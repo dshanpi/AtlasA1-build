@@ -1,0 +1,33 @@
+{
+  "release": "https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.19-ubuntu26.04-hw-v34-preview1",
+  "tag": "v2026.11.19-ubuntu26.04-hw-v34-preview1",
+  "commit": "c06befd6e3c0c295054c6fb3f229d36a23198738",
+  "public_downloads": [
+    {
+      "name": "SHA256SUMS",
+      "bytes": 479,
+      "sha256": "1cf05c9d0a43ddf14fa2a4d00e828ce60aba665caf375b2b9261ac605e78b31a"
+    },
+    {
+      "name": "Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_hw-v34_arm64.img.manifest.json",
+      "bytes": 2084,
+      "sha256": "5b82ed820cc009811d7fedc482aa03be48c488e1a6058a4818ab743b2887b7d1"
+    },
+    {
+      "name": "atlasa1-v34-firefox-image-20261119.json",
+      "bytes": 3293,
+      "sha256": "304b4eb4cd09be510c84be524b34457216a6fa5b66fd88a430204ef86d177d0c"
+    },
+    {
+      "name": "atlasa1-v34-firefox-armbian.patch",
+      "bytes": 1796036,
+      "sha256": "c74f742f5d30171fcc78fb891dab3af53354f2bca8dba2b99406d099bb28fa3d"
+    },
+    {
+      "name": "Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_hw-v34_arm64.img.xz",
+      "bytes": 1161597472,
+      "sha256": "89f23626d111301fe9e54002f8040156ff1f17d0a5af270271981aac3daeff6a"
+    }
+  ],
+  "verified_utc": "2026-11-18T16:25:39Z"
+}

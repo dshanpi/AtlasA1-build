@@ -942,6 +942,13 @@
       "sha256": "8c4f7219747de616f441a5174455ee674f1301cd6a02d997dd0185aa62117236"
     },
     {
+      "path": "evidence/atlasa1-v34-public-downloads-20261119.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-v34-public-downloads-20261119.json",
+      "size": 1191,
+      "sha256": "0ff14a920872111527ea4ac32c3f7992a42829c09182b52b9c6ce2343ad2fc57"
+    },
+    {
       "path": "evidence/atlasa1-wireless-v31-rebuild-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/atlasa1-wireless-v31-rebuild-20261118.json",
@@ -4193,8 +4200,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 28918,
-      "sha256": "2001776e87003062b05ae4a22cdd531e6dd020be1590972b02f9f16c5c54c756"
+      "size": 28989,
+      "sha256": "cef646710792fe2474945c78a253bd2ffbb40f94e30b24c9ce2e522572c1e852"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
