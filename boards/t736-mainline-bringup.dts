@@ -1,0 +1,202 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+
+/memreserve/ 0x48000000 0x01000000;
+/memreserve/ 0xb4613000 0x003e8000;
+/memreserve/ 0xb8800000 0x07800000;
+/memreserve/ 0xfb800000 0x04800000;
+
+/ {
+	model = "T736 custom board mainline bring-up";
+	compatible = "allwinner,t736";
+	#address-cells = <2>;
+	#size-cells = <2>;
+	interrupt-parent = <&gic>;
+
+	aliases { serial0 = &uart0; mmc0 = &mmc0; };
+	chosen { stdout-path = "serial0:115200n8"; };
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 2 0>;
+	};
+
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+		cpu@0 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x000>; enable-method = "psci"; };
+		cpu@100 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x100>; enable-method = "psci"; };
+		cpu@200 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x200>; enable-method = "psci"; };
+		cpu@300 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x300>; enable-method = "psci"; };
+		cpu@400 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x400>; enable-method = "psci"; };
+		cpu@500 { device_type = "cpu"; compatible = "arm,cortex-a55"; reg = <0 0x500>; enable-method = "psci"; };
+		cpu@600 { device_type = "cpu"; compatible = "arm,cortex-a76"; reg = <0 0x600>; enable-method = "psci"; };
+		cpu@700 { device_type = "cpu"; compatible = "arm,cortex-a76"; reg = <0 0x700>; enable-method = "psci"; };
+	};
+
+	psci { compatible = "arm,psci-1.0"; method = "smc"; };
+
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <1 13 8>, <1 14 8>, <1 11 8>, <1 10 8>;
+	};
+
+	gic: interrupt-controller@3400000 {
+		compatible = "arm,gic-v3";
+		#interrupt-cells = <3>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		interrupt-controller;
+		reg = <0 0x03400000 0 0x10000>,
+		      <0 0x03460000 0 0x100000>;
+	};
+
+	osc24m: osc24m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	dcxo: dcxo {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
+	};
+
+	osc32k: osc32k {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+	};
+
+	/* The R-APB gate and bank voltages remain initialized by firmware.
+	 * osc24m is a temporary APB clock handle, not a measured bus rate.
+	 */
+	r_pio: pinctrl@7025000 {
+		compatible = "allwinner,t736-r-pinctrl";
+		reg = <0 0x07025000 0 0x410>;
+		interrupts = <0 198 4>, <0 200 4>;
+		clocks = <&osc24m>, <&dcxo>, <&osc32k>;
+		clock-names = "apb", "hosc", "losc";
+		gpio-controller;
+		#gpio-cells = <3>;
+		interrupt-controller;
+		#interrupt-cells = <3>;
+		#address-cells = <0>;
+	};
+
+	usb1_vbus: regulator-usb1-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb1-vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpio = <&r_pio 0 6 0>;
+		enable-active-high;
+		startup-delay-us = <1000>;
+	};
+
+	/* Separate resources avoid the eMMC driver's CCU register subset. */
+	usb_ccu: clock-controller@2003300 {
+		compatible = "allwinner,t736-usb-ccu";
+		reg = <0 0x02003300 0 0x50>, <0 0x020025a4 0 4>,
+		      <0 0x020025c0 0 4>;
+		clocks = <&osc24m>;
+		#clock-cells = <1>;
+		#reset-cells = <1>;
+	};
+
+	usb1_phy: phy@4200800 {
+		compatible = "allwinner,t736-usb1-phy";
+		reg = <0 0x04200800 0 0x20>;
+		clocks = <&usb_ccu 0>, <&usb_ccu 1>, <&usb_ccu 5>, <&usb_ccu 4>;
+		clock-names = "ref", "bus", "master", "msi";
+		resets = <&usb_ccu 0>;
+		#phy-cells = <0>;
+		vbus-supply = <&usb1_vbus>;
+		allwinner,phy-tuning = <0x188>;
+	};
+
+	ehci1: usb@4200000 {
+		compatible = "generic-ehci";
+		reg = <0 0x04200000 0 0x400>;
+		interrupts = <0 159 4>;
+		clocks = <&usb_ccu 1>;
+		resets = <&usb_ccu 1>;
+		phys = <&usb1_phy>;
+		phy-names = "usb";
+		companion = <&ohci1>;
+	};
+
+	ohci1: usb@4200400 {
+		compatible = "generic-ohci";
+		reg = <0 0x04200400 0 0x400>;
+		interrupts = <0 160 4>;
+		clocks = <&usb_ccu 2>, <&usb_ccu 3>;
+		resets = <&usb_ccu 2>;
+		phys = <&usb1_phy>;
+		phy-names = "usb";
+	};
+
+	/* Firmware keeps APB0 at 100 MHz and these rails on. No PMIC control yet. */
+	apb0_fw: clock-apb0-firmware {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+
+	pc_supply: regulator-pc-firmware {
+		compatible = "regulator-fixed";
+		regulator-name = "pc-1v8-firmware";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-always-on;
+	};
+
+	pio: pinctrl@2000000 {
+		compatible = "allwinner,t736-pinctrl";
+		reg = <0 0x02000000 0 0x600>;
+		interrupts = <0 69 4>, <0 71 4>, <0 73 4>, <0 75 4>,
+			     <0 77 4>, <0 79 4>, <0 81 4>, <0 83 4>,
+			     <0 85 4>, <0 87 4>;
+		clocks = <&apb0_fw>, <&dcxo>, <&osc32k>;
+		clock-names = "apb", "hosc", "losc";
+		vcc-pc-supply = <&pc_supply>;
+		gpio-controller;
+		#gpio-cells = <3>;
+		interrupt-controller;
+		#interrupt-cells = <3>;
+		#address-cells = <0>;
+
+		emmc_pins: emmc-pins {
+			pins = "PC0", "PC1", "PC5", "PC6", "PC8", "PC9",
+			       "PC10", "PC11", "PC13", "PC14", "PC15", "PC16";
+			function = "sdc3";
+			allwinner,pinmux = <4>;
+			/* Preserve the firmware's drive strength and pull settings. */
+		};
+	};
+
+	/* Initial PIO driver still owns this CCU subset, but no GPIO registers. */
+	mmc0: mmc@4023000 {
+		compatible = "allwinner,t736-smhc3-pio";
+		reg = <0 0x04023000 0 0x1000>,
+		      <0 0x02002d30 0 4>,
+		      <0 0x02002d3c 0 4>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&emmc_pins>;
+		bus-width = <8>;
+		non-removable;
+	};
+
+	/* Prior firmware keeps UART0 clocks, reset and pinmux configured. */
+	uart0: serial@2500000 {
+		compatible = "snps,dw-apb-uart";
+		reg = <0 0x02500000 0 0x400>;
+		interrupts = <0 2 4>;
+		reg-shift = <2>;
+		reg-io-width = <4>;
+		clocks = <&osc24m>;
+		clock-names = "baudclk";
+		status = "okay";
+	};
+};

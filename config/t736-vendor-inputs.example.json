@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "board": "t736-mainline",
+  "description": "Private, licensed inputs used by the T736 image customizer.",
+  "archive_layout": "manifest.json plus payload files at the paths in files[].source",
+  "private": true,
+  "files": [
+    {
+      "source": "gpu/t736-img-userspace-candidate_arm64.deb",
+      "target": "/tmp/t736-vendor/gpu-userspace.deb",
+      "kind": "deb",
+      "role": "gpu_userspace",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "gpu/pvrsrvkm.ko",
+      "target": "/lib/modules/6.18.63-t736-armbian/extra/pvrsrvkm.ko",
+      "kind": "file",
+      "role": "pvr_module",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "media/t736-cedar-broker",
+      "target": "/usr/libexec/t736-cedar-broker",
+      "kind": "file",
+      "role": "codec_backend",
+      "mode": "0755",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "media/t736-cedar-userspace.deb",
+      "target": "/tmp/t736-vendor/cedar-userspace.deb",
+      "kind": "deb",
+      "role": "codec_userspace",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "media/cedarc.conf",
+      "target": "/opt/t736-cedar-transport-v2/config/cedarc.conf",
+      "kind": "file",
+      "role": "codec_config",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "media/t736-cedar-broker.service",
+      "target": "/etc/systemd/system/t736-cedar-broker.service",
+      "kind": "file",
+      "role": "codec_service",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "media/70-t736-cedar.rules",
+      "target": "/etc/udev/rules.d/70-t736-cedar.rules",
+      "kind": "file",
+      "role": "device_rules",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "browser/t736-firefox-cedar",
+      "target": "/opt/t736-cedar-transport-v2/bin/firefox-cedar",
+      "kind": "file",
+      "role": "browser_bridge",
+      "mode": "0755",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "browser/t736-cedar-browser.service",
+      "target": "/etc/systemd/system/t736-cedar-browser.service",
+      "kind": "file",
+      "role": "browser_service",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "boot/t736-ddr-spl.bin",
+      "target": "/usr/lib/u-boot/t736-ddr-spl.bin",
+      "kind": "boot",
+      "role": "ddr_boot",
+      "sha256": "REPLACE_WITH_SHA256"
+    }
+  ],
+  "notes": [
+    "Do not commit this manifest with real hashes or vendor payloads to the public repository.",
+    "codec_userspace must contain the matching Tina Cedar/OpenMAX/WC runtime; a plugin-registration result alone is not sufficient.",
+    "browser_bridge and browser_service must be built from the same FFmpeg/client/backend protocol revision; do not mix v1 and SHM-v2 artifacts.",
+    "device_rules must keep cedar_dev and dma_heap/t736-ve restricted to t736-cedar; do not replace them with a video-group 0660 rule.",
+    "Add the matching DDR/SPL input only when the licensed board boot package is available.",
+    "The image is not hardware-complete until the media and GPU acceptance matrix passes."
+  ]
+}

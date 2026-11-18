@@ -1,0 +1,10 @@
+# T736 Aurora/Atlas open SBC.  The .wip file is kept as a source template;
+# build_t736_armbian_image.py emits the supported .conf name into Armbian.
+BOARD_NAME="T736 Aurora/Atlas"
+BOARD_VENDOR="T736 open SBC"
+BOARDFAMILY="t736-mainline"
+KERNEL_TARGET="current"
+BOOTCONFIG="t736_bringup_defconfig"
+SERIALCON="ttyS0"
+BOOT_FDT_FILE="allwinner/t736-mainline-bringup.dtb"
+HAS_VIDEO_OUTPUT="yes"

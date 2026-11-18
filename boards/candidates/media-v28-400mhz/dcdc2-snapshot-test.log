@@ -1,0 +1,1 @@
+PASS: 267 actual-callback cases; owner identity, lock ordering, five register reads, failure short-circuit, all 256 selector/DVM values, enable/phase guards, feedback; no PMIC write function linked
