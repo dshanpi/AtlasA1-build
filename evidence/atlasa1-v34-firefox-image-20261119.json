@@ -1,0 +1,65 @@
+{
+  "product": "AtlasA1 Ubuntu 26.04 hw-v34 with native Cedar format switching and Firefox 160 Cedar launcher",
+  "armbian_build_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "single_patch_sha256": "c74f742f5d30171fcc78fb891dab3af53354f2bca8dba2b99406d099bb28fa3d",
+  "method": "Cloned the pinned official Armbian checkout, applied the published single patch, and ran its v34 media preparation, rootfs configuration, unprivileged Firefox checks and full 8 GiB disk packer. The base filesystem was the RC1 build root mounted read-only with a writable overlay. The v34 kernel and PowerVR came from clean source replay; the Firefox add-on used its pinned rebuild-tested package.",
+  "firefox_deb_sha256": "0e360b0c309f61a6b6562387026ea8bfe3fb7f3248672972dbc7c9781c1c29cb",
+  "native_broker_sha256": "2a2790b05dd55a7463e8b11f6eed165cb4f2d904906c5ae8957527054de04f98",
+  "checks": {
+    "rootfs_package_dependencies": true,
+    "firefox_desktop_user_menu_and_rdd_codec_abi_62_60": true,
+    "private_h264_and_hevc_decoders": true,
+    "power_vr_module_and_kernel_abi": true,
+    "gstreamer_omx_and_native_player": true,
+    "emmc_image_ext4_gpt_and_boot_file_readback": true
+  },
+  "hardware_scope": "Release RC1 was FES flashed and cold-booted. The v34 kernel and DTB were independently booted from eMMC and PCIe was tested with an empty slot. The image described in this offline report has not itself been FES flashed.",
+  "image_manifest": {
+    "image": "AtlasA1-Ubuntu26-v34-Firefox.img",
+    "bytes": 8589934592,
+    "sha256": "80975eb72bf80e53e549e7d4351600719cdc2d09113e30790a03df24e1636622",
+    "format": "AtlasA1 eMMC raw disk image",
+    "distribution": "Ubuntu 26.04",
+    "root_partuuid": "a0085546-4166-744a-a353-fca9272b8e48",
+    "rootfs_uuid": "110a80c5-2c7b-444d-8afe-0a1b4228fa89",
+    "rootfs_lba": 368640,
+    "boot_files": {
+      "boot/vmlinuz-6.18.63-t736-hw-v34": "a6f8ca290affe51a5c2bca63fc1527b7a98a3568f15d5780e9c2740b69ceffe5",
+      "boot/initrd.img-6.18.63-t736-hw-v34": "832a8afae766e8bfe3643ff0ceaa59ac5abd749bc311c4cbba00320ce67f1971",
+      "boot/dtb/allwinner/t736-mainline-bringup.dtb": "6e49ad1bf17f01621114f90766b14994992706d37b3ca593a5de1c6a2c329d9f"
+    },
+    "root_partition_bytes": 7802716160,
+    "rootfs_user_available_bytes": 3608096768,
+    "spl_sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea",
+    "boot_package_sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e",
+    "components": [
+      {
+        "sector": 24577,
+        "address": "0x47000000",
+        "bytes": 5040,
+        "crc32": "caa77399",
+        "sha256": "44aeb8e56f64f2ccd80a1cd286460eda6d0232f9cc1e82618866826b23298535",
+        "offset": 512
+      },
+      {
+        "sector": 24587,
+        "address": "0x48000000",
+        "bytes": 53924,
+        "crc32": "aa2158fa",
+        "sha256": "81f53c1d1f571c74bd907317d813a5ed56c64382479caa75edd3cec43ada6dc6",
+        "offset": 5632
+      },
+      {
+        "sector": 24693,
+        "address": "0x52000000",
+        "bytes": 265640,
+        "crc32": "6b4439f6",
+        "sha256": "fd3ffd3d5584642ad0eb0be645941b671591d47d1e2fc575c8a30d3b539c00c3",
+        "offset": 59904
+      }
+    ],
+    "e2fsck": "passed",
+    "gpt": "passed",
+    "hardware_boot": "unverified"
+  }
+}

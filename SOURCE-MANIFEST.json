@@ -928,6 +928,13 @@
       "sha256": "c5ed8e97d6f76dc69f1365b42f7d7a4761c29241508bafec5b5817436e0988e1"
     },
     {
+      "path": "evidence/atlasa1-v34-firefox-image-20261119.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-v34-firefox-image-20261119.json",
+      "size": 3293,
+      "sha256": "304b4eb4cd09be510c84be524b34457216a6fa5b66fd88a430204ef86d177d0c"
+    },
+    {
       "path": "evidence/atlasa1-v34-image-integration-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/atlasa1-v34-image-integration-20261118.json",
@@ -4186,8 +4193,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 28850,
-      "sha256": "1f555f1bacf697ae3bc37916d7f73a222f0590ee4eac90a9150f2becd1b43e08"
+      "size": 28918,
+      "sha256": "2001776e87003062b05ae4a22cdd531e6dd020be1590972b02f9f16c5c54c756"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",

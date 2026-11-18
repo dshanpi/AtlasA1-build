@@ -163,6 +163,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json",
                 "evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json",
                 "evidence/atlasa1-v34-image-integration-20261118.json",
+                "evidence/atlasa1-v34-firefox-image-20261119.json",
                 "evidence/atlasa1-rc1-installed-broker-update-20261118.json",
                 "evidence/atlasa1-armbian-v34-patch-replay-20261119.json",
                 "evidence/atlasa1-cedar-format-switch-20261118.json",
