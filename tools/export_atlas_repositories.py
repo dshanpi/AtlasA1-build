@@ -161,6 +161,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "tools/browser/shm_v2", "tools/browser/shm_v2", records)
     for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
                 "tools/browser/panel_candidate/private-1080p-panel.patch",
+                "tools/browser/panel_candidate/prefer-omx-panel.patch",
                 "tools/browser/panel_candidate/cedar_panel.h",
                 "tools/browser/cedar_client.h"):
         _file(ROOT, destination, rel, rel, records)
@@ -179,6 +180,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "patches/ffmpeg/ffplay-refresh-budget.patch",
                 "evidence/atlasa1-player-armbian-rootfs-20261118.json",
                 "evidence/atlasa1-player-panel-package-20261118.json",
+                "evidence/atlasa1-player-preferred-panel-package-20261118.json",
                 "patches/cedar/omx-4k-broker-buffers.patch",
                 "evidence/armbian-source-boot-layout-test-20261118.json",
                 "evidence/media-v30-heap-budget-build-20261118.json",
@@ -256,12 +258,14 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     _glob(ROOT, destination, "evidence/firefox-hevc1080p60-v8-*-20261118.json", "evidence", records)
     for rel in ("evidence/media-v30-4k-firefox-parallel-20261118.json",
                 "evidence/media-v30-4k-native-playback-20261118.json",
+                "evidence/media-v30-4k-omx-panel-20261118.json",
                 "evidence/media-v30-1080-playback-20261118.json",
                 "evidence/cedar-peer-roles-build-20261118.json",
                 "patches/ffmpeg/ffplay-refresh-budget.patch", "tools/build_ffplay_refresh_pair.sh",
                 "tools/build_atlasa1_player.py", "tests/test_atlasa1_player.py",
                 "evidence/atlasa1-native-player-package-20261118.json",
                 "evidence/atlasa1-player-panel-package-20261118.json",
+                "evidence/atlasa1-player-preferred-panel-package-20261118.json",
                 "evidence/ffplay-refresh-budget-build-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/validation/media_*.py", "tools/validation/browser_*.py", "tools/validation/cedar_*.py", "tools/validation/*nv21*.py", "tools/validation/*omx*.py", "tools/validation/decode_*.py", "tools/validation/build_h264_*.py"):
