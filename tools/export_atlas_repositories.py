@@ -173,14 +173,18 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "tools/export_atlas_repositories.py", "tools/export_atlas_repositories.py", records)
     for rel in ("tools/validation/README.md", "tools/validation/ffplay_offscreen.py", "tools/validation/ffplay_present_trace.c",
+                "tools/validation/ffplay_start_sync.md", "tools/validation/ffplay_start_sync_probe.c",
                 "tools/validation/firefox_headless_playback.py", "tools/validation/media_acceptance.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
     for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
                 "patches/ffmpeg/ffplay-refresh-budget.patch",
+                "patches/ffmpeg/ffplay-first-picture-audio.patch",
+                "evidence/ffplay-first-picture-sync-qemu-20261118.json",
                 "evidence/atlasa1-player-armbian-rootfs-20261118.json",
                 "evidence/atlasa1-player-panel-package-20261118.json",
                 "evidence/atlasa1-player-preferred-panel-package-20261118.json",
+                "evidence/atlasa1-player-start-sync-package-20261118.json",
                 "patches/cedar/omx-4k-broker-buffers.patch",
                 "evidence/armbian-source-boot-layout-test-20261118.json",
                 "evidence/media-v30-heap-budget-build-20261118.json",
@@ -242,7 +246,8 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
         _file(ROOT, destination, rel, rel, records)
     for rel in ("tools/validation/update_t736_media_v29.py", "tools/validation/audit_media_v29_package.py"):
         _file(ROOT, destination, rel, rel, records)
-    for rel in ("tools/validation/firefox_headless_playback.py", "tools/validation/ffplay_offscreen.py", "tools/validation/ffplay_present_trace.c",
+    for rel in ("tools/validation/README.md", "tools/validation/firefox_headless_playback.py", "tools/validation/ffplay_offscreen.py", "tools/validation/ffplay_present_trace.c",
+                "tools/validation/ffplay_start_sync.md", "tools/validation/ffplay_start_sync_probe.c",
                 "tests/test_ffmpeg_cedar_dr1.c", "tests/test_cedar_backend.c", "tests/test_cedar_shm_transport.c",
                 "tests/test_cedar_parallel_direct.c", "tools/build_cedar_parallel_slot.sh",
                 "evidence/media-v30-4k-browser-hardware-20261118.json",
@@ -262,10 +267,13 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
                 "evidence/media-v30-1080-playback-20261118.json",
                 "evidence/cedar-peer-roles-build-20261118.json",
                 "patches/ffmpeg/ffplay-refresh-budget.patch", "tools/build_ffplay_refresh_pair.sh",
+                "patches/ffmpeg/ffplay-first-picture-audio.patch",
+                "evidence/ffplay-first-picture-sync-qemu-20261118.json",
                 "tools/build_atlasa1_player.py", "tests/test_atlasa1_player.py",
                 "evidence/atlasa1-native-player-package-20261118.json",
                 "evidence/atlasa1-player-panel-package-20261118.json",
                 "evidence/atlasa1-player-preferred-panel-package-20261118.json",
+                "evidence/atlasa1-player-start-sync-package-20261118.json",
                 "evidence/ffplay-refresh-budget-build-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/validation/media_*.py", "tools/validation/browser_*.py", "tools/validation/cedar_*.py", "tools/validation/*nv21*.py", "tools/validation/*omx*.py", "tools/validation/decode_*.py", "tools/validation/build_h264_*.py"):

@@ -111,6 +111,16 @@ python3 tools/validation/ffplay_offscreen.py /var/tmp/media/hevc-1080p60-1800.mp
 
 交叉编译观测库时可将 `cc` 换成 `aarch64-linux-gnu-gcc`。使用单独的实验库时，通过 `--ffmpeg-lib` 和 `--client-lib` 指定路径。验证 4K 源在 1080p 桌面的表现时，`--scale-to-window` 会在解码后缩放纹理，记录保留源尺寸和实际纹理尺寸。
 
+在 v30 上验收 0.1-4 的 OMX 路径时，以下命令使用安装包中的播放器和库。选一段带 AAC 的 3840×2160 HEVC 文件。`--omx-fit` 会核对 4K 输入会话、解码器返回的 1080p 画面和呈现帧数。`--loops 2` 让 FFplay 在同一进程内回到开头再播一次。使用旧后端的共享内存缩放时，可把 `--omx-fit` 换成 `--native-fit`。每次测试使用新的输出文件名。
+
+```sh
+app=/opt/atlasa1-player
+taskset -c 6-7 python3 tools/validation/ffplay_offscreen.py /var/tmp/media/hevc-4k30-aac.mp4 \
+  --player "$app/bin/ffplay" --ffmpeg-lib "$app/lib" --client-lib "$app/lib/libt736_cedar_client.so" \
+  --renderer powervr --present-trace /var/tmp/t736-present.so --keep-frames \
+  --omx-fit --audio --wait-video-start --loops 2 --output /var/tmp/native-4k-repeat.json
+```
+
 ## 帧缓冲抓图
 
 交叉编译示例：

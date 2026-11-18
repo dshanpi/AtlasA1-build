@@ -45,9 +45,11 @@ python3 tools/build_t736_vendor_input.py \
 
 PVR 内核模块的 `vermagic` 必须与实际启动的内核完全一致。上面的 media-v29 示例只适用于配套的 `6.18.63-t736-media-v29` 内核候选。
 要在 GNOME 镜像里提供「打开方式 → AtlasA1 播放器」，在 Linux 上组装私有输入时追加
-`--player-deb /private/atlasa1-player_0.1-2_arm64.deb`。构建器读取软件包的真实名称、架构和文件权限，
+`--player-deb /private/atlasa1-player_0.1-4_arm64.deb`。构建器读取软件包的真实名称、架构和文件权限，
 把它的 SHA-256 加入清单。镜像定制阶段安装清单中的本地软件包，核对目标软件包数据库和播放器入口。
-该参数可省略。已在 arm64 Trixie GNOME 根文件系统内通过定制脚本将播放器从 0.1-1 升至 0.1-2，校验了私有解码库和桌面入口。[根文件系统实测](../evidence/atlasa1-player-armbian-rootfs-20261118.json) · [播放器和硬解要求](../tools/player/README.md)
+该参数可省略。已在 arm64 Trixie GNOME 根文件系统内通过定制脚本将播放器从 0.1-2 升至 0.1-3，再升至 0.1-4，核对了目标 FFplay 的首帧音画同步选项、私有库、桌面入口和 Cedar 套接字。[根文件系统实测](../evidence/atlasa1-player-armbian-rootfs-20261118.json)
+
+在 1080p 显示器上播放 4K 片源时，实测的解码器缩放路径使用 v30 内核、256 MiB Cedar 堆和支持 OMX 缩放的配套服务。兼容的旧版服务可使用客户端 2×2 缩放路径。上例中的 v29 模块和 128 MiB 堆配置用于根文件系统集成验证；制作 v30 镜像时需提供与 v30 内核匹配的模块和服务。[播放器要求](../tools/player/README.md) · [OMX 服务源码与构建说明](https://github.com/dshanpi/AtlasA1-media/tree/main/tools/browser/omx_scale_candidate)
 公开 patch 默认产生 `6.18.63-t736-armbian`，它不会自动生成或改写厂商 PVR 模块。
 
 生成的目录或 tar.gz 可以直接传给 `build_t736_armbian_image.py --vendor-input`。

@@ -72,5 +72,58 @@
     },
     "offline_hook_exit_status": 0,
     "raw_hook_log_sha256": "83c77c3dc79e988abc540c190e773d4bb42bc1ad86af45644c37fcfe893604f6"
+  },
+  "upgrade_0_1_3": {
+    "from": "0.1-2",
+    "to": "0.1-3",
+    "architecture": "arm64",
+    "bytes": 5920974,
+    "deb_sha256": "87e27f414306341153063613b4775860e927739a5c25ece04a4ee60a65064109",
+    "method": "Same pinned Armbian commit and read-only arm64 rootfs as the 0.1-2 test, fresh checkout and overlay. The generated customization hook used APT with the 0.1-2 package already installed.",
+    "manifest_sha256": "dc7d6e16930119dc2ad1ba4c4d5b3676689a2c9b102cecf6bbf8f447a61ce544",
+    "unchanged_nonplayer_inputs": 72,
+    "socket_enabled": true,
+    "package_database": "install ok installed arm64 0.1-3",
+    "dpkg_verify": "no differences",
+    "ffplay_version": "7.1.5",
+    "installed_sha256": {
+      "/opt/atlasa1-player/lib/libavcodec.so.61": "d345857e704adfca5057a377fd8973bb43a98311090ad4d29a88ea96cd653ea1",
+      "/opt/atlasa1-player/lib/libavutil.so.59": "017f69e66121ff84a4a9b92c9d8397cad73ce73a2efb612074b2ee811bc38de0",
+      "/opt/atlasa1-player/lib/libt736_cedar_client.so": "f34cb076927f0afc87df29da9d7c32f095ebf6979ba32fa9e5eb122730f16c1e",
+      "/opt/atlasa1-player/bin/ffplay": "6caa18410a684e702099cb760bcdce9c480313603707092e4023d6f558545dd4",
+      "/usr/bin/atlasa1-player": "6b7ee7ed4e54efda9915af90bedf5ff62685e5615e0c91253f48f4d53f72d132",
+      "/usr/share/applications/atlasa1-player.desktop": "850793681c7050168def31acf8f452b1903a96543860f3959e3502da1009eeeb"
+    },
+    "offline_hook_exit_status": 0,
+    "raw_hook_log_sha256": "e852b77cac2b62d5217367e28982d4bfbbea8e3b0abee727e1f1446bfca98537",
+    "image_hardware_acceptance": "pending"
+  },
+  "upgrade_0_1_4": {
+    "from": "0.1-3",
+    "to": "0.1-4",
+    "architecture": "arm64",
+    "bytes": 5921480,
+    "deb_sha256": "a0869afbec50507f6c91c8ce0b0ebaac9feadb590dc6348a9cac9ee8f0a10e89",
+    "method": "Rebuilt the private 73-file vendor input and restaged the pinned official Armbian checkout, then remounted the same arm64 Trixie GNOME overlay in a separate network-isolated namespace. The generated hook upgraded the installed 0.1-3 player via local APT.",
+    "manifest_sha256": "843faba9ef45bf3c8d027017f29dc73a50e9b3c66622a15cac3d41db211c01b6",
+    "unchanged_nonplayer_inputs": 72,
+    "socket_enabled": true,
+    "package_database": "install ok installed arm64 0.1-4",
+    "dpkg_verify": "no differences",
+    "ffplay_version": "7.1.5",
+    "target_option_present": "-wait_video_start",
+    "desktop_exec": "atlasa1-player %f",
+    "desktop_mimetype": "video/mp4;",
+    "installed_sha256": {
+      "/opt/atlasa1-player/lib/libavcodec.so.61": "d345857e704adfca5057a377fd8973bb43a98311090ad4d29a88ea96cd653ea1",
+      "/opt/atlasa1-player/lib/libavutil.so.59": "017f69e66121ff84a4a9b92c9d8397cad73ce73a2efb612074b2ee811bc38de0",
+      "/opt/atlasa1-player/lib/libt736_cedar_client.so": "f34cb076927f0afc87df29da9d7c32f095ebf6979ba32fa9e5eb122730f16c1e",
+      "/opt/atlasa1-player/bin/ffplay": "36b891ba51dc72d18bedc07664bbdb45a0df9183d2ea3bb79d353ecb92f721ff",
+      "/usr/bin/atlasa1-player": "4a38bc273a87f260e3554e76c6d82263bbc1ef468d84ee3534a0190bcd666251",
+      "/usr/share/applications/atlasa1-player.desktop": "850793681c7050168def31acf8f452b1903a96543860f3959e3502da1009eeeb"
+    },
+    "offline_hook_exit_status": 0,
+    "raw_hook_log_sha256": "e05aaff666bf4515ed57f93467a9466d7e0bae4bd848bf7e7728b56eb7db8080",
+    "image_hardware_acceptance": "pending"
   }
 }
