@@ -103,6 +103,13 @@ for name in vmlinuz initrd.img; do
 done
 systemctl --root="$root" enable t736-cedar.socket serial-getty@ttyS0.service
 systemctl --root="$root" is-enabled t736-cedar.socket
+# eMMC does not expose SMART. Keep the daemon available for add-on drives.
+install -d "$root/etc/systemd/system/smartmontools.service.d" "$root/etc/systemd/system/run-rpc_pipefs.mount.d"
+printf '[Service]\nExecStart=\nExecStart=/usr/sbin/smartd -n --quit=never $smartd_opts\n' \
+    > "$root/etc/systemd/system/smartmontools.service.d/atlasa1-emmc.conf"
+# Ubuntu pulls in nfs-common; mount rpc_pipefs only on a kernel with SUNRPC.
+printf '[Unit]\nConditionPathExists=|/sys/module/sunrpc\nConditionPathExistsGlob=|/usr/lib/modules/%%v/kernel/net/sunrpc/sunrpc.ko*\n' \
+    > "$root/etc/systemd/system/run-rpc_pipefs.mount.d/atlasa1-sunrpc.conf"
 target dpkg --audit > "$work/dpkg-audit"
 [[ ! -s "$work/dpkg-audit" ]] || { cat "$work/dpkg-audit" >&2; exit 1; }
 target apt-get check

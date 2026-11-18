@@ -672,8 +672,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 9709,
-      "sha256": "9e729c02631a7cf57d4f5aa6447e349fcd379a5f7e706a8bc908f36998387554"
+      "size": 11673,
+      "sha256": "44bd5687385e838e862d106ccce0c5e9a752f495416dc1101a5a7c289abb75a2"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -760,11 +760,25 @@
       "sha256": "0b352b71c86f8114c713a918fae0a95ddab95230d621df5d9655c15205e43734"
     },
     {
+      "path": "evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json",
+      "size": 7044,
+      "sha256": "63bd2b03c2d82c2cba5834466682f914a2b1f96c21b5ef392efd148b9aa36bce"
+    },
+    {
       "path": "evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
       "size": 1776,
       "sha256": "dc54b394475148f41fdb23377d4e1d4856acda38968d9a0a49433410df7a6e1f"
+    },
+    {
+      "path": "evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json",
+      "size": 18186,
+      "sha256": "d90ada8c92d8e27c34cb84df810886dfd781562ec28f4fbf0e1762782678e4ed"
     },
     {
       "path": "evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv",
@@ -3906,8 +3920,8 @@
       "path": "tools/configure_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_resolute.sh",
-      "size": 5965,
-      "sha256": "6c0ca4e473d063adf414ef36437a0a5734cd375a57970f4efc5ab6a130464cfa"
+      "size": 6609,
+      "sha256": "00fd9ff3b617749012c0a48311a2073e961125ca3bf7ffffa2b78a2ffb006ccd"
     },
     {
       "path": "tools/export_atlas_repositories.py",
@@ -4253,6 +4267,27 @@
       "sha256": "d99514c516fdc20f81775f213c3d15a26e3c346b9fce86362dcb4a189898ded9"
     },
     {
+      "path": "tools/validation/atlasa1_finalize_gpt.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/atlasa1_finalize_gpt.py",
+      "size": 5068,
+      "sha256": "9eb4e3af279fbe66b4849544abad8d9368e90bb0592bb7db110e0b7ae1a89723"
+    },
+    {
+      "path": "tools/validation/atlasa1_io_inventory.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/atlasa1_io_inventory.py",
+      "size": 2497,
+      "sha256": "0cdebb8a56ebd59862dd3b018049b8b02fbfe3b0e9f42a02bae73a822a745000"
+    },
+    {
+      "path": "tools/validation/atlasa1_resolute_live.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/atlasa1_resolute_live.py",
+      "size": 5668,
+      "sha256": "b23c5880bc0f2d94289a4ff6141b047217098a62bb908c5f07501441ffb97cd5"
+    },
+    {
       "path": "tools/validation/atlasa1_sdl_gles_smoke.c",
       "kind": "source",
       "source": "mainline/tools/validation/atlasa1_sdl_gles_smoke.c",
@@ -4270,8 +4305,8 @@
       "path": "tools/validation/ffplay_offscreen.py",
       "kind": "source",
       "source": "mainline/tools/validation/ffplay_offscreen.py",
-      "size": 14561,
-      "sha256": "d5a5d53b01b6d77418298cb32da542906eea8911a847a4bc68491781521b5aff"
+      "size": 15016,
+      "sha256": "7cc75e8530a5214d9861ce1b79a05d29731aa02d3603a2a64162674e1da4024d"
     },
     {
       "path": "tools/validation/ffplay_present_trace.c",
@@ -4298,8 +4333,8 @@
       "path": "tools/validation/firefox_headless_playback.py",
       "kind": "source",
       "source": "mainline/tools/validation/firefox_headless_playback.py",
-      "size": 14812,
-      "sha256": "b4e6d120e13b26706a306e4e9ba5c38e022856534ccf829a89a6baec0e31ba2f"
+      "size": 15071,
+      "sha256": "ca2722f519e3af5dce89d39a523c4f7e50c22f55683f75fce4724e70cdd780a9"
     },
     {
       "path": "tools/validation/gpu_runtime_view.py",

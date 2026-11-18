@@ -97,4 +97,21 @@ OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 
 - SDL 离屏 GLES 四种颜色全部读回正确，渲染器为 `PowerVR B-Series BXM-4-64`，OpenGL ES 3.2 驱动版本为 `24.2@6603887`。直接使用 GBM 的测试还验证了 60 帧、每帧四个象限的颜色。
 - 25 秒的 3840×2160 HEVC 30 fps + AAC 片源经当前运行系统的 v30 Cedar 服务解出 750/750 帧，Cedar 硬件中断增加 750 次。Ubuntu FFplay 收到的画面尺寸为 1920×1080。该轮使用虚拟音视频输出，耗时 25.480 秒。
 
-完整镜像从 eMMC 冷启动、HDMI 物理显示和扬声器输出、GNOME 会话、Firefox 的硬件解码、硬件编码及无线功能仍待在本版单独验收。[本版媒体实板记录](https://github.com/dshanpi/AtlasA1-media/blob/df178e59ebf7eac04b2b00a713db75ddcb04cc44/evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json)
+## RC1 整盘烧录后的实测
+
+FES 已向板载 eMMC 写入并提交完整 8 GiB，工具校验成功。断电 5 秒后，固定 LPDDR4x SPL、TF-A、U-Boot 和 Linux 6.18.63 自动引导 Ubuntu 26.04。串口登录和 SSH 登录成功。从 eMMC 回读的启动组件、内核、initrd、DTB 和根分区标识均与 Release 清单一致。HDMI 的 DRM 和 LightDM XRandR 均报告 1920×1080、60 Hz；测试时屏幕处于登录界面。以普通用户运行的 PowerVR SDL 和 GBM 图像读回通过。以太网协商为 100 Mbps 全双工，通过 DNS 和 HTTPS 访问 Ubuntu 镜像站。
+
+| 本地播放器输入 | PowerVR 离屏提交 | 首次打开至退出 | 复播至退出 | 复播音画时差 P95 |
+| --- | --- | --- | --- | --- |
+| H.264，1920×1080，60 fps，25 秒 | 1500/1500 帧，零丢帧 | 28.40 秒 | 25.54 秒 | 38 ms |
+| HEVC，3840×2160，30 fps，25 秒；硬件缩放至 1920×1080 | 750/750 帧，零丢帧 | 29.69 秒 | 25.52 秒 | 29 ms |
+
+两项首次测试分别在干净启动后执行。RC1 的 Cedar 服务仅保留一种解码格式；从上述 4K HEVC 切到 1080p H.264 会退回软件解码，25 秒片段实测耗时 43.31 秒。发行版原装 Firefox 的离屏 H.264 1080p60 测试共计 1187 帧、丢 527 帧，Cedar 中断增量为零。RC1 未枚举 ALSA 声卡，音画计时使用 SDL 虚拟音频。物理扬声器、原生 4K HDMI 扫描输出和硬件编码仍待实测。[完整实板报告](../evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json)
+
+本板 eMMC 容量为 58.2 GiB。整盘写入后，备份 GPT 初始位于 8 GiB 镜像末端。板上运行以下命令可备份原 GPT、迁移副本到实际介质末端，并同步 LBA 40960 的厂家镜像。脚本校验主备 CRC 和全部六个分区条目；此次操作后根分区保持原大小。
+
+```sh
+sudo python3 tools/validation/atlasa1_finalize_gpt.py /path/to/release.manifest.json --apply
+```
+
+首次启动另有两个 systemd 单元报错。RC1 内核缺少 `rpc_pipefs`，板载 eMMC 也不提供 SMART。仓库中的根文件系统配置为前者添加了启动条件，并让 `smartd` 在没有 SMART 磁盘时继续运行。两项修改已在烧录后的板上验证。[FES 与首次冷启动记录](../evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json)
