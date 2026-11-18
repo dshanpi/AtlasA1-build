@@ -42,5 +42,35 @@
     "target_ffplay_version": "7.1.5",
     "rootfs_build_info_hardware_acceptance": "pending"
   },
-  "scope": "Private rootfs package integration only. Default kernel/boot selection was not changed. No image flash or end-to-end new-image boot performed."
+  "scope": "Private rootfs package integration only. Default kernel/boot selection was not changed. No image flash or end-to-end new-image boot performed.",
+  "upgrade_0_1_2": {
+    "armbian_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+    "method": "A separate pinned official checkout generated the private vendor input and customization hook. A network-isolated AArch64 chroot on a writable overlay of the read-only Trixie GNOME image installed 0.1-1, then ran that hook with local packages and the media-v29 kernel module tree. Existing desktop packages and credentials were retained.",
+    "deb": {
+      "version": "0.1-2",
+      "architecture": "arm64",
+      "bytes": 5920396,
+      "sha256": "ac9cea660b1a68088ba8bef271537a7c93e9f524b175f4e66a466b76f9f9f4ae"
+    },
+    "vendor_files": 73,
+    "other_72_manifest_entries_equal_to_0_1_1": true,
+    "vendor_manifest_sha256": "2f38722b1b7845023afc1e562e9a5b91246e9270f0e66fecbfd062e369090a6d",
+    "verified_package_status": "install ok installed arm64 0.1-2",
+    "dpkg_verify": "no differences",
+    "target_ffplay_version": "7.1.5",
+    "desktop_exec": "atlasa1-player %f",
+    "desktop_mimetype": "video/mp4;",
+    "socket_enabled": true,
+    "pvr_vermagic_matches_v29": true,
+    "image_hardware_acceptance": "pending",
+    "installed_sha256": {
+      "/opt/atlasa1-player/bin/ffplay": "6caa18410a684e702099cb760bcdce9c480313603707092e4023d6f558545dd4",
+      "/opt/atlasa1-player/lib/libavcodec.so.61": "ed86027d1bf7fb15a57104f86ac2575384895a01104adb7b4bac8b51575c1d9a",
+      "/opt/atlasa1-player/lib/libt736_cedar_client.so": "1d8309cd19002fd7a994679fd388b3d41435d235b1b77fc26c322ea68cd296c4",
+      "/usr/bin/atlasa1-player": "6b7ee7ed4e54efda9915af90bedf5ff62685e5615e0c91253f48f4d53f72d132",
+      "/usr/share/applications/atlasa1-player.desktop": "850793681c7050168def31acf8f452b1903a96543860f3959e3502da1009eeeb"
+    },
+    "offline_hook_exit_status": 0,
+    "raw_hook_log_sha256": "83c77c3dc79e988abc540c190e773d4bb42bc1ad86af45644c37fcfe893604f6"
+  }
 }

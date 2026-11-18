@@ -602,8 +602,8 @@
       "path": "docs/ARMBIAN_REBUILD.md",
       "kind": "source",
       "source": "mainline/docs/ARMBIAN_REBUILD.md",
-      "size": 8374,
-      "sha256": "5083ce10e988af8ca41d767400751a0b3f2a0bdeed9823a8d4ddb1f0e27a3210"
+      "size": 8538,
+      "sha256": "2e458791e7ee59d7882d8130a94098b8ffbb46002abda3518c74c48713745fe7"
     },
     {
       "path": "docs/ATLAS_REPOSITORY_LAYOUT.md",
@@ -679,8 +679,8 @@
       "path": "evidence/atlasa1-player-armbian-rootfs-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/atlasa1-player-armbian-rootfs-20261118.json",
-      "size": 2284,
-      "sha256": "e5af202b46ee544ec0cf625f5d00971b147bb92f62ec8e0db9b7b9e3879a6168"
+      "size": 4159,
+      "sha256": "2f32879876829cfed26c836aafbcad46cef9c475cbb720a5460917449de3b5ac"
     },
     {
       "path": "evidence/atlasa1-player-panel-package-20261118.json",
