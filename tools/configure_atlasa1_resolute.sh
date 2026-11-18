@@ -5,13 +5,20 @@ if [[ ${1:-} != --private-mounts ]]; then
     exec unshare --mount --propagation private bash "$0" --private-mounts "$@"
 fi
 shift
-[[ $# == 6 && $(id -u) == 0 ]] || { echo "Usage (root): $0 ROOTFS KERNEL_DEB PVR_KO MEDIA_OVERLAY GPU_DEB PLAYER_DEB" >&2; exit 2; }
+[[ ( $# == 6 || $# == 7 ) && $(id -u) == 0 ]] || { echo "Usage (root): $0 ROOTFS KERNEL_DEB PVR_KO MEDIA_OVERLAY GPU_DEB PLAYER_DEB [FIREFOX_CEDAR_DEB]" >&2; exit 2; }
 root=$(realpath -e "$1")
 kernel=$(realpath -e "$2")
 pvr=$(realpath -e "$3")
 overlay=$(realpath -e "$4")
 gpu=$(realpath -e "$5")
 player=$(realpath -e "$6")
+board_debs=("$kernel" "$gpu" "$player")
+if [[ $# == 7 ]]; then
+    firefox=$(realpath -e "$7")
+    [[ $(dpkg-deb -f "$firefox" Package) == atlasa1-firefox-cedar ]]
+    [[ $(dpkg-deb -f "$firefox" Version) == '8.0.1-1~resolute1' ]]
+    board_debs+=("$firefox")
+fi
 [[ "$root" != / && "$overlay" != / && "$root" != "$overlay" ]]
 for sub in dev proc sys run; do
     if [[ -L "$root/$sub" ]] || mountpoint -q "$root/$sub"; then
@@ -21,8 +28,13 @@ for sub in dev proc sys run; do
 done
 grep -qx 'VERSION_ID="26.04"' "$root/usr/lib/os-release"
 grep -q t736-mainline "$root/etc/armbian-release"
-release=6.18.63-t736-media-v30
-[[ $(dpkg-deb -f "$kernel" Package) == "linux-image-$release" ]]
+package=$(dpkg-deb -f "$kernel" Package)
+case "$package" in
+    linux-image-6.18.63-t736-media-v30) board_dtb=t736-gpu-candidate.dtb ;;
+    linux-image-6.18.63-t736-hw-v34) board_dtb=t736-pcie-v32.dtb ;;
+    *) echo "Unsupported AtlasA1 kernel package: $package" >&2; exit 2 ;;
+esac
+release=${package#linux-image-}
 [[ $(dpkg-deb -f "$player" Package) == atlasa1-player ]]
 [[ $(modinfo -F vermagic "$pvr" | cut -d' ' -f1) == "$release" ]]
 work=$(mktemp -d)
@@ -71,13 +83,13 @@ target id t736-cedar >/dev/null 2>&1 || target useradd -r -g t736-cedar -G t736 
 printf 'root:1234\nt736:1234\n' | target chpasswd
 # Preserve Armbian's first-login password change for the public root account.
 target chage -d 0 root
-for deb in "$kernel" "$gpu" "$player"; do
+packages=(initramfs-tools ffmpeg gstreamer1.0-tools
+    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad)
+for deb in "${board_debs[@]}"; do
     [[ $(dpkg-deb -f "$deb" Architecture) == arm64 ]]
     install -m 0644 "$deb" "$pkg/"
+    packages+=("${pkg#"$root"}/$(basename "$deb")")
 done
-packages=(initramfs-tools ffmpeg gstreamer1.0-tools
-    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
-    "${pkg#"$root"}/$(basename "$kernel")" "${pkg#"$root"}/$(basename "$gpu")" "${pkg#"$root"}/$(basename "$player")")
 # A freshly prepared rootfs may already contain every runtime dependency.
 if ! target apt-get --print-uris --no-install-recommends --assume-yes install "${packages[@]}" >"$work/uris" 2>&1 ||
     grep -Eq "^'(https?|ftp):" "$work/uris"; then
@@ -90,7 +102,7 @@ rsync -a --chown=root:root "$overlay/" "$root/"
 install -D -m 0644 "$pvr" "$root/lib/modules/$release/extra/pvrsrvkm.ko"
 target depmod -a "$release"
 target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
-install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/t736-gpu-candidate.dtb" \
+install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/$board_dtb" \
     "$root/boot/dtb/allwinner/t736-mainline-bringup.dtb"
 if [[ -s "$root/boot/initrd.img-$release" ]]; then
     target update-initramfs -u -k "$release"

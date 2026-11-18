@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Rebuild AtlasA1 eMMC media on an Armbian-supported Linux build host.
 set -euo pipefail
-if [[ $# != 2 ]]; then
-    echo "Usage: $0 OFFICIAL_ARMBIAN_CHECKOUT NEW_OUTPUT_DIRECTORY" >&2
+if [[ $# != 2 && $# != 3 ]] || [[ $# == 3 && ${3-} != --pcie-v34 ]]; then
+    echo "Usage: $0 OFFICIAL_ARMBIAN_CHECKOUT NEW_OUTPUT_DIRECTORY [--pcie-v34]" >&2
     echo "Set ATLAS_TINA_SDK to the configured T736 Tina SDK (see docs/UBUNTU_26_04.md)." >&2
     exit 2
 fi
@@ -15,6 +15,10 @@ test -x "$tina/out/t736/demo_aiot/buildroot/buildroot/host/bin/aarch64-none-linu
 git -C "$framework" cat-file -e '2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736^{commit}'
 check_file() { printf '%s  %s\n' "$1" "$2" | sha256sum --check --status; }
 check_file 5361d148fa097ccc14e15a173523783d0eb1a71969bc76d57eb8e1229ddc6d90 "$ddr"
+if [[ -n ${ATLAS_FIREFOX_DEB:-} ]]; then
+    firefox=$(realpath -e "$ATLAS_FIREFOX_DEB")
+    check_file 0e360b0c309f61a6b6562387026ea8bfe3fb7f3248672972dbc7c9781c1c29cb "$firefox"
+fi
 mkdir -- "$out"
 mkdir -- "$out/sources"
 if [[ -n ${ATLAS_IMG_DEB:-} || -n ${ATLAS_CEDAR_WC:-} ]]; then
@@ -42,8 +46,14 @@ python3 "$tools/build_atlasa1_release_boot.py" --work "$out/boot" \
     --uboot-archive "$out/sources/u-boot.tar.gz" --tfa-archive "$out/sources/tf-a.tar.gz" --ddr-library "$ddr"
 
 git clone --depth=1 --branch v6.18.63 https://github.com/gregkh/linux.git linux
-bash "$tools/build_atlasa1_release_kernel.sh" "$out/sources/linux" "$tina" "$out/kernel"
-kernel="$out/kernel/linux-image-6.18.63-t736-media-v30_6.18.63-30_arm64.deb"
+release=6.18.63-t736-media-v30
+version=6.18.63-30
+if [[ $# == 3 ]]; then
+    release=6.18.63-t736-hw-v34
+    version=6.18.63-34
+fi
+bash "$tools/build_atlasa1_release_kernel.sh" "$out/sources/linux" "$tina" "$out/kernel" "${@:3}"
+kernel="$out/kernel/linux-image-${release}_${version}_arm64.deb"
 pvr="$out/kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko"
 
 curl --fail --location --retry 3 -o ffmpeg.tar.xz https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz
@@ -51,17 +61,21 @@ check_file de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f ffmp
 tar -xf ffmpeg.tar.xz
 bash "$tools/build_atlasa1_resolute_player.sh" "$out/sources/ffmpeg-7.1.5" "$sdl" "$out/player"
 player="$out/player/atlasa1-player_0.1-5~resolute1_arm64.deb"
+if [[ -z ${ATLAS_FIREFOX_DEB:-} ]]; then
+    bash "$tools/browser/build_firefox_resolute_ffmpeg.sh" --ubuntu-archive "$out/firefox"
+    firefox="$out/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb"
+fi
 export T736_TINA_SDK="$tina/out/t736/demo_aiot/buildroot/buildroot/host"
 bash "$tools/browser/omx_scale_candidate/build_omx_panel.sh" "$tools/browser" --service-only "$out/service"
 python3 "$tools/build_cedar_4k_omx.py" --tina "$tina" --output "$out/omx"
 python3 "$tools/prepare_atlasa1_resolute_media.py" --wc-archive "$wc" --service-build "$out/service" \
-    --omx-vdec "$out/omx/libOmxVdec.so" --pvr-module "$pvr" --gpu-deb "$gpu" --output "$out/media"
+    --omx-vdec "$out/omx/libOmxVdec.so" --pvr-module "$pvr" --kernel-release "$release" --gpu-deb "$gpu" --output "$out/media"
 bash "$tools/stage_atlasa1_resolute_x11.sh" "$out/media"
 
 bash "$tools/build_atlasa1_resolute_rootfs.sh" "$framework" "$out/ubuntu"
 root="$out/ubuntu/rootfs"
-sudo bash "$tools/configure_atlasa1_resolute.sh" "$root" "$kernel" "$pvr" "$out/media" "$gpu" "$player"
-sudo bash "$tools/verify_atlasa1_resolute.sh" "$root"
+sudo bash "$tools/configure_atlasa1_resolute.sh" "$root" "$kernel" "$pvr" "$out/media" "$gpu" "$player" "$firefox"
+sudo bash "$tools/verify_atlasa1_resolute.sh" "$root" "$release" --require-firefox-cedar
 image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img"
 sudo python3 "$tools/pack_atlasa1_resolute.py" --rootfs "$root" --boot "$out/boot/payload" --output "$image"
 # xz preserves file ownership and returns a warning status for a root-owned input.

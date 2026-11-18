@@ -6,20 +6,24 @@
 
 构建机使用大小写敏感的 Linux 文件系统。准备官方 Armbian 支持的构建环境、sudo、支持运行 arm64 chroot 的 QEMU/binfmt，以及 AArch64 和 ARM soft-float 交叉工具链。本次基准工具链为 Ubuntu 24.04 上的 GCC 13 和 binutils 2.42。源码包构建还用到 python3、git、make、patch、curl、cpio、device-tree-compiler、dpkg-dev、libssl-dev、libelf-dev、bc、bison、flex、pkg-config、patchelf、qemu-user-static、rsync、kmod、e2fsprogs、fdisk、xz-utils 和 zstd。构建与出镜像的目录需要容纳展开的 Linux、根文件系统和 8 GiB 原始镜像。
 
-下载与目标发行版相同版本的 `atlasa1-resolute-armbian.patch`，然后在 Bash 中运行以下命令。这个示例固定到 2026-11-18 发布候选版。[单文件补丁](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/patches/atlasa1-resolute-armbian.patch)
+以下命令下载主分支的单文件补丁，并在固定的官方 Armbian 提交上应用。复现 2026-11-18 的原始 RC1 时，从该版本的 Release 页面下载同名补丁。[主分支补丁](https://github.com/dshanpi/AtlasA1-build/blob/main/patches/atlasa1-resolute-armbian.patch) · [RC1 发布页面](https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.18-ubuntu26.04-rc1)
 
 ```sh
 git clone https://github.com/armbian/build.git armbian-build
 cd armbian-build
 git checkout --detach 2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736
 curl -fL -o /tmp/atlasa1-resolute-armbian.patch \
-  https://raw.githubusercontent.com/dshanpi/AtlasA1-build/v2026.11.18-ubuntu26.04-rc1/patches/atlasa1-resolute-armbian.patch
+  https://raw.githubusercontent.com/dshanpi/AtlasA1-build/main/patches/atlasa1-resolute-armbian.patch
 git apply --whitespace=nowarn --check /tmp/atlasa1-resolute-armbian.patch
 git apply --whitespace=nowarn /tmp/atlasa1-resolute-armbian.patch
 
 export ATLAS_TINA_SDK=/srv/tina
 bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output
 ```
+
+默认构建使用 v30 内核和双格式 Cedar 服务。在最后一条命令末尾追加 `--pcie-v34`，并指定新的输出目录，即可选用 v34 内核、DTB、PowerVR 模块、initrd 和启动别名。v34 已在 J58 空槽的实板上冷启动，内建驱动枚举出根端口并完成重扫。板载 Wi-Fi 已有 SDIO 主控，仍未枚举无线芯片，蓝牙 UART 也尚未收到 HCI 响应。[v34 干净构建](../evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [PCIe 实测](../evidence/atlasa1-pcie-v34-coldboot-20261118.json) · [无线实测](../evidence/atlasa1-wireless-v33-hardware-20261118.json)
+
+v34 的整盘打包验证复用了 RC1 根文件系统，在其可写叠加层安装 v34 和双格式 Cedar 服务。产出的 8 GiB 镜像通过了 GPT、ext4 文件系统及启动文件回读检查。该镜像保留了原装 Firefox，尚未整盘重刷；v34 的实板冷启动使用已刷 RC1 上的独立启动文件。[整盘打包记录](../evidence/atlasa1-v34-image-integration-20261118.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
 
 `/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
 
@@ -48,6 +52,7 @@ bash "$recipe/prepare_atlasa1_sdl_sysroot.sh" /srv/atlas-sdl2-arm64
 | 启动链 | U-Boot v2026.10、社区 TF-A 固定提交 `7d322909`、固定 DDR 库及本板源码。生成 eGON SPL、stage64、BL31、U-Boot 和含每段 CRC 的启动包。 |
 | 内核和 GPU | Linux v6.18.63、264 个经 SHA-256 核对的 Tina 显示输入、板级补丁及 PowerVR 24.2 DDK，生成 `linux-image-6.18.63-t736-media-v30`、DTB 和对应 vermagic 的 `pvrsrvkm.ko`。 |
 | 视频 | FFmpeg 7.1.5、Cedar 服务及板级 OMX 补丁，生成 `atlasa1-player_0.1-5~resolute1_arm64.deb`。播放器自带配套 FFmpeg 库，保留 Ubuntu 的系统 FFmpeg。 |
+| 浏览器 | 主分支从 Ubuntu 源码包构建 FFmpeg 8 Cedar 解码库，并随镜像安装 `atlasa1-firefox-cedar`。打包前以桌面用户检查应用菜单入口、FFmpeg ABI 和 H.264、HEVC 的默认解码器。 |
 | 系统 | 官方 `compile.sh rootfs`、`armbian-bsp-cli` 和 `armbian-base-files`，生成 Ubuntu 26.04 桌面根文件系统，再安装板级包、初始化镜像和桌面配置。 |
 | 镜像 | 板级打包器核对 GPT 分区、SPL、启动包、第四分区 ext4，并从镜像内回读 kernel、initrd 和 DTB。镜像同目录含 `.manifest.json` 及压缩文件的 `SHA256SUMS`。 |
 
@@ -90,6 +95,8 @@ OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 
 
 默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。Xorg 配置优先选择 HDMI 1920×1080，会话启动时关闭 X11 屏保与 DPMS。本次 arm64 根文件系统实测包含 Xfce 4.20、GNOME Shell 50.1、原生 Firefox 160 和系统 FFmpeg 8.0.1。[根文件系统构建与软件版本](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json)
 
+从应用菜单选择 **Firefox (AtlasA1 Cedar)** 可启用浏览器硬解。主分支的镜像构建默认安装此入口，原始 RC1 镜像可安装 Release 中的同名配套 deb。该入口和解码器已在 Ubuntu 26.04 成品根文件系统中以 `t736` 用户核验。浏览器在 1080p60 片源的独立 X11 虚拟显示测试中呈现约 38.54 fps。[浏览器接入与测试](../tools/browser/FIREFOX_RESOLUTE.md) · [镜像用户态验收](../evidence/atlasa1-firefox-image-integration-20261119.json)
+
 切换到 GNOME 时，运行 `sudo dpkg-reconfigure gdm3`，选择 GDM，然后重启。恢复默认桌面可运行 `sudo dpkg-reconfigure lightdm`，选择 LightDM 后重启。桌面账号为 `t736`，初始密码为 `1234`。root 初始密码为 `1234`，首次登录按提示更换。
 
 原生播放器支持从桌面打开本地 H.264 / HEVC 文件。本次在运行 v30 的 AtlasA1 上只读挂载最终镜像，直接执行镜像内的 Ubuntu 用户态程序。
@@ -98,6 +105,8 @@ OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 
 - 25 秒的 3840×2160 HEVC 30 fps + AAC 片源经当前运行系统的 v30 Cedar 服务解出 750/750 帧，Cedar 硬件中断增加 750 次。Ubuntu FFplay 收到的画面尺寸为 1920×1080。该轮使用虚拟音视频输出，耗时 25.480 秒。
 
 ## RC1 整盘烧录后的实测
+
+板端安装双格式服务后再次启动默认 v30，连续播放 4K HEVC、1080p60 H.264、4K HEVC 三段文件，实际提交帧数分别为 750、1,500 和 750，播放器均记录零丢帧。计入进程启动，第一段 25 秒视频耗时 29.821 秒，超出实时门槛；后两段分别耗时 25.640 秒和 25.466 秒。使用 PowerVR 离屏呈现和 SDL 虚拟音频。[默认系统更新后复测](../evidence/atlasa1-rc1-installed-broker-update-20261118.json)
 
 FES 已向板载 eMMC 写入并提交完整 8 GiB，工具校验成功。断电 5 秒后，固定 LPDDR4x SPL、TF-A、U-Boot 和 Linux 6.18.63 自动引导 Ubuntu 26.04。串口登录和 SSH 登录成功。从 eMMC 回读的启动组件、内核、initrd、DTB 和根分区标识均与 Release 清单一致。HDMI 的 DRM 和 LightDM XRandR 均报告 1920×1080、60 Hz；测试时屏幕处于登录界面。以普通用户运行的 PowerVR SDL 和 GBM 图像读回通过。以太网协商为 100 Mbps 全双工，通过 DNS 和 HTTPS 访问 Ubuntu 镜像站。
 

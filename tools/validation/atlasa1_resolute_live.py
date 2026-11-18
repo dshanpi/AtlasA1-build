@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the running AtlasA1 RC1 against the published image manifest."""
+"""Check an installed AtlasA1 image against its disk image manifest."""
 import argparse
 import hashlib
 import json
@@ -65,6 +65,10 @@ def main():
     if partuuid.lower() != manifest['root_partuuid']:
         parser.error('root PARTUUID does not match the supplied manifest')
     kernel = os.uname().release
+    images = [name.removeprefix('boot/vmlinuz-') for name in manifest['boot_files']
+              if name.startswith('boot/vmlinuz-')]
+    if len(images) != 1:
+        parser.error('expected one versioned Linux image in the manifest')
     boots = {name: digest(Path('/')/name) == checksum
              for name, checksum in manifest['boot_files'].items()}
     storage = emmc_readback(manifest)
@@ -93,7 +97,7 @@ def main():
                   if Path('/proc/asound/cards').exists() else '',
                   package_audit=run('dpkg', '--audit'))
     record['checks'] = dict(ubuntu_resolute='VERSION_CODENAME=resolute' in os_release,
-                            released_kernel=kernel == '6.18.63-t736-media-v30',
+                            released_kernel=kernel == images[0],
                             boot_files=all(boots.values()), raw_boot_stages=all(storage.values()),
                             rootfs_uuid=record['rootfs_uuid'] == manifest['rootfs_uuid'],
                             emmc_file_fsync_readback=filesystem_test(),

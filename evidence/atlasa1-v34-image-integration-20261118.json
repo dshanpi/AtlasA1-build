@@ -1,0 +1,63 @@
+{
+  "board": "AtlasA1 / T736",
+  "distribution": "Ubuntu 26.04",
+  "method": "Replayed the public v34 kernel build, staged its module and DTB alongside the two-format Cedar service, applied the image configurator to a writable overlay above the release build rootfs, ran the chroot checks, and packed and verified the entire 8 GiB image.",
+  "base_rootfs": "Read-only lower layer from the built RC1 rootfs. The Ubuntu package set was reused.",
+  "browser": "Stock Firefox in this integration run. The separate Firefox 8 ABI adapter package was tested on the board.",
+  "manifest": {
+    "image": "AtlasA1-Ubuntu26-v34-integration.img",
+    "bytes": 8589934592,
+    "sha256": "e795217ab5f2e618ebfd7898f9c50cd2a8a9f5a8d867e112870a985ec86098be",
+    "format": "AtlasA1 eMMC raw disk image",
+    "distribution": "Ubuntu 26.04",
+    "root_partuuid": "a0085546-4166-744a-a353-fca9272b8e48",
+    "rootfs_uuid": "1b989fd5-f583-4e98-aa29-8f806deb6a4c",
+    "rootfs_lba": 368640,
+    "boot_files": {
+      "boot/vmlinuz-6.18.63-t736-hw-v34": "a6f8ca290affe51a5c2bca63fc1527b7a98a3568f15d5780e9c2740b69ceffe5",
+      "boot/initrd.img-6.18.63-t736-hw-v34": "1ee68bfc48b995b10d6c333aa1a914b91a078022c9928bda3ab787d24019b38c",
+      "boot/dtb/allwinner/t736-mainline-bringup.dtb": "6e49ad1bf17f01621114f90766b14994992706d37b3ca593a5de1c6a2c329d9f"
+    },
+    "root_partition_bytes": 7802716160,
+    "rootfs_user_available_bytes": 3621089280,
+    "spl_sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea",
+    "boot_package_sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e",
+    "components": [
+      {
+        "sector": 24577,
+        "address": "0x47000000",
+        "bytes": 5040,
+        "crc32": "caa77399",
+        "sha256": "44aeb8e56f64f2ccd80a1cd286460eda6d0232f9cc1e82618866826b23298535",
+        "offset": 512
+      },
+      {
+        "sector": 24587,
+        "address": "0x48000000",
+        "bytes": 53924,
+        "crc32": "aa2158fa",
+        "sha256": "81f53c1d1f571c74bd907317d813a5ed56c64382479caa75edd3cec43ada6dc6",
+        "offset": 5632
+      },
+      {
+        "sector": 24693,
+        "address": "0x52000000",
+        "bytes": 265640,
+        "crc32": "6b4439f6",
+        "sha256": "fd3ffd3d5584642ad0eb0be645941b671591d47d1e2fc575c8a30d3b539c00c3",
+        "offset": 59904
+      }
+    ],
+    "e2fsck": "passed",
+    "gpt": "passed",
+    "hardware_boot": "unverified"
+  },
+  "hardware_boot": "The corresponding v34 Image and DTB were one-shot booted from eMMC. This entire integration image was not reflashed.",
+  "verified": [
+    "configured arm64 userspace and media service",
+    "PowerVR module vermagic",
+    "ext4 e2fsck",
+    "GPT layout",
+    "readback of versioned kernel, initrd and selected DTB"
+  ]
+}

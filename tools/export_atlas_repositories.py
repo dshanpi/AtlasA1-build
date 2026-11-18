@@ -24,6 +24,8 @@ AtlasA1 / T736 的 Armbian Ubuntu 26.04 LTS（arm64）eMMC 镜像。默认桌面
 从官方 Armbian 源码重建时，应用一份发行版补丁，指定已配置的 T736 Tina SDK，然后执行总入口。它会从 SDK 中准备 IMG/Cedar 运行库，获取公开交叉编译依赖，构建固定 LPDDR4x 启动链、Linux 与 PowerVR 内核模块、播放器及 Ubuntu 根文件系统，并打包成完整磁盘镜像。[Ubuntu 26.04 构建步骤](docs/UBUNTU_26_04.md) · [单文件补丁](patches/atlasa1-resolute-armbian.patch)
 
 板级源码按组件备份，可分别检查启动链、内核与播放器。本仓库还保留原有通用 Armbian 板级补丁及此前 Debian 开发镜像的集成记录。[U-Boot / SPL / TF-A](https://github.com/dshanpi/AtlasA1-uboot) · [Linux / PowerVR](https://github.com/dshanpi/AtlasA1-linux) · [Cedar / 播放器](https://github.com/dshanpi/AtlasA1-media) · [早期 Armbian 适配](docs/ARMBIAN_REBUILD.md)
+
+主分支包含双格式 Cedar 服务和适用于 Firefox 160 的 FFmpeg 8.0.1 适配。构建时追加 `--pcie-v34` 可选择已在 J58 空槽实测的 PCIe 根端口、SDIO 主控和蓝牙 UART。无线芯片的 SDIO 枚举和蓝牙 HCI 响应仍待打通。[浏览器实测](evidence/atlasa1-firefox160-ffmpeg8-20261118.json) · [4K HEVC 与 1080p H.264 切换](evidence/atlasa1-cedar-format-switch-20261118.json) · [v34 整盘打包检查](evidence/atlasa1-v34-image-integration-20261118.json)
 """,
     "AtlasA1-linux": """# AtlasA1-linux
 
@@ -34,6 +36,8 @@ The v30 candidate adds the boot parameter `t736_cedar_wc.heap_limit_mib` to the 
 Armbian integration and pinned upstream revisions are available in [AtlasA1-build](https://github.com/dshanpi/AtlasA1-build).
 
 The release replay recipe starts from the pinned upstream Git tree. It imports the board's Tina display sources by SHA-256, applies the complete board delta and checks the resulting 317 board files. [Clean-source build instructions](patches/linux/media-v30-replay/README.md)
+
+The kernel-only build option `--pcie-v34` includes the J58 PCIe host, the four-bit COMBO1 PIPE route and the SDIO/UART transports. After a cold boot the built-in driver registered the root port at `0000:00:00.0`, and an empty-slot rescan completed. PCIe endpoint I/O requires a card in J58. [Build and test](boards/pcie-v32/README.md) · [Clean build](evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [Board measurement](evidence/atlasa1-pcie-v34-coldboot-20261118.json)
 """,
     "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL and fixed LPDDR4x boot sources for the AtlasA1 board. The release boot packer takes the board's DDR training library as a separate input.\n\n[Reconstruct the tested CPU-D U-Boot tree](patches/u-boot/media-v28-replay/README.md) · [Build the Ubuntu release boot chain](tools/build_atlasa1_release_boot.py)\n""",
     "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration for AtlasA1 / T736. The Ubuntu 26.04 native player builds its FFmpeg 7.1.5 libraries in a private prefix and uses the system SDL2 ABI. The media overlay installs the matching Cedar service and PowerVR firmware. [Player builder](tools/build_atlasa1_resolute_player.sh) · [Overlay builder](tools/prepare_atlasa1_resolute_media.py) · [Ubuntu 26.04 build instructions](https://github.com/dshanpi/AtlasA1-build/blob/main/docs/UBUNTU_26_04.md)\n\nEarlier board measurements cover Cedar hardware decoding and the PowerVR GLES2 renderer. [Native player](tools/player/README.md) · [Playback measurements and display status](docs/PLAYBACK.md)\n""",
@@ -155,6 +159,15 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
                 "evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json",
                 "evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json",
+                "evidence/atlasa1-v34-image-integration-20261118.json",
+                "evidence/atlasa1-rc1-installed-broker-update-20261118.json",
+                "evidence/atlasa1-armbian-v34-patch-replay-20261119.json",
+                "evidence/atlasa1-cedar-format-switch-20261118.json",
+                "tools/validation/atlasa1_resolute_live.py", "tools/validation/atlasa1_finalize_gpt.py",
+                "tools/validation/atlasa1_io_inventory.py",
                 "evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
                 "evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv",
                 "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
@@ -177,6 +190,11 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "tools/browser/shm_v2", "tools/browser/shm_v2", records)
     _tree(ROOT, destination, "tools/browser/omx_scale_candidate", "tools/browser/omx_scale_candidate", records)
     for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
+                "tools/browser/build_firefox_resolute_ffmpeg.sh", "tools/browser/firefox-resolute",
+                "tools/browser/firefox-resolute-source.sha256", "tools/browser/firefox-resolute-copyright",
+                "tools/browser/copy_candidate/firefox-dr1-output.patch", "tools/browser/verify_firefox_resolute.py",
+                "tools/browser/FIREFOX_RESOLUTE.md", "evidence/atlasa1-firefox160-ffmpeg8-20261118.json",
+                "evidence/atlasa1-firefox-image-integration-20261119.json",
                 "tools/browser/panel_candidate/private-1080p-panel.patch",
                 "tools/browser/panel_candidate/prefer-omx-panel.patch",
                 "tools/browser/panel_candidate/cedar_panel.h",
@@ -195,7 +213,17 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
     _file(ROOT, destination, "patches/atlasa1-resolute-armbian.patch", "patches/atlasa1-resolute-armbian.patch", records)
-    for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
+    for rel in ("patches/linux/media-v30-cedar-heap-quota.patch", "patches/linux/atlasa1-wireless-v31.patch",
+                "patches/linux/atlasa1-wireless-dldo5-v33.patch", "patches/linux/atlasa1-pcie-v32.patch",
+                "patches/linux/atlasa1-wireless-reset-v33.patch",
+                "patches/linux/atlasa1-pcie-combo1-v33.patch",
+                "patches/linux/atlasa1-pcie-pipe-map-v34.patch",
+                "evidence/atlasa1-pcie-v32-empty-slot-20261118.json",
+                "evidence/atlasa1-pcie-v33-pipe-route-20261118.json",
+                "evidence/atlasa1-hw-v34-kernel-replay-20261118.json",
+                "evidence/atlasa1-pcie-v34-coldboot-20261118.json",
+                "evidence/atlasa1-wireless-v31-rebuild-20261118.json",
+                "evidence/atlasa1-wireless-v33-hardware-20261118.json",
                 "patches/ffmpeg/ffplay-refresh-budget.patch",
                 "patches/ffmpeg/ffplay-first-picture-audio.patch",
                 "evidence/ffplay-first-picture-sync-qemu-20261118.json",
@@ -222,6 +250,15 @@ def _export_linux(destination: Path) -> dict[str, tuple[Path, str]]:
     for source in sorted((ROOT / "userpatches").glob("linux-t736-*.config")):
         _copy(destination, source, Path("userpatches") / source.name, records)
     _tree(ROOT, destination, "patches/linux", "patches/linux", records)
+    _tree(ROOT, destination, "boards/wireless-v31", "boards/wireless-v31", records)
+    _tree(ROOT, destination, "boards/pcie-v32", "boards/pcie-v32", records)
+    for filename in ("atlasa1-pcie-v32-build-20261118.json", "atlasa1-pcie-v32-empty-slot-20261118.json",
+                     "atlasa1-hw-v33-build-20261118.json", "atlasa1-pcie-v33-pipe-route-20261118.json",
+                     "atlasa1-hw-v34-kernel-replay-20261118.json", "atlasa1-pcie-v34-coldboot-20261118.json"):
+        _file(ROOT, destination, f"evidence/{filename}", f"evidence/{filename}", records)
+    _file(ROOT, destination, "docs/WIRELESS.md", "docs/WIRELESS.md", records)
+    _file(ROOT, destination, "evidence/atlasa1-wireless-v31-rebuild-20261118.json", "evidence/atlasa1-wireless-v31-rebuild-20261118.json", records)
+    _file(ROOT, destination, "evidence/atlasa1-wireless-v33-hardware-20261118.json", "evidence/atlasa1-wireless-v33-hardware-20261118.json", records)
     _file(ROOT, destination, "tools/prepare_atlas_release_sources.py", "tools/prepare_atlas_release_sources.py", records)
     for rel in ("tools/build_media_v30_candidate.sh", "tools/build_atlasa1_release_kernel.sh", "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
                 "evidence/media-v30-heap-budget-build-20261118.json",
@@ -247,6 +284,7 @@ def _export_uboot(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "spl", "spl", records)
     _glob(ROOT, destination, "boards/t736-uboot-cpuclock*.c", "boards", records)
     for rel in ("tools/prepare_atlas_release_sources.py", "tools/build_atlasa1_release_boot.py",
+                "evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json",
                 "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
                 "tools/build_t736_source_handoff.py", "evidence/source-uboot-backup-audit-20261115.json",
                 "evidence/atlasa1-clean-source-replay-20261118.json"):
@@ -268,6 +306,11 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     _file(ROOT, destination, "tools/build_atlasa1_resolute_player.sh", "tools/build_atlasa1_resolute_player.sh", records)
     _file(ROOT, destination, "tools/prepare_atlasa1_resolute_media.py", "tools/prepare_atlasa1_resolute_media.py", records)
     for rel in ("tools/verify_atlasa1_resolute_media.sh", "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "evidence/atlasa1-firefox160-ffmpeg8-20261118.json",
+                "evidence/atlasa1-firefox-image-integration-20261119.json",
+                "evidence/atlasa1-rc1-installed-broker-update-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-installed-validation-20261118.json",
+                "tools/build_atlasa1_rc1_broker_update.sh", "evidence/atlasa1-cedar-format-switch-20261118.json",
                 "evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
                 "tools/build_atlasa1_resolute_vendor.sh", "tools/prepare_atlasa1_sdl_sysroot.sh",
                 "tools/build_gpu_userspace.py", "config/atlasa1-resolute-vendor-files.json",

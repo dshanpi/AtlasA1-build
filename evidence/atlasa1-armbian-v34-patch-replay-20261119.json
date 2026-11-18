@@ -1,0 +1,20 @@
+{
+  "target": "official armbian/build",
+  "upstream_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "patch": "patches/atlasa1-resolute-armbian.patch",
+  "patch_sha256": "c74f742f5d30171fcc78fb891dab3af53354f2bca8dba2b99406d099bb28fa3d",
+  "patched_tree": "795bfce61293721fd5396aed382bcd5fa2033acf",
+  "release_recipe_files": 171,
+  "method": "Initialized an independent Git object store and index with the official commit tree, checked and applied the single patch with git apply --cached, and checked out the recipe files from that index for inspection.",
+  "checks": {
+    "exact_upstream_tree_before_apply": true,
+    "patch_check_and_apply": true,
+    "hardware_patch_and_config_inputs_sha256": "8 of 8 passed",
+    "kernel_build_entry": "--pcie-v34",
+    "full_image_build_entry_accepts_v34": true,
+    "firefox_libavcodec62_source_package_and_ordinary_user_verifier": "included",
+    "cedar_broker_two_format_patch_applied_by_service_build": true,
+    "release_shell_entry_points_syntax": "passed",
+    "python_build_and_verification_entry_points_syntax": "passed"
+  }
+}

@@ -19,7 +19,9 @@ mountpoint -q "$root/sys" || mount -t sysfs -o ro sysfs "$root/sys"
 for path in run tmp; do
     mountpoint -q "$root/$path" || mount -t tmpfs -o nosuid,nodev,mode=1777 tmpfs "$root/$path"
 done
-release=6.18.63-t736-media-v30
+release=${2:-6.18.63-t736-media-v30}
+[[ $release == 6.18.63-t736-media-v30 || $release == 6.18.63-t736-hw-v34 ]]
+[[ $# -le 2 || ( $# == 3 && $3 == --require-firefox-cedar ) ]]
 player=/opt/atlasa1-player/bin/ffplay
 libs=/opt/atlasa1-player/lib
 target() { chroot "$root" /usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LANG=C HOME=/tmp "$@"; }
@@ -36,6 +38,12 @@ target gnome-shell --version
 firefox_version=$(target dpkg-query -W -f='${Version}' firefox)
 [[ "$firefox_version" != *snap* ]]
 [[ -e "$root/usr/lib/firefox/firefox" || -e "$root/opt/firefox/firefox" ]]
+if [[ ${3:-} == --require-firefox-cedar || -e $root/usr/bin/atlasa1-firefox ]]; then
+    [[ $(target dpkg-query -W -f='${db:Status-Abbrev} ${Version}' atlasa1-firefox-cedar) == 'ii  8.0.1-1~resolute1' ]]
+    chroot --userspec="$(target id -u t736):$(target id -g t736)" "$root" \
+        /usr/bin/env -i HOME=/tmp PATH=/usr/bin:/bin LC_ALL=C XDG_CURRENT_DESKTOP=XFCE \
+        /usr/bin/python3 - < "$(dirname "$0")/browser/verify_firefox_resolute.py"
+fi
 [[ -r "$root/usr/share/xsessions/xfce.desktop" && -r "$root/usr/share/wayland-sessions/gnome.desktop" ]]
 [[ -r "$root/usr/share/xsessions/atlasa1-xfce.desktop" ]]
 grep -qx 'user-session=atlasa1-xfce' "$root/etc/lightdm/lightdm.conf.d/90-atlasa1-x11.conf"
@@ -52,5 +60,5 @@ relocations=$(target env LD_LIBRARY_PATH="$libs" ldd -r "$player" 2>&1)
 if grep -Ei 'not found|undefined symbol' <<<"$relocations"; then exit 1; fi
 target env LD_LIBRARY_PATH="$libs" "$player" -hide_banner -h full 2>&1 | grep -F -- '-wait_video_start'
 target gst-inspect-1.0 --version
-bash "$(dirname "$0")/verify_atlasa1_resolute_media.sh" "$root"
+bash "$(dirname "$0")/verify_atlasa1_resolute_media.sh" "$root" "$release"
 echo "AtlasA1 Ubuntu userspace checks passed"

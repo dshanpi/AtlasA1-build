@@ -1,0 +1,114 @@
+{
+  "board": "AtlasA1 T736 LPDDR4x",
+  "release": "v2026.11.18-ubuntu26.04-rc1",
+  "initial_fes_and_coldboot": "atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json",
+  "method": "Each temporary boot selected eMMC files in U-Boot RAM for that boot. The final cold boot used the resident default environment. Board access was verified over serial and authenticated SSH.",
+  "boots": [
+    {
+      "timestamp_utc": "2026-11-18T15:23:13+00:00",
+      "boot_mode": "default",
+      "uart_log_sha256": "95125a83909aa453a2bb42e595e521f946eedab92f711088696fc1a16d9d9c0a",
+      "serial_linux_banner": "Linux version 6.18.63-t736-media-v30 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #30 SMP 2026-11-18 00:00:00 UTC",
+      "serial_prompt": "atlasa1 login:",
+      "ssh_kernel_release": "6.18.63-t736-media-v30",
+      "ssh_root_device": "/dev/mmcblk0p4",
+      "linux_boot_id": "0b79fd8c-a176-4016-adaa-02a15bf6b732",
+      "display_manager": "active",
+      "default_kernel_alias": "/boot/vmlinuz-6.18.63-t736-media-v30",
+      "default_rc1_boot_components_sha256": {
+        "kernel": "3d9e2475cef78841572b0f138508fe0460dc301e4fdfcfe77e39e8193a3fb335",
+        "initrd": "062b16d9d2551cb2360ea8984d3ef9ebcc0f4466f5d266600d6f5aa2c7f70f75",
+        "dtb": "45012aeb86d657fca568417e831067170d12e224ebe71720c1956989af6f3626"
+      }
+    },
+    {
+      "timestamp_utc": "2026-11-18T15:27:48+00:00",
+      "boot_mode": "temporary",
+      "uart_log_sha256": "c5892ad538e53ccbf01657379f726edfcee2b4a76a2607338d421de3096f84b6",
+      "serial_linux_banner": "Linux version 6.18.63-t736-hw-v32 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #32 SMP 2026-11-18 00:00:00 UTC",
+      "serial_prompt": "atlasa1 login:",
+      "ssh_kernel_release": "6.18.63-t736-hw-v32",
+      "ssh_root_device": "/dev/mmcblk0p4",
+      "linux_boot_id": "80d5d985-58a3-41ff-ae3e-97ded9ee3a45",
+      "display_manager": "active",
+      "default_kernel_alias": "/boot/vmlinuz-6.18.63-t736-media-v30",
+      "default_rc1_boot_components_sha256": {
+        "kernel": "3d9e2475cef78841572b0f138508fe0460dc301e4fdfcfe77e39e8193a3fb335",
+        "initrd": "062b16d9d2551cb2360ea8984d3ef9ebcc0f4466f5d266600d6f5aa2c7f70f75",
+        "dtb": "45012aeb86d657fca568417e831067170d12e224ebe71720c1956989af6f3626"
+      }
+    },
+    {
+      "timestamp_utc": "2026-11-18T15:36:22+00:00",
+      "boot_mode": "temporary",
+      "uart_log_sha256": "a99881cf8eb11e4dee76fa62a88004525b920514894efed1a456643368778f20",
+      "serial_linux_banner": "Linux version 6.18.63-t736-hw-v33 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #33 SMP 2026-11-18 00:00:00 UTC",
+      "serial_prompt": "atlasa1 login:",
+      "ssh_kernel_release": "6.18.63-t736-hw-v33",
+      "ssh_root_device": "/dev/mmcblk0p4",
+      "linux_boot_id": "4e0cb674-b969-4485-bf8d-70b0ffb505e7",
+      "display_manager": "active",
+      "default_kernel_alias": "/boot/vmlinuz-6.18.63-t736-media-v30",
+      "default_rc1_boot_components_sha256": {
+        "kernel": "3d9e2475cef78841572b0f138508fe0460dc301e4fdfcfe77e39e8193a3fb335",
+        "initrd": "062b16d9d2551cb2360ea8984d3ef9ebcc0f4466f5d266600d6f5aa2c7f70f75",
+        "dtb": "45012aeb86d657fca568417e831067170d12e224ebe71720c1956989af6f3626"
+      }
+    },
+    {
+      "timestamp_utc": "2026-11-18T15:52:07+00:00",
+      "boot_mode": "temporary",
+      "uart_log_sha256": "24f7b187d8bc0a129be71a6fff7b6f9e98982ff37522c13640513bd08dee74ad",
+      "serial_linux_banner": "Linux version 6.18.63-t736-hw-v34 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #34 SMP 2026-11-18 00:00:00 UTC",
+      "serial_prompt": "atlasa1 login:",
+      "ssh_kernel_release": "6.18.63-t736-hw-v34",
+      "ssh_root_device": "/dev/mmcblk0p4",
+      "linux_boot_id": "aa92d1ac-c51b-471c-a4eb-7498b2961f13",
+      "display_manager": "active",
+      "default_kernel_alias": "/boot/vmlinuz-6.18.63-t736-media-v30",
+      "default_rc1_boot_components_sha256": {
+        "kernel": "3d9e2475cef78841572b0f138508fe0460dc301e4fdfcfe77e39e8193a3fb335",
+        "initrd": "062b16d9d2551cb2360ea8984d3ef9ebcc0f4466f5d266600d6f5aa2c7f70f75",
+        "dtb": "45012aeb86d657fca568417e831067170d12e224ebe71720c1956989af6f3626"
+      }
+    },
+    {
+      "timestamp_utc": "2026-11-18T15:55:31+00:00",
+      "boot_mode": "default",
+      "uart_log_sha256": "fa063736e58864ffae682d4fa99f87f3cfe4685e231de771f002411bc2612b51",
+      "serial_linux_banner": "Linux version 6.18.63-t736-media-v30 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #30 SMP 2026-11-18 00:00:00 UTC",
+      "serial_prompt": "atlasa1 login:",
+      "ssh_kernel_release": "6.18.63-t736-media-v30",
+      "ssh_root_device": "/dev/mmcblk0p4",
+      "linux_boot_id": "71a59910-7a2c-4d8d-9266-d478442cc412",
+      "display_manager": "active",
+      "default_kernel_alias": "/boot/vmlinuz-6.18.63-t736-media-v30",
+      "default_rc1_boot_components_sha256": {
+        "kernel": "3d9e2475cef78841572b0f138508fe0460dc301e4fdfcfe77e39e8193a3fb335",
+        "initrd": "062b16d9d2551cb2360ea8984d3ef9ebcc0f4466f5d266600d6f5aa2c7f70f75",
+        "dtb": "45012aeb86d657fca568417e831067170d12e224ebe71720c1956989af6f3626"
+      }
+    }
+  ],
+  "final": {
+    "systemd": "running",
+    "failed_units": [],
+    "display_manager": "active",
+    "xrandr": {
+      "output": "HDMI-1",
+      "primary": true,
+      "mode": "1920x1080",
+      "refresh_hz": 60.0
+    },
+    "installed_packages": {
+      "atlasa1-cedar-format-switch": "1.0-1~resolute1",
+      "atlasa1-firefox-cedar": "8.0.1-1~resolute1"
+    },
+    "normal_user_launch_entry": {
+      "executable": "/usr/bin/atlasa1-firefox",
+      "desktop_file": "/usr/share/applications/atlasa1-firefox.desktop",
+      "name": "Firefox (AtlasA1 Cedar)",
+      "exec": "atlasa1-firefox %U"
+    }
+  }
+}
