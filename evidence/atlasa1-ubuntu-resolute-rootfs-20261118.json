@@ -1,0 +1,49 @@
+{
+  "board": "AtlasA1 / T736",
+  "built_on": "2026-11-18",
+  "stage": "Fresh Ubuntu userspace and board support, before kernel and vendor media integration",
+  "distribution": "Ubuntu 26.04 LTS (resolute)",
+  "architecture": "arm64",
+  "armbian_framework": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "mmdebstrap": "19d69c1ab8941ec47dfc2922264870a116e6abdd",
+  "desktop_profile": "gnome, mid",
+  "build": "Bootstrapped from signed package repositories. Resumed the Armbian GNOME packaging stage from this run's completed Ubuntu base after changing the download mirror.",
+  "armbian_gnome_cache": {
+    "name": "rootfs-arm64-resolute-gnome-desktop-mid_202611-09ad65821713-H6eccde-B7ae8c2.tar.zst",
+    "size_bytes": 1063642097,
+    "sha256": "fbacdb9efd8dbcb1c97a36aefaf7a2b222066576de8832d828f547d8f3bf27a6",
+    "zstd_integrity_check": "passed"
+  },
+  "bsp_package_sha256": "845a52c5439dabe8d3c00b63ed3ea7e8caba6ca3eea3833b164a69711bc1d4d6",
+  "base_files_package_sha256": "c7f16f8afcb6fd3da80ceb7883a019a44124d6f3f2e4fe288d30f611f5edbd8a",
+  "prepared_userspace": {
+    "disk_usage_bytes": 3825233920,
+    "dpkg_manifest_entries": 1398,
+    "dpkg_manifest_sha256": "3d42b038835dd764cd659de04afb1582e2ee9c47b8fff8f9bfb2a8ef76413261",
+    "bsp": "26.11.0-trunk",
+    "base_files": "26.11.0-trunk-14ubuntu6-resolute",
+    "gnome_shell": "50.1-0ubuntu1.5",
+    "gdm3": "50.1-0ubuntu0.1",
+    "xfce4_session": "4.20.4-1",
+    "lightdm": "1.32.0-6ubuntu4",
+    "firefox_native_arm64": "9:160.0.1+build1-0ubuntu0.26.04.1~mt1armbian1",
+    "system_ffmpeg": "7:8.0.1-3ubuntu2",
+    "gstreamer_plugins_bad": "1.28.2-1ubuntu1.2"
+  },
+  "chroot_checks": {
+    "apt_get_check": "passed",
+    "dpkg_audit": "clean",
+    "gnome_shell_version_output": "GNOME Shell 50.1",
+    "sessions": ["GNOME Wayland", "Xfce X11"],
+    "display_manager": "lightdm.service",
+    "default_target": "graphical.target",
+    "ssh_host_keys": 0,
+    "tls_snakeoil_private_key": "absent",
+    "machine_id_size_bytes": 0,
+    "dbus_machine_id_link": "/etc/machine-id",
+    "accounts_with_passwords_or_empty_passwords_before_board_integration": 0,
+    "dns_resolver_link": "/run/systemd/resolve/stub-resolv.conf",
+    "start_stop_daemon": "native executable restored",
+    "service_start_blocker": "removed"
+  }
+}

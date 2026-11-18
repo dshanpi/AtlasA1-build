@@ -672,8 +672,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 7855,
-      "sha256": "ba50436acc6b93dd96ffac866c94f7b15319092c9411efc6cfae83faf51374f4"
+      "size": 9709,
+      "sha256": "9e729c02631a7cf57d4f5aa6447e349fcd379a5f7e706a8bc908f36998387554"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -746,11 +746,39 @@
       "sha256": "f330fe057a9e31886495ea6f709aa51453d8a41ad9b3fd00f8c0e084b1164e6d"
     },
     {
+      "path": "evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json",
+      "size": 2280,
+      "sha256": "349244b7dd0fac90eaa42f7943e4f69fb2a6c70891f92c8fad59ae9b748e886c"
+    },
+    {
+      "path": "evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
+      "size": 1491,
+      "sha256": "0b352b71c86f8114c713a918fae0a95ddab95230d621df5d9655c15205e43734"
+    },
+    {
+      "path": "evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
+      "size": 1776,
+      "sha256": "dc54b394475148f41fdb23377d4e1d4856acda38968d9a0a49433410df7a6e1f"
+    },
+    {
+      "path": "evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv",
+      "size": 45443,
+      "sha256": "b53bfcfaaa34ab40ad26291eeaf011ac86314401b2dee8bfa914927b14b1b95f"
+    },
+    {
       "path": "evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
-      "size": 2990,
-      "sha256": "84379dd6ee1df0d9253b8a6638611576f5fb69a842ded1fac8b51e08cf9fc049"
+      "size": 4534,
+      "sha256": "c5ed8e97d6f76dc69f1365b42f7d7a4761c29241508bafec5b5817436e0988e1"
     },
     {
       "path": "evidence/ffplay-first-picture-sync-qemu-20261118.json",
@@ -812,8 +840,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 1578259,
-      "sha256": "1bacc03ff47927bc4742b0b4eb93144667cdadc4b489a3b471412a9147876a5e"
+      "size": 1582328,
+      "sha256": "86e7dee336dd8aed062cbbda73e91887a497524c0d3df50ef5630626c63aee35"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -3878,22 +3906,22 @@
       "path": "tools/configure_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_resolute.sh",
-      "size": 5546,
-      "sha256": "b9f6fec1855083d0a571361e815996b873820312e00ec2bc8e90ef2e5d6a7253"
+      "size": 5965,
+      "sha256": "6c0ca4e473d063adf414ef36437a0a5734cd375a57970f4efc5ab6a130464cfa"
     },
     {
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 23972,
-      "sha256": "a3f213575f5c0160b2d8610b513ff823284a2200b0a0f5676e36e5aed4933af1"
+      "size": 24450,
+      "sha256": "c1f06b3bc4b7706e1a46fddf0ce985e589d9dbe06848a11b87e245740dafcb35"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 4805,
-      "sha256": "55e6fd609f794f850acf00b365115ab10bbb74dfb5a5d575551c55af3a2b6b14"
+      "size": 4810,
+      "sha256": "3dfd1c616d15e22bc734f6a89888ae354db7c5e70789de6d4a4516e82150c98f"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -4172,8 +4200,8 @@
       "path": "tools/prepare_t736_resolute_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/prepare_t736_resolute_rootfs.sh",
-      "size": 5586,
-      "sha256": "7edf82a8ec9d608fa6e4e01f9e9fe8e23159e5ef77eb317de9d2e8d87c403ce8"
+      "size": 5665,
+      "sha256": "a403f7640a6082a9918c92ee9a55f1ca4eb963b0be646995c977a47bbcdfa755"
     },
     {
       "path": "tools/repack_storage_v18_topology.py",
@@ -4223,6 +4251,13 @@
       "source": "mainline/tools/validation/README.md",
       "size": 12340,
       "sha256": "d99514c516fdc20f81775f213c3d15a26e3c346b9fce86362dcb4a189898ded9"
+    },
+    {
+      "path": "tools/validation/atlasa1_sdl_gles_smoke.c",
+      "kind": "source",
+      "source": "mainline/tools/validation/atlasa1_sdl_gles_smoke.c",
+      "size": 3575,
+      "sha256": "953243a3d5f23227a3b4b49086b50feff279f36b5a553ade9e68cff9092313aa"
     },
     {
       "path": "tools/validation/cedar-env",

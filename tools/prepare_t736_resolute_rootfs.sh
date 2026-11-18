@@ -54,7 +54,8 @@ cp "${base[0]}" "$scratch/base.deb"
 inside=${scratch#"$root"}
 run() { chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C "$@"; }
 run apt-get -o Acquire::Retries=3 -o Acquire::Languages=none \
-    -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false update
+    -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
+    -o Acquire::IndexTargets::deb::Contents-deb-legacy::DefaultEnabled=false update
 # The rootfs repository may already contain a newer Armbian base-files build.
 # Install the package made from this checkout, as the framework's image stage does.
 run apt-get -o Acquire::Retries=3 -y --allow-downgrades --no-install-recommends install "$inside/base.deb"

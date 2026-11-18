@@ -151,7 +151,12 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     for rel in ("config/u-boot-source-v6.config", "config/t736-lp4x-fixed.fex", "evidence/source-uboot-backup-audit-20261115.json",
                 "config/atlasa1-resolute-vendor-files.json", "tools/validation/gpu_userspace_probe.c",
                 "tools/validation/gpu_runtime_view.py", "tools/validation/cedar-env",
+                "tools/validation/atlasa1_sdl_gles_smoke.c",
                 "evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
+                "evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv",
                 "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
                 "evidence/atlasa1-clean-source-replay-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
@@ -263,11 +268,12 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     _file(ROOT, destination, "tools/build_atlasa1_resolute_player.sh", "tools/build_atlasa1_resolute_player.sh", records)
     _file(ROOT, destination, "tools/prepare_atlasa1_resolute_media.py", "tools/prepare_atlasa1_resolute_media.py", records)
     for rel in ("tools/verify_atlasa1_resolute_media.sh", "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json",
                 "tools/build_atlasa1_resolute_vendor.sh", "tools/prepare_atlasa1_sdl_sysroot.sh",
                 "tools/build_gpu_userspace.py", "config/atlasa1-resolute-vendor-files.json",
                 "config/gpu-userspace-x11.env", "config/gpu-userspace-run.sh", "config/gpu-userspace-gnome.desktop",
                 "tools/validation/gpu_userspace_probe.c", "tools/validation/gpu_runtime_view.py",
-                "tools/validation/cedar-env"):
+                "tools/validation/cedar-env", "tools/validation/atlasa1_sdl_gles_smoke.c"):
         _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/build_cedar*.py", "tools/build_media*.py", "tools/prepare_media*.py"):
         _glob(ROOT, destination, pattern, "tools", records)

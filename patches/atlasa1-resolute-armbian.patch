@@ -7185,10 +7185,10 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_TOOLS_FWUMDATA is not set
 diff --git a/userpatches/atlasa1-release/docs/UBUNTU_26_04.md b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..e348137b80590d0b5eb545b3c124c559ef1de2e0
+index 0000000000000000000000000000000000000000..a8faa98e84c3cf92ef7595fbc94efb2eecbc9701
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,100 @@
 +# AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 +
 +本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
@@ -7213,6 +7213,8 @@ index 0000000000000000000000000000000000000000..e348137b80590d0b5eb545b3c124c559
 +```
 +
 +`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
++
++Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
 +
 +## 厂家输入和公开编译依赖
 +
@@ -7246,6 +7248,13 @@ index 0000000000000000000000000000000000000000..e348137b80590d0b5eb545b3c124c559
 +xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img.xz
 +```
 +
++本次 RC1 的文件摘要如下。第 4 分区中普通用户可用 3,671,642,112 字节，系统软件包清单共 1,402 项。[镜像内核、DTB、启动包与 GPT 校验](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json) · [软件包明细](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv)
++
++| 文件 | 字节数 | SHA-256 |
++| --- | ---: | --- |
++| 下载的 `.img.xz` | 1,004,564,592 | `a5b882423f308f7d7b9218ba011beef8ccfb51cdc27979d6526c66af6f5d3d25` |
++| 解压后的 `.img` | 8,589,934,592 | `01235d344087d299e70cf4581d18385b76db1cac02cf3a9471055bc0ca9c1232` |
++
 +## 用 Openix 写入板载 eMMC
 +
 +先备份 eMMC 上的数据。解压后的 `.img` 是从物理扇区 0 开始的完整 **eMMC 用户区**镜像，长度应为 8,589,934,592 字节。实测板卡的 `EXT_CSD PARTITION_CONFIG=0x00`，两个硬件 boot 分区均为空。上电后 Boot ROM 从用户区 LBA 16 读取 SPL，第二阶段启动包位于 LBA 24576，根系统在第四分区。SD 卡启动另需对应的板级支持。
@@ -7270,9 +7279,16 @@ index 0000000000000000000000000000000000000000..e348137b80590d0b5eb545b3c124c559
 +
 +## 桌面与硬件状态
 +
-+默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。GNOME 和 GDM 也在镜像中。切换到 GNOME 时，运行 `sudo dpkg-reconfigure gdm3`，选择 GDM，然后重启。恢复默认桌面可运行 `sudo dpkg-reconfigure lightdm`，选择 LightDM 后重启。桌面账号为 `t736`，初始密码为 `1234`。root 初始密码为 `1234`，首次登录按提示更换。
++默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。Xorg 配置优先选择 HDMI 1920×1080，会话启动时关闭 X11 屏保与 DPMS。本次 arm64 根文件系统实测包含 Xfce 4.20、GNOME Shell 50.1、原生 Firefox 160 和系统 FFmpeg 8.0.1。[根文件系统构建与软件版本](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json)
 +
-+原生播放器支持在桌面打开本地 H.264 / HEVC 文件。旧系统上的 1080p60 结果来自实板，同一解码器在 4K 测试中也有真实硬件输出。新 Ubuntu 镜像的冷启动、GNOME / GTK 图形路径、浏览器硬解、4K 帧率、编码和无线功能需看对应发行版的实板验收记录。主机侧软件包及文件系统验证不测量 HDMI 输出或播放帧率。[媒体适配与实板数据](https://github.com/dshanpi/AtlasA1-media)
++切换到 GNOME 时，运行 `sudo dpkg-reconfigure gdm3`，选择 GDM，然后重启。恢复默认桌面可运行 `sudo dpkg-reconfigure lightdm`，选择 LightDM 后重启。桌面账号为 `t736`，初始密码为 `1234`。root 初始密码为 `1234`，首次登录按提示更换。
++
++原生播放器支持从桌面打开本地 H.264 / HEVC 文件。本次在运行 v30 的 AtlasA1 上只读挂载最终镜像，直接执行镜像内的 Ubuntu 用户态程序。
++
++- SDL 离屏 GLES 四种颜色全部读回正确，渲染器为 `PowerVR B-Series BXM-4-64`，OpenGL ES 3.2 驱动版本为 `24.2@6603887`。直接使用 GBM 的测试还验证了 60 帧、每帧四个象限的颜色。
++- 25 秒的 3840×2160 HEVC 30 fps + AAC 片源经当前运行系统的 v30 Cedar 服务解出 750/750 帧，Cedar 硬件中断增加 750 次。Ubuntu FFplay 收到的画面尺寸为 1920×1080。该轮使用虚拟音视频输出，耗时 25.480 秒。
++
++完整镜像从 eMMC 冷启动、HDMI 物理显示和扬声器输出、GNOME 会话、Firefox 的硬件解码、硬件编码及无线功能仍待在本版单独验收。[本版媒体实板记录](https://github.com/dshanpi/AtlasA1-media/blob/df178e59ebf7eac04b2b00a713db75ddcb04cc44/evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json)
 diff --git a/userpatches/atlasa1-release/evidence/source-uboot-backup-audit-20261115.json b/userpatches/atlasa1-release/evidence/source-uboot-backup-audit-20261115.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..7105b167541dee403ddaefb46de39ec6dfed7376
@@ -34448,51 +34464,6 @@ index 0000000000000000000000000000000000000000..fe1c3930540382cae149a1cf1efa626d
 +    puts("PASS: actual v2 client/broker Unix+SCM_RIGHTS setup, listener UID/memfd owner/version/sequence rejection before backend use, readonly sealed slot, bounded 4x4/1080p pixels, guards, no old-frame cross-talk, 1000 concurrent pulls with API lock verified inside memcpy, flush/EOS/close/reopen, both-direction v1 refusal, 8 malformed reply cases and AGAIN without stale copy, fd balance0; software backend only");
 +    return 0;
 +}
-diff --git a/userpatches/atlasa1-release/tools/archive_atlasa1_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/archive_atlasa1_resolute_rootfs.sh
-new file mode 100755
-index 0000000000000000000000000000000000000000..af2a1ede213b22d25f0ee7bd10d0c0bc6735feb8
---- /dev/null
-+++ b/userpatches/atlasa1-release/tools/archive_atlasa1_resolute_rootfs.sh
-@@ -0,0 +1,39 @@
-+#!/usr/bin/env bash
-+# Archive the public Ubuntu userspace before device accounts, firmware and kernel integration.
-+set -euo pipefail
-+if (( EUID != 0 || $# != 2 )); then
-+    echo "Usage: sudo bash $0 PREPARED_ROOT NEW_ARCHIVE_DIRECTORY" >&2
-+    exit 2
-+fi
-+root=$(realpath -e "$1")
-+output=$(realpath -m "$2")
-+[[ "$root" != / && "$output/" != "$root/"* ]]
-+grep -qx 'VERSION_CODENAME=resolute' "$root/usr/lib/os-release"
-+[[ $(chroot "$root" dpkg --print-architecture) == arm64 ]]
-+[[ ! -s "$root/etc/machine-id" && $(readlink "$root/var/lib/dbus/machine-id") == /etc/machine-id ]]
-+[[ $(readlink "$root/etc/resolv.conf") == /run/systemd/resolve/stub-resolv.conf ]]
-+[[ ! -e "$root/var/lib/systemd/random-seed" && ! -s "$root/etc/apt/auth.conf" ]]
-+[[ ! -e "$root/opt/atlasa1-player" && ! -e "$root/opt/t736-cedar" ]]
-+[[ -z $(find "$root/boot" -name 'vmlinuz*' -print -quit) ]]
-+[[ -z $(find "$root/etc/ssh" -name 'ssh_host_*' -print -quit) ]]
-+for path in home root/.ssh etc/ssl/private etc/NetworkManager/system-connections etc/apt/auth.conf.d; do
-+    if [[ -d "$root/$path" && -n $(find "$root/$path" -type f -size +0 -print -quit) ]]; then
-+        echo "Unexpected content under $path in public root filesystem" >&2
-+        exit 1
-+    fi
-+done
-+for shadow in "$root"/etc/shadow{,-}; do
-+    [[ ! -e "$shadow" ]] || awk -F: '$2 !~ /^[!*]+$/ { exit 1 }' "$shadow"
-+done
-+[[ -z $(chroot "$root" dpkg --audit) ]]
-+mkdir -- "$output"
-+cd "$output"
-+# shellcheck disable=SC2016 # dpkg-query expands the package fields.
-+chroot "$root" dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort > rootfs-packages.tsv
-+name=AtlasA1_Ubuntu-26.04_arm64_public-rootfs.tar.zst
-+tar --one-file-system --acls --xattrs --xattrs-include='*' --sparse --numeric-owner -C "$root" -cf - . |
-+    zstd -T4 -8 -q -o "$name.part"
-+zstd -tq "$name.part"
-+mv -- "$name.part" "$name"
-+sha256sum "$name" rootfs-packages.tsv > SHA256SUMS-rootfs
-+cat SHA256SUMS-rootfs
 diff --git a/userpatches/atlasa1-release/tools/browser/build_browser_ffmpeg.py b/userpatches/atlasa1-release/tools/browser/build_browser_ffmpeg.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..b7319e52b51e9c18d4c0ceae90b2d2fa111f409b
@@ -40076,10 +40047,10 @@ index 0000000000000000000000000000000000000000..39018cc4d307af3baca9bf84125b4d5e
 +if __name__=='__main__':main()
 diff --git a/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..ac3ad42e15ebe54a609933bc240d94eab5fc2094
+index 0000000000000000000000000000000000000000..9e31835bc2f4128724985e8f0299f5a921eb0f94
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,120 @@
 +#!/bin/bash
 +# Install the AtlasA1 board support into a fresh official Armbian Resolute desktop rootfs.
 +set -euo pipefail
@@ -40157,11 +40128,17 @@ index 0000000000000000000000000000000000000000..ac3ad42e15ebe54a609933bc240d94ea
 +    [[ $(dpkg-deb -f "$deb" Architecture) == arm64 ]]
 +    install -m 0644 "$deb" "$pkg/"
 +done
-+target apt-get -o Acquire::Retries=3 -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
-+    -o Acquire::Languages=none update
-+target apt-get -y --no-install-recommends install initramfs-tools ffmpeg gstreamer1.0-tools \
-+    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
-+    "${pkg#"$root"}/$(basename "$kernel")" "${pkg#"$root"}/$(basename "$gpu")" "${pkg#"$root"}/$(basename "$player")"
++packages=(initramfs-tools ffmpeg gstreamer1.0-tools
++    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
++    "${pkg#"$root"}/$(basename "$kernel")" "${pkg#"$root"}/$(basename "$gpu")" "${pkg#"$root"}/$(basename "$player")")
++# A freshly prepared rootfs may already contain every runtime dependency.
++if ! target apt-get --print-uris --no-install-recommends --assume-yes install "${packages[@]}" >"$work/uris" 2>&1 ||
++    grep -Eq "^'(https?|ftp):" "$work/uris"; then
++    target apt-get -o Acquire::Retries=3 -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
++        -o Acquire::IndexTargets::deb::Contents-deb-legacy::DefaultEnabled=false \
++        -o Acquire::IndexTargets::deb::DEP-11::DefaultEnabled=false -o Acquire::Languages=none update
++fi
++target apt-get -y --no-install-recommends install "${packages[@]}"
 +rsync -a --chown=root:root "$overlay/" "$root/"
 +install -D -m 0644 "$pvr" "$root/lib/modules/$release/extra/pvrsrvkm.ko"
 +target depmod -a "$release"
@@ -41418,10 +41395,10 @@ index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f
 +readelf -d abi-test | grep -F 'Shared library: [libSDL2-2.0.so.0]'
 diff --git a/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..4b5a2ea5c4b3683f08665678cee7789ec6c0c9cd
+index 0000000000000000000000000000000000000000..3abf008990637e8eb4ec48f51ab13f6892511fbe
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,111 @@
 +#!/usr/bin/env bash
 +# Finish the official Armbian Resolute ARM64 rootfs for AtlasA1 image assembly.
 +# Usage: sudo bash prepare_t736_resolute_rootfs.sh ROOTFS.tar.zst NEW_ROOT BSP_OUTPUT_DEBS
@@ -41478,7 +41455,8 @@ index 0000000000000000000000000000000000000000..4b5a2ea5c4b3683f08665678cee7789e
 +inside=${scratch#"$root"}
 +run() { chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C "$@"; }
 +run apt-get -o Acquire::Retries=3 -o Acquire::Languages=none \
-+    -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false update
++    -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
++    -o Acquire::IndexTargets::deb::Contents-deb-legacy::DefaultEnabled=false update
 +# The rootfs repository may already contain a newer Armbian base-files build.
 +# Install the package made from this checkout, as the framework's image stage does.
 +run apt-get -o Acquire::Retries=3 -y --allow-downgrades --no-install-recommends install "$inside/base.deb"
@@ -41587,6 +41565,90 @@ index 0000000000000000000000000000000000000000..e3991efc25fa2d10d0f6e1bfd3a373ce
 +TryExec=/usr/bin/startxfce4
 +DesktopNames=XFCE
 +EOF
+diff --git a/userpatches/atlasa1-release/tools/validation/atlasa1_sdl_gles_smoke.c b/userpatches/atlasa1-release/tools/validation/atlasa1_sdl_gles_smoke.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..cfa10fc131790e72f90d894bd38f6b6b0a3891b5
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/validation/atlasa1_sdl_gles_smoke.c
+@@ -0,0 +1,78 @@
++#include <SDL.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++typedef unsigned GLenum;
++typedef unsigned char GLubyte;
++
++int main(void)
++{
++    static const unsigned char colors[][4] = {
++        {255, 0, 0, 255}, {0, 255, 0, 255}, {0, 0, 255, 255}, {255, 255, 0, 255}
++    };
++    if (getenv("DISPLAY") || getenv("WAYLAND_DISPLAY")) {
++        fprintf(stderr, "Unset DISPLAY and WAYLAND_DISPLAY for this offscreen test\n");
++        return 2;
++    }
++    if (SDL_setenv("SDL_VIDEODRIVER", "offscreen", 1) != 0 || SDL_Init(SDL_INIT_VIDEO) != 0) {
++        fprintf(stderr, "SDL init: %s\n", SDL_GetError());
++        return 1;
++    }
++    int result = 1;
++    SDL_Window *window = NULL;
++    SDL_GLContext context = NULL;
++    const char *driver = SDL_GetCurrentVideoDriver();
++    printf("SDL_VIDEODRIVER=%s\n", driver ? driver : "(none)");
++    if (!driver || strcmp(driver, "offscreen")) goto out;
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
++    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
++    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
++    window = SDL_CreateWindow("AtlasA1 offscreen QA", 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
++    if (!window) { fprintf(stderr, "SDL_CreateWindow: %s\n", SDL_GetError()); goto out; }
++    context = SDL_GL_CreateContext(window);
++    if (!context) { fprintf(stderr, "SDL_GL_CreateContext: %s\n", SDL_GetError()); goto out; }
++#define GL_PROC(ret, name, args) ret (*name) args = SDL_GL_GetProcAddress(#name); \
++    if (!name) { fprintf(stderr, "Missing " #name "\n"); goto out; }
++    GL_PROC(const GLubyte *, glGetString, (GLenum))
++    GL_PROC(void, glClearColor, (float,float,float,float))
++    GL_PROC(void, glClear, (GLenum))
++    GL_PROC(void, glFinish, (void))
++    GL_PROC(void, glReadPixels, (int,int,int,int,GLenum,GLenum,void *))
++    GL_PROC(GLenum, glGetError, (void))
++    const char *vendor = (const char *)glGetString(0x1f00);
++    const char *renderer = (const char *)glGetString(0x1f01);
++    const char *version = (const char *)glGetString(0x1f02);
++    if (!vendor || !renderer || !version) { fputs("Missing GLES identity\n",stderr); goto out; }
++    printf("GL_VENDOR=%s\nGL_RENDERER=%s\nGL_VERSION=%s\n",vendor,renderer,version);
++    if (!strstr(version, "OpenGL ES")) { fputs("Unexpected GL context\n",stderr); goto out; }
++    for (size_t i=0; i<sizeof(colors)/sizeof(colors[0]); i++) {
++        unsigned char pixel[4] = {0};
++        const unsigned char *c = colors[i];
++        glClearColor(c[0]/255.0f,c[1]/255.0f,c[2]/255.0f,1.0f);
++        glClear(0x4000);
++        glFinish();
++        glReadPixels(16,16,1,1,0x1908,0x1401,pixel);
++        GLenum error = glGetError();
++        printf("color%zu=%u,%u,%u,%u gl_error=0x%x\n",i,pixel[0],pixel[1],pixel[2],pixel[3],error);
++        if (error || memcmp(pixel,c,3)) { fputs("Pixel readback mismatch\n",stderr); goto out; }
++        SDL_GL_SwapWindow(window);
++    }
++    if (!(strstr(vendor, "Imagination") || strstr(renderer,"PowerVR") || strstr(renderer,"BXM")) ||
++        strstr(renderer, "llvmpipe") || strstr(renderer, "softpipe")) {
++        fputs("RGB readback passed; renderer is not IMG PowerVR\n",stderr);
++        result = 3;
++        goto out;
++    }
++    puts("PASS PowerVR offscreen GLES color readback");
++    result = 0;
++out:
++    if (context) SDL_GL_DeleteContext(context);
++    if (window) SDL_DestroyWindow(window);
++    SDL_Quit();
++    return result;
++}
 diff --git a/userpatches/atlasa1-release/tools/validation/cedar-env b/userpatches/atlasa1-release/tools/validation/cedar-env
 new file mode 100755
 index 0000000000000000000000000000000000000000..2a3a8a2f872fd7f6d8d58a1b8151e68026d80fc9

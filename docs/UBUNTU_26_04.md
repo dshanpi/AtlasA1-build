@@ -23,6 +23,8 @@ bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atl
 
 `/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
 
+Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
+
 ## 厂家输入和公开编译依赖
 
 | 输入 | 来源与用途 |
@@ -55,6 +57,13 @@ sha256sum -c SHA256SUMS
 xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img.xz
 ```
 
+本次 RC1 的文件摘要如下。第 4 分区中普通用户可用 3,671,642,112 字节，系统软件包清单共 1,402 项。[镜像内核、DTB、启动包与 GPT 校验](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json) · [软件包明细](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv)
+
+| 文件 | 字节数 | SHA-256 |
+| --- | ---: | --- |
+| 下载的 `.img.xz` | 1,004,564,592 | `a5b882423f308f7d7b9218ba011beef8ccfb51cdc27979d6526c66af6f5d3d25` |
+| 解压后的 `.img` | 8,589,934,592 | `01235d344087d299e70cf4581d18385b76db1cac02cf3a9471055bc0ca9c1232` |
+
 ## 用 Openix 写入板载 eMMC
 
 先备份 eMMC 上的数据。解压后的 `.img` 是从物理扇区 0 开始的完整 **eMMC 用户区**镜像，长度应为 8,589,934,592 字节。实测板卡的 `EXT_CSD PARTITION_CONFIG=0x00`，两个硬件 boot 分区均为空。上电后 Boot ROM 从用户区 LBA 16 读取 SPL，第二阶段启动包位于 LBA 24576，根系统在第四分区。SD 卡启动另需对应的板级支持。
@@ -79,6 +88,13 @@ OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 
 
 ## 桌面与硬件状态
 
-默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。GNOME 和 GDM 也在镜像中。切换到 GNOME 时，运行 `sudo dpkg-reconfigure gdm3`，选择 GDM，然后重启。恢复默认桌面可运行 `sudo dpkg-reconfigure lightdm`，选择 LightDM 后重启。桌面账号为 `t736`，初始密码为 `1234`。root 初始密码为 `1234`，首次登录按提示更换。
+默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。Xorg 配置优先选择 HDMI 1920×1080，会话启动时关闭 X11 屏保与 DPMS。本次 arm64 根文件系统实测包含 Xfce 4.20、GNOME Shell 50.1、原生 Firefox 160 和系统 FFmpeg 8.0.1。[根文件系统构建与软件版本](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json)
 
-原生播放器支持在桌面打开本地 H.264 / HEVC 文件。旧系统上的 1080p60 结果来自实板，同一解码器在 4K 测试中也有真实硬件输出。新 Ubuntu 镜像的冷启动、GNOME / GTK 图形路径、浏览器硬解、4K 帧率、编码和无线功能需看对应发行版的实板验收记录。主机侧软件包及文件系统验证不测量 HDMI 输出或播放帧率。[媒体适配与实板数据](https://github.com/dshanpi/AtlasA1-media)
+切换到 GNOME 时，运行 `sudo dpkg-reconfigure gdm3`，选择 GDM，然后重启。恢复默认桌面可运行 `sudo dpkg-reconfigure lightdm`，选择 LightDM 后重启。桌面账号为 `t736`，初始密码为 `1234`。root 初始密码为 `1234`，首次登录按提示更换。
+
+原生播放器支持从桌面打开本地 H.264 / HEVC 文件。本次在运行 v30 的 AtlasA1 上只读挂载最终镜像，直接执行镜像内的 Ubuntu 用户态程序。
+
+- SDL 离屏 GLES 四种颜色全部读回正确，渲染器为 `PowerVR B-Series BXM-4-64`，OpenGL ES 3.2 驱动版本为 `24.2@6603887`。直接使用 GBM 的测试还验证了 60 帧、每帧四个象限的颜色。
+- 25 秒的 3840×2160 HEVC 30 fps + AAC 片源经当前运行系统的 v30 Cedar 服务解出 750/750 帧，Cedar 硬件中断增加 750 次。Ubuntu FFplay 收到的画面尺寸为 1920×1080。该轮使用虚拟音视频输出，耗时 25.480 秒。
+
+完整镜像从 eMMC 冷启动、HDMI 物理显示和扬声器输出、GNOME 会话、Firefox 的硬件解码、硬件编码及无线功能仍待在本版单独验收。[本版媒体实板记录](https://github.com/dshanpi/AtlasA1-media/blob/df178e59ebf7eac04b2b00a713db75ddcb04cc44/evidence/atlasa1-ubuntu26-rc1-board-media-20261118.json)

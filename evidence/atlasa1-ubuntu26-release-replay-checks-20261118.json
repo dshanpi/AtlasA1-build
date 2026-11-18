@@ -1,6 +1,11 @@
 {
   "date": "2026-11-18",
   "distribution": "Ubuntu 26.04 arm64",
+  "component_repositories": {
+    "https://github.com/dshanpi/AtlasA1-linux": "ec57f20d96e3c774e572db058a8cb44646442096",
+    "https://github.com/dshanpi/AtlasA1-uboot": "d64c9c25ee4af7b672ac3f3f3dd0f9a31a93d0a5",
+    "https://github.com/dshanpi/AtlasA1-media": "df178e59ebf7eac04b2b00a713db75ddcb04cc44"
+  },
   "build_host_tests": {
     "armbian_source": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
     "initial_single_patch": {
@@ -9,7 +14,12 @@
       "size_bytes": 1576675,
       "recipe_files": 131,
       "files_in_full_patch": 141,
-      "verified": ["git apply --check in pristine upstream index", "git apply --cached and verify every recipe Git blob", "regenerate identical patch from AtlasA1-build export", "download identical published patch from GitHub"]
+      "verified": [
+        "git apply --check in pristine upstream index",
+        "git apply --cached and verify every recipe Git blob",
+        "regenerate identical patch from AtlasA1-build export",
+        "download identical published patch from GitHub"
+      ]
     },
     "sdl_sysroot": {
       "runtime_deb_sha256": "6312ccbc29645ac5cc9dde9f9ed8bd5c85a0233690c270c83c963b49f8cd49d5",
@@ -26,7 +36,12 @@
       "independent_wc_archive_sha256": "d227a17aaed3eca98ad2cd62a9c38036cad50e955760f048ac0fc6f755f969c1",
       "cedar_broker_sha256": "1910bf0ce66653d27fe67f99d2a1ce8b813dafec3893f981a8d7c662a61f3b04",
       "cedar_backend_sha256": "2185f2019b4aea60933c34d387d290e808848e420f8899b0b401783293145583",
-      "checks": ["native and AArch64 QEMU transport tests", "4K OMX module compiled", "vendor-library contents and firmware hashes verified", "media and LightDM X11 overlay assembled"],
+      "checks": [
+        "native and AArch64 QEMU transport tests",
+        "4K OMX module compiled",
+        "vendor-library contents and firmware hashes verified",
+        "media and LightDM X11 overlay assembled"
+      ],
       "scope": "These are separate repeat builds. Tool-generated package and container hashes can differ from the component files selected for the published image."
     },
     "ram_fes_loader": {
@@ -43,6 +58,32 @@
       "source": "Release recipe files extracted independently and run against the pinned U-Boot and TF-A archives plus the matching Tina LPDDR4x training library",
       "boot_package_sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e",
       "matches_original_release_build": true
+    }
+  },
+  "published_rc1_artifacts": {
+    "tag": "v2026.11.18-ubuntu26.04-rc1",
+    "compressed_image": {
+      "file": "Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img.xz",
+      "bytes": 1004564592,
+      "sha256": "a5b882423f308f7d7b9218ba011beef8ccfb51cdc27979d6526c66af6f5d3d25"
+    },
+    "raw_image": {
+      "file": "Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img",
+      "bytes": 8589934592,
+      "sha256": "01235d344087d299e70cf4581d18385b76db1cac02cf3a9471055bc0ca9c1232",
+      "evidence": "atlasa1-ubuntu26-rc1-image-manifest-20261118.json"
+    },
+    "single_patch": {
+      "file": "atlasa1-resolute-armbian.patch",
+      "bytes": 1582328,
+      "sha256": "86e7dee336dd8aed062cbbda73e91887a497524c0d3df50ef5630626c63aee35",
+      "verified": "git apply --check and --cached against clean Armbian index, individual embedded blobs verified"
+    },
+    "release_userspace_on_board": "atlasa1-ubuntu26-rc1-board-media-20261118.json",
+    "package_manifest": {
+      "file": "atlasa1-ubuntu26-rc1-packages-20261118.tsv",
+      "packages": 1402,
+      "sha256": "b53bfcfaaa34ab40ad26291eeaf011ac86314401b2dee8bfa914927b14b1b95f"
     }
   }
 }

@@ -75,11 +75,17 @@ for deb in "$kernel" "$gpu" "$player"; do
     [[ $(dpkg-deb -f "$deb" Architecture) == arm64 ]]
     install -m 0644 "$deb" "$pkg/"
 done
-target apt-get -o Acquire::Retries=3 -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
-    -o Acquire::Languages=none update
-target apt-get -y --no-install-recommends install initramfs-tools ffmpeg gstreamer1.0-tools \
-    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
-    "${pkg#"$root"}/$(basename "$kernel")" "${pkg#"$root"}/$(basename "$gpu")" "${pkg#"$root"}/$(basename "$player")"
+packages=(initramfs-tools ffmpeg gstreamer1.0-tools
+    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
+    "${pkg#"$root"}/$(basename "$kernel")" "${pkg#"$root"}/$(basename "$gpu")" "${pkg#"$root"}/$(basename "$player")")
+# A freshly prepared rootfs may already contain every runtime dependency.
+if ! target apt-get --print-uris --no-install-recommends --assume-yes install "${packages[@]}" >"$work/uris" 2>&1 ||
+    grep -Eq "^'(https?|ftp):" "$work/uris"; then
+    target apt-get -o Acquire::Retries=3 -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
+        -o Acquire::IndexTargets::deb::Contents-deb-legacy::DefaultEnabled=false \
+        -o Acquire::IndexTargets::deb::DEP-11::DefaultEnabled=false -o Acquire::Languages=none update
+fi
+target apt-get -y --no-install-recommends install "${packages[@]}"
 rsync -a --chown=root:root "$overlay/" "$root/"
 install -D -m 0644 "$pvr" "$root/lib/modules/$release/extra/pvrsrvkm.ko"
 target depmod -a "$release"
