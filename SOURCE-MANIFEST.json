@@ -718,11 +718,25 @@
       "sha256": "e6a8723289052adf4498623b483e96833ffc35331810356be1082b0b7ae4dec6"
     },
     {
+      "path": "patches/cedar/backend-parallel-direct-slot.patch",
+      "kind": "source",
+      "source": "mainline/patches/cedar/backend-parallel-direct-slot.patch",
+      "size": 2129,
+      "sha256": "91eeecd80ad5a157a5682cda4c114cff1b170e103956a19859455c42f7f50944"
+    },
+    {
       "path": "patches/cedar/omx-4k-broker-buffers.patch",
       "kind": "source",
       "source": "mainline/patches/cedar/omx-4k-broker-buffers.patch",
       "size": 1223,
       "sha256": "4cabef8c5b0af45ffe10d5b9a94e0667841f35bbbcabb82ca4b2ebdc347cb5c5"
+    },
+    {
+      "path": "patches/ffmpeg/ffplay-refresh-budget.patch",
+      "kind": "source",
+      "source": "mainline/patches/ffmpeg/ffplay-refresh-budget.patch",
+      "size": 970,
+      "sha256": "d57295384b26344e6f01bc38f37453d65616bdda238a71eaded09d0d4cdd7c6a"
     },
     {
       "path": "patches/linux/media-v30-cedar-heap-quota.patch",
@@ -760,6 +774,13 @@
       "sha256": "271fb57b73545fb877dca5bae0868fcc41c83fe45919b03e7f8624e57438306d"
     },
     {
+      "path": "tests/test_atlasa1_player.py",
+      "kind": "source",
+      "source": "mainline/tests/test_atlasa1_player.py",
+      "size": 2079,
+      "sha256": "aa1f7fe78dc6fa65a34be061a1d5547408592847a957e3a6416777166edac371"
+    },
+    {
       "path": "tests/test_cedar_backend.c",
       "kind": "source",
       "source": "mainline/tests/test_cedar_backend.c",
@@ -779,6 +800,13 @@
       "source": "mainline/tests/test_cedar_gst_fd_ownership.py",
       "size": 4577,
       "sha256": "05aa5b4603f2d77e012f9314afb8fc9a063332fd276501f68eb7a1845ce1fca4"
+    },
+    {
+      "path": "tests/test_cedar_parallel_direct.c",
+      "kind": "source",
+      "source": "mainline/tests/test_cedar_parallel_direct.c",
+      "size": 2933,
+      "sha256": "9c5cd406196b0e05c0add97293602bb664d2b990c9cf83e8d3d272954aa0085f"
     },
     {
       "path": "tests/test_cedar_plane_copy_candidate.c",
@@ -842,6 +870,13 @@
       "source": "mainline/tests/test_ffmpeg_cedar.c",
       "size": 28982,
       "sha256": "419e56621a2b367db07f6d835bf096c26461e25fb5a4cd5b80f47d2103f57c15"
+    },
+    {
+      "path": "tests/test_ffmpeg_cedar_dr1.c",
+      "kind": "source",
+      "source": "mainline/tests/test_ffmpeg_cedar_dr1.c",
+      "size": 3357,
+      "sha256": "c9153cb5f06b0a0ac614e706a5eaddaa27ebccc752977e59b4b088909ac91d14"
     },
     {
       "path": "tests/test_ffmpeg_cedar_v7_batch.c",
@@ -991,6 +1026,34 @@
       "sha256": "a9abbbf59a7c414e101e3b22b4ba2466b2ee2e819fd0f9d8ffc2cb6eaa8b4148"
     },
     {
+      "path": "tools/browser/build_browser_ffmpeg.py",
+      "kind": "source",
+      "source": "mainline/tools/browser/build_browser_ffmpeg.py",
+      "size": 7850,
+      "sha256": "e9d969ca3e81743a62eb5f3a216ddadffb315370767eac9e734e73106a6d7a3b"
+    },
+    {
+      "path": "tools/browser/cedar_backend.c",
+      "kind": "source",
+      "source": "mainline/tools/browser/cedar_backend.c",
+      "size": 26186,
+      "sha256": "3e5ac5787b79d0717d06f2ffba5d89fa93253a7d774fee261c6251205311e7c4"
+    },
+    {
+      "path": "tools/browser/cedar_backend.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/cedar_backend.h",
+      "size": 2805,
+      "sha256": "bb0156d8b7dec6b8a975a13a8962f0d31eef826fd890e08e1caf4d800696e061"
+    },
+    {
+      "path": "tools/browser/cedar_client.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/cedar_client.h",
+      "size": 1181,
+      "sha256": "8ed66c98a7f630400840276f8e4aa4bb443702a49c29b564f17a82f41b1e5101"
+    },
+    {
       "path": "tools/browser/cedarc.conf",
       "kind": "source",
       "source": "mainline/tools/browser/cedarc.conf",
@@ -998,11 +1061,109 @@
       "sha256": "df9f8915fca4e773efd5760caee71c521d7c50fba364270fb896c1e112a2ee4a"
     },
     {
+      "path": "tools/browser/copy_candidate/cedar_parallel_copy.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/copy_candidate/cedar_parallel_copy.h",
+      "size": 4938,
+      "sha256": "cf5cee4b4fe1d98191cac29f350bcb4aca4aada8e11d676d0936ed598dcbbc7e"
+    },
+    {
+      "path": "tools/browser/ffmpeg_cedar.c",
+      "kind": "source",
+      "source": "mainline/tools/browser/ffmpeg_cedar.c",
+      "size": 35703,
+      "sha256": "909ab49e890aecdfaf955518cfddc132e0d84d0f41c6c3397071d61a36f06bda"
+    },
+    {
       "path": "tools/browser/gstomx.conf",
       "kind": "source",
       "source": "mainline/tools/browser/gstomx.conf",
       "size": 591,
       "sha256": "ee435630b57faf0de41e48c4150247d2f42736da531acde4907bcb45af922fb3"
+    },
+    {
+      "path": "tools/browser/shm_v2/70-t736-cedar.rules",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/70-t736-cedar.rules",
+      "size": 263,
+      "sha256": "fc09eb8652f1351a995b353eba854ad38d3146c945459180f3f4dd73025a8299"
+    },
+    {
+      "path": "tools/browser/shm_v2/README.md",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/README.md",
+      "size": 10162,
+      "sha256": "a91b1b4713bb25960b09bcf3a3552c885a1f55c293e5ab4fcb5691a37af772e2"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar-service",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar-service",
+      "size": 1558,
+      "sha256": "30876c0a5898b2b8986641f6989b4e296f78b8e683ce8e710a1cd73e8cf5527a"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_backend.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_backend.h",
+      "size": 2805,
+      "sha256": "bb0156d8b7dec6b8a975a13a8962f0d31eef826fd890e08e1caf4d800696e061"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_broker.c",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_broker.c",
+      "size": 14613,
+      "sha256": "792553045c6531064b1a82865d5bce8de94a718fbf9c36c8df971f09454aae1d"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_client.c",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_client.c",
+      "size": 12249,
+      "sha256": "81105f11150315507a4717ca391976393808f424b7c0767631dbe1984293dc87"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_client.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_client.h",
+      "size": 1181,
+      "sha256": "8ed66c98a7f630400840276f8e4aa4bb443702a49c29b564f17a82f41b1e5101"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_protocol.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_protocol.h",
+      "size": 1459,
+      "sha256": "c3b776da0ace7f191738cf45076d977ff255d6d5c58a708cbd34b5fea111b646"
+    },
+    {
+      "path": "tools/browser/shm_v2/cedar_shm.h",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/cedar_shm.h",
+      "size": 9151,
+      "sha256": "a9530be7f4f9607cbc9451b9398c8e6f8c64615cac54a7f90851c04795d6ee88"
+    },
+    {
+      "path": "tools/browser/shm_v2/firefox-cedar",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/firefox-cedar",
+      "size": 636,
+      "sha256": "82a0a7b16d883af27b012d902ea5b07b2fb7faf4b1735d07c095949f90193304"
+    },
+    {
+      "path": "tools/browser/shm_v2/t736-cedar-experiment.service",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/t736-cedar-experiment.service",
+      "size": 969,
+      "sha256": "7e11f314826ff72c98baefcabaf861eb0c7ee2c0c78ce6fed80b3768a64e0ec4"
+    },
+    {
+      "path": "tools/browser/shm_v2/t736-cedar.socket",
+      "kind": "source",
+      "source": "mainline/tools/browser/shm_v2/t736-cedar.socket",
+      "size": 446,
+      "sha256": "eef87a7d6004806b2774191e84c2b59a909b88ef4f83c149ae240b0b47be45fc"
     },
     {
       "path": "tools/build_armbian_kernel.sh",
@@ -1017,6 +1178,13 @@
       "source": "mainline/tools/build_armbian_rootfs.sh",
       "size": 2860,
       "sha256": "e97a1d6e1dd24d5e4cdd39a8aea9dc28a17c0dc7f17fb018703b77cd95ea0571"
+    },
+    {
+      "path": "tools/build_atlasa1_player.py",
+      "kind": "source",
+      "source": "mainline/tools/build_atlasa1_player.py",
+      "size": 4400,
+      "sha256": "ba00e34a941f38d9876bc1d5c883acd91ba6ac182552ecc3ef995d9c8d78c8bd"
     },
     {
       "path": "tools/build_bringup_payloads.sh",
@@ -1059,6 +1227,13 @@
       "source": "mainline/tools/build_cedar_demo_diagnostic.py",
       "size": 6533,
       "sha256": "3bc02555ab2d0e9f8b1ae92ddf3c2d752a5cb56310a01687ff564fe9d67a150e"
+    },
+    {
+      "path": "tools/build_cedar_parallel_slot.sh",
+      "kind": "source",
+      "source": "mainline/tools/build_cedar_parallel_slot.sh",
+      "size": 2966,
+      "sha256": "6426383fa0e2d65c53402072c953cb5a8c932f4b37c4eb304ca0b76a6906aedd"
     },
     {
       "path": "tools/build_cedar_shm_transport.py",
@@ -1136,6 +1311,13 @@
       "source": "mainline/tools/build_ethernet_kernel.sh",
       "size": 992,
       "sha256": "7f041e0c2bfb4e287254c1395064476cc590c3d24e7d621d887026aae9276777"
+    },
+    {
+      "path": "tools/build_ffplay_refresh_pair.sh",
+      "kind": "source",
+      "source": "mainline/tools/build_ffplay_refresh_pair.sh",
+      "size": 2149,
+      "sha256": "af95efe9f404bab4221635316fe4a88b67f3919a8d455028ce53e8e994f75b42"
     },
     {
       "path": "tools/build_gpu_kernel.sh",
@@ -1722,8 +1904,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 17714,
-      "sha256": "13b87381cd4fa8f0f06479b3973118e83ce414e4698acc8bfb39c561b23c28a5"
+      "size": 19148,
+      "sha256": "cf39978958104227211a28f735e8c14b18d01b5ccc9d077c0c5f5dd72b4126ff"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -1873,6 +2055,34 @@
       "sha256": "4d65cfe5a9b9ac169c8f0facbe9d4206ea6ead5b8c5c3d21ad73db622d2d9004"
     },
     {
+      "path": "tools/player/README.md",
+      "kind": "source",
+      "source": "mainline/tools/player/README.md",
+      "size": 2032,
+      "sha256": "12111d8bfb5d00ab2ace4a8080d3d3ff5bc9638d0ea85578d7bfe804554cfc30"
+    },
+    {
+      "path": "tools/player/atlasa1-player",
+      "kind": "source",
+      "source": "mainline/tools/player/atlasa1-player",
+      "size": 2849,
+      "sha256": "14161ab0a218dd061e613b5a85b5e674108b0325d03f4469cd1cefcd6eff1d16"
+    },
+    {
+      "path": "tools/player/atlasa1-player.desktop",
+      "kind": "source",
+      "source": "mainline/tools/player/atlasa1-player.desktop",
+      "size": 223,
+      "sha256": "850793681c7050168def31acf8f452b1903a96543860f3959e3502da1009eeeb"
+    },
+    {
+      "path": "tools/player/copyright",
+      "kind": "source",
+      "source": "mainline/tools/player/copyright",
+      "size": 1565,
+      "sha256": "ca0242aa9dd54559df4e2320d162c63e4e4ecdf9293bc0e2cbd9eb1909fb470c"
+    },
+    {
       "path": "tools/port_media_iommu.py",
       "kind": "source",
       "source": "mainline/tools/port_media_iommu.py",
@@ -1960,22 +2170,29 @@
       "path": "tools/validation/README.md",
       "kind": "source",
       "source": "mainline/tools/validation/README.md",
-      "size": 10443,
-      "sha256": "8d813c793c276df2c502202c9221a9c1bf0d46b95e9eee9adc1fcdb4bf71a614"
+      "size": 11513,
+      "sha256": "174b4dd1b9811c2e10bb7b938c42a60a767a2698107a237a860edf6c33317d46"
     },
     {
       "path": "tools/validation/ffplay_offscreen.py",
       "kind": "source",
       "source": "mainline/tools/validation/ffplay_offscreen.py",
-      "size": 6730,
-      "sha256": "a7b2b538a5603ecf7af60da1273cf739f04cd1f29c75d94ce55beeb285dc86e6"
+      "size": 11404,
+      "sha256": "861149441f6fd91e5ff5474ff27a010dfcf4d86158aebe1f308d09f722548240"
+    },
+    {
+      "path": "tools/validation/ffplay_present_trace.c",
+      "kind": "source",
+      "source": "mainline/tools/validation/ffplay_present_trace.c",
+      "size": 2389,
+      "sha256": "6a6e11cdc7e69635ba48f7862e12a5f8c736d5a0107d8d4137585bbcb78720f5"
     },
     {
       "path": "tools/validation/firefox_headless_playback.py",
       "kind": "source",
       "source": "mainline/tools/validation/firefox_headless_playback.py",
-      "size": 14177,
-      "sha256": "4dab5c7dae3db23eb3ef1db4dd7ffc4f246464f58750280e635a91fce690fa73"
+      "size": 14812,
+      "sha256": "b4e6d120e13b26706a306e4e9ba5c38e022856534ccf829a89a6baec0e31ba2f"
     },
     {
       "path": "tools/validation/media_acceptance.py",

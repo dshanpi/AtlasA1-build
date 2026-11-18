@@ -149,11 +149,19 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
         _tree(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "userpatches/linux-t736-mainline-current.config", "userpatches/linux-t736-mainline-current.config", records)
     _file(ROOT, destination, "userpatches/t736-media-acceptance.py", "userpatches/t736-media-acceptance.py", records)
-    for rel in ("tools/browser/cedarc.conf", "tools/browser/gstomx.conf"):
+    for rel in ("tools/browser/cedarc.conf", "tools/browser/gstomx.conf",
+                "tools/browser/cedar_backend.c", "tools/browser/cedar_backend.h",
+                "tools/browser/copy_candidate/cedar_parallel_copy.h",
+                "patches/cedar/backend-parallel-direct-slot.patch"):
         _file(ROOT, destination, rel, rel, records)
     for rel in ("docs/ARMBIAN_REBUILD.md", "docs/BUILD.md", "docs/BOOT_CHAIN.md", "docs/CODE_MAP.md", "docs/ETHERNET.md", "docs/HARDWARE_MAP.md", "docs/VALIDATION.md", "docs/WIRELESS.md", "docs/ATLAS_REPOSITORY_LAYOUT.md"):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, "tests", "tests", records)
+    _tree(ROOT, destination, "tools/player", "tools/player", records)
+    _tree(ROOT, destination, "tools/browser/shm_v2", "tools/browser/shm_v2", records)
+    for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
+                "tools/browser/cedar_client.h"):
+        _file(ROOT, destination, rel, rel, records)
     for source in sorted((ROOT / "tools").glob("*.py")) + sorted((ROOT / "tools").glob("*.sh")):
         if source.name in {"export_atlas_repositories.py", "build_media_v29_candidate.py", "build_media_v28_candidate.py"}:
             continue
@@ -161,11 +169,12 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     for rel in ("tools/build_media_v29_candidate.py", "tools/validation/update_t736_media_v29.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "tools/export_atlas_repositories.py", "tools/export_atlas_repositories.py", records)
-    for rel in ("tools/validation/README.md", "tools/validation/ffplay_offscreen.py",
+    for rel in ("tools/validation/README.md", "tools/validation/ffplay_offscreen.py", "tools/validation/ffplay_present_trace.c",
                 "tools/validation/firefox_headless_playback.py", "tools/validation/media_acceptance.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
     for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
+                "patches/ffmpeg/ffplay-refresh-budget.patch",
                 "patches/cedar/omx-4k-broker-buffers.patch",
                 "evidence/armbian-source-boot-layout-test-20261118.json",
                 "evidence/media-v30-heap-budget-build-20261118.json",
@@ -218,6 +227,7 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
     _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
     _tree(ROOT, destination, "tools/browser", "tools/browser", records)
+    _tree(ROOT, destination, "tools/player", "tools/player", records)
     for pattern in ("tools/build_cedar*.py", "tools/build_media*.py", "tools/prepare_media*.py"):
         _glob(ROOT, destination, pattern, "tools", records)
     for rel in ("tools/install_t736_media_runtime.py", "tools/port_media_iommu.py", "tools/prepare_media_kernel.py",
@@ -226,7 +236,7 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
         _file(ROOT, destination, rel, rel, records)
     for rel in ("tools/validation/update_t736_media_v29.py", "tools/validation/audit_media_v29_package.py"):
         _file(ROOT, destination, rel, rel, records)
-    for rel in ("tools/validation/firefox_headless_playback.py", "tools/validation/ffplay_offscreen.py",
+    for rel in ("tools/validation/firefox_headless_playback.py", "tools/validation/ffplay_offscreen.py", "tools/validation/ffplay_present_trace.c",
                 "tests/test_ffmpeg_cedar_dr1.c", "tests/test_cedar_backend.c", "tests/test_cedar_shm_transport.c",
                 "tests/test_cedar_parallel_direct.c", "tools/build_cedar_parallel_slot.sh",
                 "evidence/media-v30-4k-browser-hardware-20261118.json",
@@ -240,6 +250,15 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
                 "evidence/firefox-headless-hevc1080p60-v8-first-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
     _glob(ROOT, destination, "evidence/firefox-hevc1080p60-v8-*-20261118.json", "evidence", records)
+    for rel in ("evidence/media-v30-4k-firefox-parallel-20261118.json",
+                "evidence/media-v30-4k-native-playback-20261118.json",
+                "evidence/media-v30-1080-playback-20261118.json",
+                "evidence/cedar-peer-roles-build-20261118.json",
+                "patches/ffmpeg/ffplay-refresh-budget.patch", "tools/build_ffplay_refresh_pair.sh",
+                "tools/build_atlasa1_player.py", "tests/test_atlasa1_player.py",
+                "evidence/atlasa1-native-player-package-20261118.json",
+                "evidence/ffplay-refresh-budget-build-20261118.json"):
+        _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/validation/media_*.py", "tools/validation/browser_*.py", "tools/validation/cedar_*.py", "tools/validation/*nv21*.py", "tools/validation/*omx*.py", "tools/validation/decode_*.py", "tools/validation/build_h264_*.py"):
         # The OMX probe is optional because the current public tree has no
         # standalone *omx*.py validator.  Keep the export deterministic while

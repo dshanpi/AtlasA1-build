@@ -98,6 +98,19 @@ python3 tools/validation/firefox_headless_playback.py \
   /var/tmp/media/hevc-1080p60-1800.mp4 --output /var/tmp/browser60.json
 ```
 
+### 原生播放器
+
+`ffplay_offscreen.py` 用 FFplay 播放本地 MP4。选择 `--renderer powervr` 时，SDL 在离屏窗口创建 GLES2 渲染器，探针检查播放器是否加载板上的 PVR 驱动。选择 `--keep-frames` 时，探针同时检查播放总时长、SDL 提交的不同视频帧数和帧间隔。输出不占用 HDMI。下例需使用包含 ELBG 导出的私有 FFmpeg，以及支持 systemd 监听套接字的 Cedar client。
+
+```sh
+cc -std=c11 -O2 -Wall -Wextra -shared -fPIC tools/validation/ffplay_present_trace.c -ldl -o /var/tmp/t736-present.so
+python3 tools/validation/ffplay_offscreen.py /var/tmp/media/hevc-1080p60-1800.mp4 \
+  --renderer powervr --keep-frames --present-trace /var/tmp/t736-present.so \
+  --output /var/tmp/native60.json
+```
+
+交叉编译观测库时可将 `cc` 换成 `aarch64-linux-gnu-gcc`。使用单独的实验库时，通过 `--ffmpeg-lib` 和 `--client-lib` 指定路径。验证 4K 源在 1080p 桌面的表现时，`--scale-to-window` 会在解码后缩放纹理，记录保留源尺寸和实际纹理尺寸。
+
 ## 帧缓冲抓图
 
 交叉编译示例：
