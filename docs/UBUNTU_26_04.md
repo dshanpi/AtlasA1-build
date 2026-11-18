@@ -14,8 +14,8 @@ cd armbian-build
 git checkout --detach 2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736
 curl -fL -o /tmp/atlasa1-resolute-armbian.patch \
   https://raw.githubusercontent.com/dshanpi/AtlasA1-build/v2026.11.18-ubuntu26.04-rc1/patches/atlasa1-resolute-armbian.patch
-git apply --check /tmp/atlasa1-resolute-armbian.patch
-git apply /tmp/atlasa1-resolute-armbian.patch
+git apply --whitespace=nowarn --check /tmp/atlasa1-resolute-armbian.patch
+git apply --whitespace=nowarn /tmp/atlasa1-resolute-armbian.patch
 
 export ATLAS_TINA_SDK=/srv/tina
 bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output
@@ -31,7 +31,7 @@ bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atl
 | IMG X11 和 Cedar/OMX 运行库 | 总入口从上述 SDK 提取匹配的 GPU 固件、IMG 用户态和编解码库。若已有配套的包，可同时设置 `ATLAS_IMG_DEB` 与 `ATLAS_CEDAR_WC` 复用它们。最终叠加源码重新生成的 4K OMX 解码库和解码服务。 |
 | SDL2 开发根 | 默认从 Debian 下载 arm64 的 `libsdl2-dev` 和 `libsdl2-2.0-0` 2.32.4，校验 SHA-256 后解包，并交叉编译一个链接 SDL2 的小程序。可用 `ATLAS_SDL_SYSROOT` 指向已准备的相同开发根。 |
 
-Tina 厂商源码及运行库由具有相应 SDK 使用权的构建方提供。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
+AtlasA1 成品镜像经项目方授权随镜像发布 LPDDR4x 训练库、PowerVR 用户态和 Cedar 编解码库。从源码重建时，由具有相应权限的构建方提供 Tina SDK。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
 
 ```sh
 recipe=$PWD/userpatches/atlasa1-release/tools
@@ -74,6 +74,8 @@ openixcli raw t736-tina-fes-loader.img Armbian_26.11_AtlasA1_Ubuntu-26.04_Deskto
 ```
 
 OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 固件分别选择上述两个文件。`eMMC boot0 from image` 保持关闭，扇区偏移由工具处理。等待写入和校验成功后再断电重启。这个写入流程此前已在本板完整写入并校验 8 GiB，新版 Ubuntu 的冷启动状态以该版 Release 记录为准。
+
+较大容量的 eMMC 也按这个固定布局启动。第 4 分区后面还有两个分区，用户区 LBA 40960 保存 GPT 副本，因此本版关闭了 Armbian 的通用首次启动自动扩容。
 
 ## 桌面与硬件状态
 

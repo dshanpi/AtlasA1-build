@@ -672,8 +672,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 7505,
-      "sha256": "e0ed0647ffb667d4c87cf7f160c765f367359576de8efc7ae7c59533808e15c5"
+      "size": 7855,
+      "sha256": "ba50436acc6b93dd96ffac866c94f7b15319092c9411efc6cfae83faf51374f4"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -746,6 +746,13 @@
       "sha256": "f330fe057a9e31886495ea6f709aa51453d8a41ad9b3fd00f8c0e084b1164e6d"
     },
     {
+      "path": "evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
+      "size": 2990,
+      "sha256": "84379dd6ee1df0d9253b8a6638611576f5fb69a842ded1fac8b51e08cf9fc049"
+    },
+    {
       "path": "evidence/ffplay-first-picture-sync-qemu-20261118.json",
       "kind": "source",
       "source": "mainline/evidence/ffplay-first-picture-sync-qemu-20261118.json",
@@ -805,8 +812,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 1576675,
-      "sha256": "a4d41d38f225ab60c95cddc1f632c4dc6fd6c0745878e26f8239599fab7bce5b"
+      "size": 1578259,
+      "sha256": "1bacc03ff47927bc4742b0b4eb93144667cdadc4b489a3b471412a9147876a5e"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -3129,8 +3136,8 @@
       "path": "tools/build_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/build_atlasa1_resolute.sh",
-      "size": 3965,
-      "sha256": "c0e973754537c5de045ec2b0c970077ed218364059eab626d5c5222ec2812474"
+      "size": 4120,
+      "sha256": "a975b2081e18c1d10ccac181ee3c1772bd7391a01a5778f3beff701f236c5705"
     },
     {
       "path": "tools/build_atlasa1_resolute_player.sh",
@@ -3143,8 +3150,8 @@
       "path": "tools/build_atlasa1_resolute_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/build_atlasa1_resolute_rootfs.sh",
-      "size": 2125,
-      "sha256": "88ea92fa6300be729ca6741aa5d70f732c2fe51093af05798c4bb6955bb8c816"
+      "size": 2207,
+      "sha256": "7861f76f013136ef2614eca6b76f2ad47afdb5f25b373e2ba9de1fadb3450fc3"
     },
     {
       "path": "tools/build_atlasa1_resolute_vendor.sh",
@@ -3878,8 +3885,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 23891,
-      "sha256": "16d1bf0cbd44e98d8217c81d6075f075079b8b8c4e6a8479c24065ca9a3d8af6"
+      "size": 23972,
+      "sha256": "a3f213575f5c0160b2d8610b513ff823284a2200b0a0f5676e36e5aed4933af1"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
@@ -3983,8 +3990,8 @@
       "path": "tools/pack_atlasa1_resolute.py",
       "kind": "source",
       "source": "mainline/tools/pack_atlasa1_resolute.py",
-      "size": 6121,
-      "sha256": "756ad8faf7caf36948d3cfd714ed4941295a4224f587610a237b71fef835a208"
+      "size": 6687,
+      "sha256": "565032a496a6602860fefbdfa3d6e5a71f4c096ce7b4b352f46fe4fb257c9036"
     },
     {
       "path": "tools/pack_boot_validation.py",
@@ -4165,8 +4172,8 @@
       "path": "tools/prepare_t736_resolute_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/prepare_t736_resolute_rootfs.sh",
-      "size": 5178,
-      "sha256": "242b91b95a1d8a0fdf5568e0e2a6a6766e9ae4a442a9a23d0420a94f79324bca"
+      "size": 5586,
+      "sha256": "7edf82a8ec9d608fa6e4e01f9e9fe8e23159e5ef77eb317de9d2e8d87c403ce8"
     },
     {
       "path": "tools/repack_storage_v18_topology.py",

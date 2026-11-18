@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-18",
+  "distribution": "Ubuntu 26.04 arm64",
+  "build_host_tests": {
+    "armbian_source": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+    "initial_single_patch": {
+      "build_repository_commit": "c12cccf7732c2feb18b399ac9fdbff4834774c66",
+      "sha256": "a4d41d38f225ab60c95cddc1f632c4dc6fd6c0745878e26f8239599fab7bce5b",
+      "size_bytes": 1576675,
+      "recipe_files": 131,
+      "files_in_full_patch": 141,
+      "verified": ["git apply --check in pristine upstream index", "git apply --cached and verify every recipe Git blob", "regenerate identical patch from AtlasA1-build export", "download identical published patch from GitHub"]
+    },
+    "sdl_sysroot": {
+      "runtime_deb_sha256": "6312ccbc29645ac5cc9dde9f9ed8bd5c85a0233690c270c83c963b49f8cd49d5",
+      "development_deb_sha256": "7def114ccf8fcbb67a2a326e7090ec0aa50074269e4e2108a23cf3328a3abc47",
+      "source": "Debian pool main/libs/libsdl2, arm64 2.32.4+dfsg-1",
+      "cross_test_needed": "libSDL2-2.0.so.0"
+    },
+    "isolated_media_rebuild": {
+      "source": "Recipe files from the single-patch exporter, unpacked into an independent Linux build directory",
+      "sdk": "configured T736 Tina",
+      "ffmpeg_archive_sha256": "de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f",
+      "player_rebuilt_with_new_sdl_sysroot_sha256": "f256e316942433551c5e81d260eb1e4dc58d67097273d0357b8c479fb15d5b6a",
+      "independent_gpu_package_sha256": "dd58accb3a96ee46750d2576c3616e8e14a95718613f3a06ac414ea00c3436f8",
+      "independent_wc_archive_sha256": "d227a17aaed3eca98ad2cd62a9c38036cad50e955760f048ac0fc6f755f969c1",
+      "cedar_broker_sha256": "1910bf0ce66653d27fe67f99d2a1ce8b813dafec3893f981a8d7c662a61f3b04",
+      "cedar_backend_sha256": "2185f2019b4aea60933c34d387d290e808848e420f8899b0b401783293145583",
+      "checks": ["native and AArch64 QEMU transport tests", "4K OMX module compiled", "vendor-library contents and firmware hashes verified", "media and LightDM X11 overlay assembled"],
+      "scope": "These are separate repeat builds. Tool-generated package and container hashes can differ from the component files selected for the published image."
+    },
+    "ram_fes_loader": {
+      "tina_input": "out/t736_lpddr4_emmc_armbian13_uart0.img",
+      "bytes": 1482752,
+      "sha256": "565436e6d6f4370d05788afa3397a7e2368b5d5d2cef9a6490700b9b944cee08",
+      "incompatible_lpddr5_fes1_refused": true,
+      "reference_openixcli": "0.2.11",
+      "previous_verified_raw_transfer_bytes": 8589934592,
+      "target": "eMMC user area, byte offset 0",
+      "hardware_boot_of_new_image": "separate test required"
+    },
+    "isolated_boot_rebuild": {
+      "source": "Release recipe files extracted independently and run against the pinned U-Boot and TF-A archives plus the matching Tina LPDDR4x training library",
+      "boot_package_sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e",
+      "matches_original_release_build": true
+    }
+  }
+}

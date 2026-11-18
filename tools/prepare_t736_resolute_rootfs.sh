@@ -99,3 +99,12 @@ run dpkg-query -W -f='${binary:Package}\t${Version}\n' base-files armbian-config
 trap - EXIT
 cleanup
 ln -sfn /run/systemd/resolve/stub-resolv.conf "$root/etc/resolv.conf"
+# The upstream cache leaves service startup blocked until its image stage.
+for service_tool in /sbin/initctl /sbin/start-stop-daemon; do
+    if [[ $(run dpkg-divert --listpackage "$service_tool") == LOCAL ]]; then
+        rm -f -- "$root$service_tool"
+        run dpkg-divert --quiet --local --rename --remove "$service_tool"
+    fi
+done
+rm -f -- "$root/usr/sbin/policy-rc.d"
+run start-stop-daemon --version

@@ -7185,10 +7185,10 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_TOOLS_FWUMDATA is not set
 diff --git a/userpatches/atlasa1-release/docs/UBUNTU_26_04.md b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..df8b1512617f523e2bf650c640e97c047070f71f
+index 0000000000000000000000000000000000000000..e348137b80590d0b5eb545b3c124c559ef1de2e0
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,84 @@
 +# AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 +
 +本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
@@ -7205,8 +7205,8 @@ index 0000000000000000000000000000000000000000..df8b1512617f523e2bf650c640e97c04
 +git checkout --detach 2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736
 +curl -fL -o /tmp/atlasa1-resolute-armbian.patch \
 +  https://raw.githubusercontent.com/dshanpi/AtlasA1-build/v2026.11.18-ubuntu26.04-rc1/patches/atlasa1-resolute-armbian.patch
-+git apply --check /tmp/atlasa1-resolute-armbian.patch
-+git apply /tmp/atlasa1-resolute-armbian.patch
++git apply --whitespace=nowarn --check /tmp/atlasa1-resolute-armbian.patch
++git apply --whitespace=nowarn /tmp/atlasa1-resolute-armbian.patch
 +
 +export ATLAS_TINA_SDK=/srv/tina
 +bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output
@@ -7222,7 +7222,7 @@ index 0000000000000000000000000000000000000000..df8b1512617f523e2bf650c640e97c04
 +| IMG X11 和 Cedar/OMX 运行库 | 总入口从上述 SDK 提取匹配的 GPU 固件、IMG 用户态和编解码库。若已有配套的包，可同时设置 `ATLAS_IMG_DEB` 与 `ATLAS_CEDAR_WC` 复用它们。最终叠加源码重新生成的 4K OMX 解码库和解码服务。 |
 +| SDL2 开发根 | 默认从 Debian 下载 arm64 的 `libsdl2-dev` 和 `libsdl2-2.0-0` 2.32.4，校验 SHA-256 后解包，并交叉编译一个链接 SDL2 的小程序。可用 `ATLAS_SDL_SYSROOT` 指向已准备的相同开发根。 |
 +
-+Tina 厂商源码及运行库由具有相应 SDK 使用权的构建方提供。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
++AtlasA1 成品镜像经项目方授权随镜像发布 LPDDR4x 训练库、PowerVR 用户态和 Cedar 编解码库。从源码重建时，由具有相应权限的构建方提供 Tina SDK。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
 +
 +```sh
 +recipe=$PWD/userpatches/atlasa1-release/tools
@@ -7265,6 +7265,8 @@ index 0000000000000000000000000000000000000000..df8b1512617f523e2bf650c640e97c04
 +```
 +
 +OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 固件分别选择上述两个文件。`eMMC boot0 from image` 保持关闭，扇区偏移由工具处理。等待写入和校验成功后再断电重启。这个写入流程此前已在本板完整写入并校验 8 GiB，新版 Ubuntu 的冷启动状态以该版 Release 记录为准。
++
++较大容量的 eMMC 也按这个固定布局启动。第 4 分区后面还有两个分区，用户区 LBA 40960 保存 GPT 副本，因此本版关闭了 Armbian 的通用首次启动自动扩容。
 +
 +## 桌面与硬件状态
 +
@@ -39026,10 +39028,10 @@ index 0000000000000000000000000000000000000000..6bc56c31e4f6e407261ec80d88efa87b
 +sha256sum "$deb" kout/arch/arm64/boot/Image "$dtb" pvr-out/target_aarch64/kbuild/pvrsrvkm.ko > SHA256SUMS
 diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..20a31200360815fcf788def3b533997dcc577936
+index 0000000000000000000000000000000000000000..50df1bf7ba045662110e6db0984e502f2b6814e4
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,73 @@
 +#!/usr/bin/env bash
 +# Rebuild AtlasA1 eMMC media on an Armbian-supported Linux build host.
 +set -euo pipefail
@@ -39096,6 +39098,8 @@ index 0000000000000000000000000000000000000000..20a31200360815fcf788def3b533997d
 +sudo bash "$tools/verify_atlasa1_resolute.sh" "$root"
 +image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img"
 +sudo python3 "$tools/pack_atlasa1_resolute.py" --rootfs "$root" --boot "$out/boot/payload" --output "$image"
++# xz preserves file ownership and returns a warning status for a root-owned input.
++sudo chown --reference="$out" -- "$image" "${image%.img}.manifest.json"
 +xz -T4 -6 --keep "$image"
 +xz -t "$image.xz"
 +cd "$out"
@@ -39141,10 +39145,10 @@ index 0000000000000000000000000000000000000000..1eeb3eb820863baad6bb7d727bb2b070
 +    --private-runtime "$prefix/lib" --output "$work/atlasa1-player_0.1-5~resolute1_arm64.deb"
 diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/build_atlasa1_resolute_rootfs.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..2979a2bae92fdc09895e5d30bd5b10b125161c3d
+index 0000000000000000000000000000000000000000..c7ce044ff0fcc7189e012737de0b9addb617b302
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_atlasa1_resolute_rootfs.sh
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,46 @@
 +#!/usr/bin/env bash
 +# Build an Ubuntu 26.04 GNOME userspace and the matching AtlasA1 Armbian BSP.
 +# Usage: bash build_atlasa1_resolute_rootfs.sh OFFICIAL_ARMBIAN_CHECKOUT NEW_WORK_DIR
@@ -39169,6 +39173,9 @@ index 0000000000000000000000000000000000000000..2979a2bae92fdc09895e5d30bd5b10b1
 +params=(ARCH=arm64 RELEASE=resolute BUILD_MINIMAL=no ARTIFACT_IGNORE_CACHE=yes MANAGE_ACNG=no SHARE_LOG=no)
 +if [[ -n ${CUSTOM_UBUNTU_MIRROR_PORTS:-} ]]; then
 +    params+=("CUSTOM_UBUNTU_MIRROR_PORTS=$CUSTOM_UBUNTU_MIRROR_PORTS")
++fi
++if [[ -n ${LOCAL_MIRROR:-} ]]; then
++    params+=("LOCAL_MIRROR=$LOCAL_MIRROR")
 +fi
 +sudo env GIT_TERMINAL_PROMPT=0 ./compile.sh rootfs "${params[@]}" BUILD_DESKTOP=yes \
 +    DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=mid ROOTFS_COMPRESSION_RATIO=3
@@ -40434,10 +40441,10 @@ index 0000000000000000000000000000000000000000..d408306eca0dcc18dc61f5b4feeb3162
 +    main()
 diff --git a/userpatches/atlasa1-release/tools/pack_atlasa1_resolute.py b/userpatches/atlasa1-release/tools/pack_atlasa1_resolute.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..f23bcc5a6e38c9e0f71125d35dbc0dc40de87782
+index 0000000000000000000000000000000000000000..153098a2d67ad88dd94af6f910b548885a226d5f
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/pack_atlasa1_resolute.py
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,119 @@
 +#!/usr/bin/env python3
 +"""Build the fixed AtlasA1 eMMC layout from a completed Ubuntu 26.04 rootfs."""
 +import argparse
@@ -40533,11 +40540,18 @@ index 0000000000000000000000000000000000000000..f23bcc5a6e38c9e0f71125d35dbc0dc4
 +                if sha(extracted) != expected:
 +                    raise ValueError(f'packed ext4 differs from source for {name}')
 +            fs_uuid = text('blkid', '-s', 'UUID', '-o', 'value', loop)
++            env = dict(os.environ, LC_ALL='C')
++            header = subprocess.check_output(['dumpe2fs', '-h', loop], env=env,
++                                             text=True, stderr=subprocess.DEVNULL)
++            numbers = dict(line.split(':', 1) for line in header.splitlines() if ':' in line)
++            block_size = int(numbers['Block size'])
++            user_free = (int(numbers['Free blocks']) - int(numbers['Reserved block count'])) * block_size
 +        finally:
 +            subprocess.run(['losetup', '-d', loop], check=True)
 +        details = dict(image=output.name, bytes=image.stat().st_size, sha256=sha(image),
 +                       format='AtlasA1 eMMC raw disk image', distribution='Ubuntu 26.04', root_partuuid=ROOT_ID,
 +                       rootfs_uuid=fs_uuid, rootfs_lba=root_lba, boot_files=expected_boot_files,
++                       root_partition_bytes=root_sectors*SECTOR, rootfs_user_available_bytes=user_free,
 +                       spl_sha256=SPL_SHA, boot_package_sha256=record['boot_package_sha256'],
 +                       components=entries, e2fsck='passed', gpt='passed', hardware_boot='unverified')
 +        pending_manifest = Path(tmp)/'manifest.json'
@@ -41404,10 +41418,10 @@ index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f
 +readelf -d abi-test | grep -F 'Shared library: [libSDL2-2.0.so.0]'
 diff --git a/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..f6d4300e70f380ba775ebbac0ffebb2c55a7e3be
+index 0000000000000000000000000000000000000000..4b5a2ea5c4b3683f08665678cee7789ec6c0c9cd
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
-@@ -0,0 +1,101 @@
+@@ -0,0 +1,110 @@
 +#!/usr/bin/env bash
 +# Finish the official Armbian Resolute ARM64 rootfs for AtlasA1 image assembly.
 +# Usage: sudo bash prepare_t736_resolute_rootfs.sh ROOTFS.tar.zst NEW_ROOT BSP_OUTPUT_DEBS
@@ -41509,6 +41523,15 @@ index 0000000000000000000000000000000000000000..f6d4300e70f380ba775ebbac0ffebb2c
 +trap - EXIT
 +cleanup
 +ln -sfn /run/systemd/resolve/stub-resolv.conf "$root/etc/resolv.conf"
++# The upstream cache leaves service startup blocked until its image stage.
++for service_tool in /sbin/initctl /sbin/start-stop-daemon; do
++    if [[ $(run dpkg-divert --listpackage "$service_tool") == LOCAL ]]; then
++        rm -f -- "$root$service_tool"
++        run dpkg-divert --quiet --local --rename --remove "$service_tool"
++    fi
++done
++rm -f -- "$root/usr/sbin/policy-rc.d"
++run start-stop-daemon --version
 diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh
 new file mode 100755
 index 0000000000000000000000000000000000000000..e3991efc25fa2d10d0f6e1bfd3a373ce3ebdf68a

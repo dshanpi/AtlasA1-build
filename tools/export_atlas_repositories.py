@@ -151,6 +151,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     for rel in ("config/u-boot-source-v6.config", "config/t736-lp4x-fixed.fex", "evidence/source-uboot-backup-audit-20261115.json",
                 "config/atlasa1-resolute-vendor-files.json", "tools/validation/gpu_userspace_probe.c",
                 "tools/validation/gpu_runtime_view.py", "tools/validation/cedar-env",
+                "evidence/atlasa1-ubuntu26-release-replay-checks-20261118.json",
                 "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
                 "evidence/atlasa1-clean-source-replay-20261118.json"):
         _file(ROOT, destination, rel, rel, records)

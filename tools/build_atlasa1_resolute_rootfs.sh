@@ -23,6 +23,9 @@ params=(ARCH=arm64 RELEASE=resolute BUILD_MINIMAL=no ARTIFACT_IGNORE_CACHE=yes M
 if [[ -n ${CUSTOM_UBUNTU_MIRROR_PORTS:-} ]]; then
     params+=("CUSTOM_UBUNTU_MIRROR_PORTS=$CUSTOM_UBUNTU_MIRROR_PORTS")
 fi
+if [[ -n ${LOCAL_MIRROR:-} ]]; then
+    params+=("LOCAL_MIRROR=$LOCAL_MIRROR")
+fi
 sudo env GIT_TERMINAL_PROMPT=0 ./compile.sh rootfs "${params[@]}" BUILD_DESKTOP=yes \
     DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=mid ROOTFS_COMPRESSION_RATIO=3
 for package in armbian-bsp-cli armbian-base-files; do

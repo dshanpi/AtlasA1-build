@@ -93,11 +93,18 @@ def main():
                 if sha(extracted) != expected:
                     raise ValueError(f'packed ext4 differs from source for {name}')
             fs_uuid = text('blkid', '-s', 'UUID', '-o', 'value', loop)
+            env = dict(os.environ, LC_ALL='C')
+            header = subprocess.check_output(['dumpe2fs', '-h', loop], env=env,
+                                             text=True, stderr=subprocess.DEVNULL)
+            numbers = dict(line.split(':', 1) for line in header.splitlines() if ':' in line)
+            block_size = int(numbers['Block size'])
+            user_free = (int(numbers['Free blocks']) - int(numbers['Reserved block count'])) * block_size
         finally:
             subprocess.run(['losetup', '-d', loop], check=True)
         details = dict(image=output.name, bytes=image.stat().st_size, sha256=sha(image),
                        format='AtlasA1 eMMC raw disk image', distribution='Ubuntu 26.04', root_partuuid=ROOT_ID,
                        rootfs_uuid=fs_uuid, rootfs_lba=root_lba, boot_files=expected_boot_files,
+                       root_partition_bytes=root_sectors*SECTOR, rootfs_user_available_bytes=user_free,
                        spl_sha256=SPL_SHA, boot_package_sha256=record['boot_package_sha256'],
                        components=entries, e2fsck='passed', gpt='passed', hardware_boot='unverified')
         pending_manifest = Path(tmp)/'manifest.json'

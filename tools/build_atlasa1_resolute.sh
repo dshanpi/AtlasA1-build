@@ -64,6 +64,8 @@ sudo bash "$tools/configure_atlasa1_resolute.sh" "$root" "$kernel" "$pvr" "$out/
 sudo bash "$tools/verify_atlasa1_resolute.sh" "$root"
 image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img"
 sudo python3 "$tools/pack_atlasa1_resolute.py" --rootfs "$root" --boot "$out/boot/payload" --output "$image"
+# xz preserves file ownership and returns a warning status for a root-owned input.
+sudo chown --reference="$out" -- "$image" "${image%.img}.manifest.json"
 xz -T4 -6 --keep "$image"
 xz -t "$image.xz"
 cd "$out"
