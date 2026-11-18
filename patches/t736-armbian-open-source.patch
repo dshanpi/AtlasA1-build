@@ -4,13 +4,13 @@
 
 diff --git a/userpatches/config/boards/t736-mainline.conf b/userpatches/config/boards/t736-mainline.conf
 new file mode 100644
-index 0000000..1d82e81
+index 0000000..ed1b200
 --- /dev/null
 +++ b/userpatches/config/boards/t736-mainline.conf
 @@ -0,0 +1,19 @@
-+# T736 Aurora/Atlas open SBC board definition for Armbian.
++# AtlasA1 / T736 open SBC board definition for Armbian.
 +# This file is also emitted by tools/export_t736_armbian_patch.py.
-+BOARD_NAME="T736 Aurora/Atlas"
++BOARD_NAME="AtlasA1 / T736"
 +BOARD_VENDOR="T736 open SBC"
 +BOARDFAMILY="t736-mainline"
 +KERNEL_TARGET="current"

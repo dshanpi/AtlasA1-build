@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build an isolated, removable IMG userspace candidate; never access a board."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -9,7 +10,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 SDK = Path('/home/ubuntu/t736-aiot/tina')
-SOURCE = SDK / 'platform/allwinner/display/libgpu/img-bxm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/x11'
+SOURCE_SUBDIR = Path('platform/allwinner/display/libgpu/img-bxm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/x11')
 PREFIX = Path('opt/t736-img-ddk-24.2-x11')
 VERSION = '24.2.6603887-2'
 FIRMWARE = {
@@ -31,19 +32,26 @@ def run(*args):
 
 
 def main():
-    assert ROOT == Path('/home/ubuntu/t736-mainline'), ROOT
-    assert SOURCE.is_dir()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--tina', type=Path, default=SDK)
+    parser.add_argument('--work', type=Path, default=ROOT/'build/gpu-userspace-v2')
+    parser.add_argument('--without-gnome-x11', action='store_true',
+                        help='Omit the GNOME Xorg session on distributions with Wayland-only GNOME')
+    args = parser.parse_args()
+    sdk = args.tina.resolve(strict=True)
+    source = sdk/SOURCE_SUBDIR
+    assert source.is_dir()
     for name, expected in FIRMWARE.items():
-        assert digest(SOURCE / 'lib/firmware' / name) == expected, name
-    build = ROOT / 'build/gpu-userspace-v2'
-    build.mkdir(exist_ok=True)
+        assert digest(source / 'lib/firmware' / name) == expected, name
+    build = args.work.resolve()
+    build.mkdir(parents=True, exist_ok=True)
     stage = build / 'package-root'
     stage.mkdir()  # Refuse to overwrite a previous candidate.
     private = stage / PREFIX
     (private / 'lib').mkdir(parents=True)
     provenance = {}
     for subtree in ['usr/lib', 'usr/local/lib']:
-        src = SOURCE / subtree
+        src = source / subtree
         for entry in sorted(src.iterdir()):
             if entry.name == 'pkgconfig':
                 continue
@@ -58,10 +66,10 @@ def main():
             for original in ([entry] if not entry.is_dir() else sorted(entry.rglob('*'))):
                 if original.is_file() or original.is_symlink():
                     target = private / 'lib' / original.relative_to(src)
-                    provenance[str(target.relative_to(stage))] = str(original.relative_to(SDK))
-    shutil.copytree(SOURCE / 'lib/firmware', private / 'firmware')
-    for original in (SOURCE / 'lib/firmware').iterdir():
-        provenance[str(PREFIX / 'firmware' / original.name)] = str(original.relative_to(SDK))
+                    provenance[str(target.relative_to(stage))] = str(original.relative_to(sdk))
+    shutil.copytree(source / 'lib/firmware', private / 'firmware')
+    for original in (source / 'lib/firmware').iterdir():
+        provenance[str(PREFIX / 'firmware' / original.name)] = str(original.relative_to(sdk))
     (private / 'bin').mkdir()
     command = ['aarch64-linux-gnu-gcc', '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
                str(ROOT / 'tools/validation/gpu_userspace_probe.c'), '-ldl',
@@ -76,9 +84,10 @@ def main():
     (private / 'bin/gpu-runtime-view').chmod(0o755)
     (stage / 'usr/bin').mkdir(parents=True)
     (stage / 'usr/bin/t736-img-run').symlink_to('/' + str(PREFIX / 'bin/t736-img-run'))
-    (stage / 'usr/share/xsessions').mkdir(parents=True)
-    shutil.copy2(ROOT / 'config/gpu-userspace-gnome.desktop', stage / 'usr/share/xsessions/t736-img.desktop')
-    icd = json.loads((SOURCE / 'powervr_icd.json').read_text())
+    if not args.without_gnome_x11:
+        (stage / 'usr/share/xsessions').mkdir(parents=True)
+        shutil.copy2(ROOT / 'config/gpu-userspace-gnome.desktop', stage / 'usr/share/xsessions/t736-img.desktop')
+    icd = json.loads((source / 'powervr_icd.json').read_text())
     icd['ICD']['library_path'] = '/' + str(PREFIX / 'lib/libVK_IMG.so')
     (private / 'powervr_icd.json').write_text(json.dumps(icd, indent=2) + '\n')
     (private / 'README.txt').write_text(
@@ -94,8 +103,7 @@ def main():
         'Then run t736-img-run probe-x11 in the intended DISPLAY/XAUTHORITY session.\n'
         'The probes draw/read back pixels and reject software renderer identities.\n'
         'A PASS is not GNOME or physical-display acceptance. No GLX test is claimed.\n'
-        'Select GNOME (T736 IMG candidate) explicitly in GDM only after the probes pass.\n'
-        'Rollback: log out, select the original GNOME session and remove this package.\n'
+        'The image-level desktop integration selects the X11 session.\n'
         'Keep the original llvmpipe image and original firmware for kernel rollback.\n')
     files = []
     external = set()
@@ -121,7 +129,7 @@ def main():
     project_inputs = ['tools/build_gpu_userspace.py', 'tools/validation/gpu_userspace_probe.c',
                       'config/gpu-userspace-x11.env', 'config/gpu-userspace-run.sh',
                       'config/gpu-userspace-gnome.desktop', 'tools/validation/gpu_runtime_view.py']
-    manifest = {'version': VERSION, 'source_root': str(SOURCE), 'prefix': '/' + str(PREFIX),
+    manifest = {'version': VERSION, 'source_root': str(SOURCE_SUBDIR), 'prefix': '/' + str(PREFIX),
                 'project_inputs_sha256': {name: digest(ROOT / name) for name in project_inputs},
                 'probe_compiler': run('aarch64-linux-gnu-gcc', '--version').splitlines()[0],
                 'firmware_sha256': FIRMWARE, 'external_sonames': sorted(external),

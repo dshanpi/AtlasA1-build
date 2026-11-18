@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""Export the board definition and Ubuntu 26.04 release recipe as one Armbian Git patch."""
+import argparse
+import hashlib
+from pathlib import Path
+
+
+BASE = Path(__file__).resolve().parents[1]
+PREFIX = 'userpatches/atlasa1-release'
+BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
+INPUTS = (
+    BOARD_PATCH, 'docs/UBUNTU_26_04.md',
+    'config/t736-lp4x-fixed.fex', 'config/u-boot-source-v6.config',
+    'config/atlasa1-resolute-vendor-files.json', 'config/gpu-userspace-x11.env',
+    'config/gpu-userspace-run.sh', 'config/gpu-userspace-gnome.desktop',
+    'config/gpu-v10/20-t736-modesetting-1080p.conf', 'config/gpu-v10/t736-hdmi-session-init.sh',
+    'userpatches/config/t736-display/30-t736-x11-blank.conf', 'evidence/source-uboot-backup-audit-20261115.json',
+    'patches/linux/media-v30-replay/*', 'patches/linux/media-v30-pvr-replay/*',
+    'patches/u-boot/t736-source-boot.patch', 'patches/u-boot/t736-cpu-d.patch',
+    'patches/tf-a/0001-t736-bl31-dram-layout.patch', 'patches/cedar/*.patch',
+    'patches/ffmpeg/ffplay-refresh-budget.patch', 'patches/ffmpeg/ffplay-first-picture-audio.patch',
+    'boards/t736-uboot-cpuclock.c', 'boards/t736-uboot-cpuclock-d.c',
+    'spl/cpuclock/*.[ch]', 'spl/early/*.[ch]', 'spl/lpddr4/axp8191.[ch]',
+    'spl/peripheral/board_power.[ch]', 'spl/storage/emmc.[ch]',
+    'spl/vendor_ddr/*.S', 'spl/vendor_ddr/*.c', 'spl/vendor_ddr/*.ld',
+    'tools/build_atlasa1_resolute.sh', 'tools/build_atlasa1_release_boot.py',
+    'tools/build_t736_emmc_spl.py', 'tools/build_t736_source_handoff.py', 'tools/build_source_uboot_cpu_d.sh',
+    'tools/prepare_atlas_release_sources.py', 'tools/build_atlasa1_release_kernel.sh',
+    'tools/build_atlasa1_resolute_rootfs.sh', 'tools/prepare_t736_resolute_rootfs.sh',
+    'tools/archive_atlasa1_resolute_rootfs.sh', 'tools/extract_atlasa1_fes_loader.py',
+    'tools/build_atlasa1_resolute_player.sh', 'tools/build_atlasa1_player.py',
+    'tools/build_atlasa1_resolute_vendor.sh', 'tools/prepare_atlasa1_sdl_sysroot.sh',
+    'tools/build_gpu_userspace.py', 'tools/build_cedar_bridge.py', 'tools/build_cedar_wc_candidate.py',
+    'tools/validation/gpu_userspace_probe.c', 'tools/validation/gpu_runtime_view.py', 'tools/validation/cedar-env',
+    'tools/player/*', 'tools/browser/shm_v2/*', 'tools/browser/omx_scale_candidate/*',
+    'tools/browser/copy_candidate/cedar_parallel_copy.h', 'tools/browser/cedar_backend.[ch]',
+    'tools/browser/gstomx.conf', 'tools/browser/cedarc.conf', 'tools/browser/ffmpeg_cedar.c',
+    'tools/browser/panel_candidate/private-1080p-panel.patch', 'tools/browser/panel_candidate/prefer-omx-panel.patch',
+    'tools/browser/panel_candidate/cedar_panel.h', 'tools/browser/build_browser_ffmpeg.py',
+    'tools/build_cedar_4k_omx.py', 'tools/prepare_atlasa1_resolute_media.py', 'tests/test_cedar_shm_transport.c',
+    'tools/stage_atlasa1_resolute_x11.sh', 'tools/configure_atlasa1_resolute.sh',
+    'tools/verify_atlasa1_resolute.sh', 'tools/verify_atlasa1_resolute_media.sh', 'tools/pack_atlasa1_resolute.py',
+    'tools/pack_armbian_raw_v6.py', 'tools/pack_boot_validation.py', 'tools/pack_t736_media_v28_boot.py',
+)
+
+
+def sources():
+    paths = set()
+    for pattern in INPUTS:
+        matched = [p for p in BASE.glob(pattern) if p.is_file() and not p.is_symlink()]
+        if not matched:
+            raise ValueError(f'Missing recipe input {pattern}')
+        paths.update(matched)
+    return sorted(paths)
+
+
+def export(output):
+    with output.open('wb') as patch:
+        patch.write((BASE / BOARD_PATCH).read_bytes().replace(b'\r\n', b'\n'))
+        for path in sources():
+            rel = path.relative_to(BASE).as_posix()
+            name = f'{PREFIX}/{rel}'
+            data = path.read_bytes().replace(b'\r\n', b'\n')
+            if b'\x00' in data:
+                raise ValueError(f'Unexpected binary input {rel}')
+            blob = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
+            mode = '100755' if data.startswith(b'#!') else '100644'
+            patch.write(f'diff --git a/{name} b/{name}\nnew file mode {mode}\n'.encode())
+            patch.write(f'index {"0" * 40}..{blob}\n'.encode())
+            if data:
+                lines = data.split(b'\n')
+                if lines[-1] == b'':
+                    lines.pop()
+                patch.write(f'--- /dev/null\n+++ b/{name}\n@@ -0,0 +1,{len(lines)} @@\n'.encode())
+                for line in lines:
+                    patch.write(b'+' + line + b'\n')
+                if not data.endswith(b'\n'):
+                    patch.write(b'\\ No newline at end of file\n')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', required=True, type=Path)
+    args = parser.parse_args()
+    export(args.output)

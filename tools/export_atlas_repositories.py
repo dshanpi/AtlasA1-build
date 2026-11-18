@@ -19,13 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 GENERATED = {
     "AtlasA1-build": """# AtlasA1-build
 
-Armbian build integration for the DshanPI AtlasA1 (Allwinner T736).
+AtlasA1 / T736 的 Armbian Ubuntu 26.04 LTS（arm64）eMMC 镜像。默认桌面是 LightDM + Xfce X11，另含 GNOME / GDM。原生播放器使用 Cedar 解码和 PowerVR GLES。镜像下载、校验和与本版验收范围见 [Releases](https://github.com/dshanpi/AtlasA1-build/releases)。
 
-Apply `patches/t736-armbian-open-source.patch` to the official Armbian revision in `config/sources.lock.json`, then select `BOARD=t736-mainline`. The patch supplies the board definition, Linux and U-Boot patches, kernel configuration, display defaults, and a board-side media test. The framework fetches its pinned upstream sources.
+从官方 Armbian 源码重建时，应用一份发行版补丁，指定已配置的 T736 Tina SDK，然后执行总入口。它会从 SDK 中准备 IMG/Cedar 运行库，获取公开交叉编译依赖，构建固定 LPDDR4x 启动链、Linux 与 PowerVR 内核模块、播放器及 Ubuntu 根文件系统，并打包成完整磁盘镜像。[Ubuntu 26.04 构建步骤](docs/UBUNTU_26_04.md) · [单文件补丁](patches/atlasa1-resolute-armbian.patch)
 
-The accelerated GNOME image also needs the board's matching LPDDR4x training stage, GPU module and userspace, and Cedar runtime. The build hook verifies the supplied archive, installs the desktop dependencies, indexes the target kernel modules and enables the decoder socket. A clean public-patch build has yet to reproduce the complete image running on the board. [Build commands and matching inputs](docs/ARMBIAN_REBUILD.md)
-
-Cedar integration and playback measurements are maintained in [AtlasA1-media](https://github.com/dshanpi/AtlasA1-media). Kernel candidates are maintained in [AtlasA1-linux](https://github.com/dshanpi/AtlasA1-linux).
+板级源码按组件备份，可分别检查启动链、内核与播放器。本仓库还保留原有通用 Armbian 板级补丁及此前 Debian 开发镜像的集成记录。[U-Boot / SPL / TF-A](https://github.com/dshanpi/AtlasA1-uboot) · [Linux / PowerVR](https://github.com/dshanpi/AtlasA1-linux) · [Cedar / 播放器](https://github.com/dshanpi/AtlasA1-media) · [早期 Armbian 适配](docs/ARMBIAN_REBUILD.md)
 """,
     "AtlasA1-linux": """# AtlasA1-linux
 
@@ -34,9 +32,11 @@ Linux board patches, kernel configurations, Ethernet support, GPU module integra
 The v30 candidate adds the boot parameter `t736_cedar_wc.heap_limit_mib` to the v29 512 MiB CMA configuration. Its default is 128 MiB, with a 256 MiB upper bound. A one-shot eMMC boot at 256 MiB produced 3840×2160 hardware output. The first Firefox measurement presented 3 of 599 frames. The driver keeps retired imported buffers pinned until reboot. [Build recipe](tools/build_media_v30_candidate.sh) · [Package and module checksums](evidence/media-v30-heap-budget-build-20261118.json) · [Board measurement](evidence/media-v30-4k-browser-hardware-20261118.json)
 
 Armbian integration and pinned upstream revisions are available in [AtlasA1-build](https://github.com/dshanpi/AtlasA1-build).
+
+The release replay recipe starts from the pinned upstream Git tree. It imports the board's Tina display sources by SHA-256, applies the complete board delta and checks the resulting 317 board files. [Clean-source build instructions](patches/linux/media-v30-replay/README.md)
 """,
-    "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL, and LPDDR4x boot sources for the T736 Aurora/AtlasA1 board.\n\nThe board uses a fixed LPDDR4x training input supplied outside this public repository. The source tree documents the expected interface and checks, but does not redistribute the authorised vendor training binary. Build and payload instructions are in AtlasA1-build.\n""",
-    "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration and browser transport sources for the T736 Aurora/AtlasA1 board.\n\nThe native player uses Cedar hardware decoding and the PowerVR GLES2 renderer. [Player and build instructions](tools/player/README.md) · [Playback measurements and display status](docs/PLAYBACK.md)\n\nThis repository contains public source, patches, tests, and manifests. Vendor codec/GPU libraries remain external inputs.\n""",
+    "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL and fixed LPDDR4x boot sources for the AtlasA1 board. The release boot packer takes the board's DDR training library as a separate input.\n\n[Reconstruct the tested CPU-D U-Boot tree](patches/u-boot/media-v28-replay/README.md) · [Build the Ubuntu release boot chain](tools/build_atlasa1_release_boot.py)\n""",
+    "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration for AtlasA1 / T736. The Ubuntu 26.04 native player builds its FFmpeg 7.1.5 libraries in a private prefix and uses the system SDL2 ABI. The media overlay installs the matching Cedar service and PowerVR firmware. [Player builder](tools/build_atlasa1_resolute_player.sh) · [Overlay builder](tools/prepare_atlasa1_resolute_media.py) · [Ubuntu 26.04 build instructions](https://github.com/dshanpi/AtlasA1-build/blob/main/docs/UBUNTU_26_04.md)\n\nEarlier board measurements cover Cedar hardware decoding and the PowerVR GLES2 renderer. [Native player](tools/player/README.md) · [Playback measurements and display status](docs/PLAYBACK.md)\n""",
 }
 
 EXCLUDED_NAMES = {"__pycache__", ".git", "build", "output", "tmp", "private"}
@@ -144,6 +144,16 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     # self-contained in the build repository.  The same source is also
     # distributed in the component repositories where it is consumed.
     _tree(ROOT, destination, "boards", "boards", records)
+    _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
+    for rel in ("spl", "patches/u-boot", "patches/tf-a", "patches/linux/media-v30-replay",
+                "patches/linux/media-v30-pvr-replay"):
+        _tree(ROOT, destination, rel, rel, records)
+    for rel in ("config/u-boot-source-v6.config", "config/t736-lp4x-fixed.fex", "evidence/source-uboot-backup-audit-20261115.json",
+                "config/atlasa1-resolute-vendor-files.json", "tools/validation/gpu_userspace_probe.c",
+                "tools/validation/gpu_runtime_view.py", "tools/validation/cedar-env",
+                "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "evidence/atlasa1-clean-source-replay-20261118.json"):
+        _file(ROOT, destination, rel, rel, records)
     for rel in ("userpatches/config", "userpatches/kernel/t736-mainline-6.18",
                 "userpatches/u-boot/u-boot-t736-mainline"):
         _tree(ROOT, destination, rel, rel, records)
@@ -154,11 +164,12 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "tools/browser/copy_candidate/cedar_parallel_copy.h",
                 "patches/cedar/backend-parallel-direct-slot.patch"):
         _file(ROOT, destination, rel, rel, records)
-    for rel in ("docs/ARMBIAN_REBUILD.md", "docs/BUILD.md", "docs/BOOT_CHAIN.md", "docs/CODE_MAP.md", "docs/ETHERNET.md", "docs/HARDWARE_MAP.md", "docs/VALIDATION.md", "docs/WIRELESS.md", "docs/ATLAS_REPOSITORY_LAYOUT.md"):
+    for rel in ("docs/ARMBIAN_REBUILD.md", "docs/UBUNTU_26_04.md", "docs/BUILD.md", "docs/BOOT_CHAIN.md", "docs/CODE_MAP.md", "docs/ETHERNET.md", "docs/HARDWARE_MAP.md", "docs/VALIDATION.md", "docs/WIRELESS.md", "docs/ATLAS_REPOSITORY_LAYOUT.md"):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, "tests", "tests", records)
     _tree(ROOT, destination, "tools/player", "tools/player", records)
     _tree(ROOT, destination, "tools/browser/shm_v2", "tools/browser/shm_v2", records)
+    _tree(ROOT, destination, "tools/browser/omx_scale_candidate", "tools/browser/omx_scale_candidate", records)
     for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
                 "tools/browser/panel_candidate/private-1080p-panel.patch",
                 "tools/browser/panel_candidate/prefer-omx-panel.patch",
@@ -177,6 +188,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "tools/validation/firefox_headless_playback.py", "tools/validation/media_acceptance.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
+    _file(ROOT, destination, "patches/atlasa1-resolute-armbian.patch", "patches/atlasa1-resolute-armbian.patch", records)
     for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
                 "patches/ffmpeg/ffplay-refresh-budget.patch",
                 "patches/ffmpeg/ffplay-first-picture-audio.patch",
@@ -204,8 +216,11 @@ def _export_linux(destination: Path) -> dict[str, tuple[Path, str]]:
     for source in sorted((ROOT / "userpatches").glob("linux-t736-*.config")):
         _copy(destination, source, Path("userpatches") / source.name, records)
     _tree(ROOT, destination, "patches/linux", "patches/linux", records)
-    for rel in ("tools/build_media_v30_candidate.sh", "evidence/media-v30-heap-budget-build-20261118.json",
-                "evidence/media-v30-4k-browser-hardware-20261118.json", "config/sources.lock.json"):
+    _file(ROOT, destination, "tools/prepare_atlas_release_sources.py", "tools/prepare_atlas_release_sources.py", records)
+    for rel in ("tools/build_media_v30_candidate.sh", "tools/build_atlasa1_release_kernel.sh", "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "evidence/media-v30-heap-budget-build-20261118.json",
+                "evidence/media-v30-4k-browser-hardware-20261118.json", "config/sources.lock.json",
+                "evidence/atlasa1-clean-source-replay-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
     for source in sorted((ROOT / "patches").glob("pvr-*.patch")):
         _copy(destination, source, Path("patches") / source.name, records)
@@ -224,6 +239,12 @@ def _export_uboot(destination: Path) -> dict[str, tuple[Path, str]]:
     for rel in ("config/u-boot-source-v6.config", "config/t736-lp4-radxa-dram-overlay.fex", "config/t736-lp4x-fixed.fex"):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, "spl", "spl", records)
+    _glob(ROOT, destination, "boards/t736-uboot-cpuclock*.c", "boards", records)
+    for rel in ("tools/prepare_atlas_release_sources.py", "tools/build_atlasa1_release_boot.py",
+                "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "tools/build_t736_source_handoff.py", "evidence/source-uboot-backup-audit-20261115.json",
+                "evidence/atlasa1-clean-source-replay-20261118.json"):
+        _file(ROOT, destination, rel, rel, records)
     for source in sorted((ROOT / "tools").glob("build_source_uboot*.sh")):
         _copy(destination, source, Path("tools") / source.name, records)
     for rel in ("tools/build_tfa_independent_candidate.sh", "tools/build_t736_emmc_spl.py", "tools/build_t736_vendor_ddr.py", "tools/check_lpddr4_components.py", "tools/check_lpddr4_timing.py", "tools/check_spl_emmc.py", "tools/pack_t736_source_boot.py"):
@@ -238,6 +259,15 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
     _tree(ROOT, destination, "tools/browser", "tools/browser", records)
     _tree(ROOT, destination, "tools/player", "tools/player", records)
+    _file(ROOT, destination, "tools/build_atlasa1_resolute_player.sh", "tools/build_atlasa1_resolute_player.sh", records)
+    _file(ROOT, destination, "tools/prepare_atlasa1_resolute_media.py", "tools/prepare_atlasa1_resolute_media.py", records)
+    for rel in ("tools/verify_atlasa1_resolute_media.sh", "evidence/atlas-ubuntu26-board-rebuild-20261118.json",
+                "tools/build_atlasa1_resolute_vendor.sh", "tools/prepare_atlasa1_sdl_sysroot.sh",
+                "tools/build_gpu_userspace.py", "config/atlasa1-resolute-vendor-files.json",
+                "config/gpu-userspace-x11.env", "config/gpu-userspace-run.sh", "config/gpu-userspace-gnome.desktop",
+                "tools/validation/gpu_userspace_probe.c", "tools/validation/gpu_runtime_view.py",
+                "tools/validation/cedar-env"):
+        _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/build_cedar*.py", "tools/build_media*.py", "tools/prepare_media*.py"):
         _glob(ROOT, destination, pattern, "tools", records)
     for rel in ("tools/install_t736_media_runtime.py", "tools/port_media_iommu.py", "tools/prepare_media_kernel.py",

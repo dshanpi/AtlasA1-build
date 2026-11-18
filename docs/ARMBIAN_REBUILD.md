@@ -1,5 +1,7 @@
 # T736 Armbian 重建入口
 
+Ubuntu 26.04 LTS 的发布镜像使用固定板级 GPT 和专用重建脚本。请从本版单文件补丁开始；下文记录此前的通用框架适配和 Debian 开发镜像。[Ubuntu 26.04 发布镜像构建步骤](UBUNTU_26_04.md)
+
 在锁定版本的官方 Armbian build 上执行下面的 `git apply` 即可加入公开板级支持。复现实板的 LPDDR4x 启动、PVR 加速桌面和 Cedar 硬解还需要对应的厂家组件，获取与安装要求见下文。[下载公开补丁](../patches/t736-armbian-open-source.patch)
 
 **公开补丁可以用于构建组件。** 完整镜像还缺把官方 Armbian 分区阶段接到实板 GPT 的适配，以及与启动包一致的 U-Boot 构建配置。实板 8 GiB 镜像要求第 4 分区为 rootfs、LBA 16 为 eGON SPL、LBA 24576 为 stage64/TF-A/U-Boot 启动包，还在 LBA 40960 保存 GPT 镜像。通用分区方案在创建镜像前停止。写入函数再次核对主、备、镜像三份 GPT、两个输入、内嵌 U-Boot 与当前构建的一致性，以及目标 loop 绑定的普通镜像文件。[实板镜像打包布局](../tools/pack_t736_source_boot.py) · [Armbian family](../userpatches/config/sources/families/t736-mainline.conf)
