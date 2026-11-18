@@ -36,7 +36,7 @@ The v30 candidate adds the boot parameter `t736_cedar_wc.heap_limit_mib` to the 
 Armbian integration and pinned upstream revisions are available in [AtlasA1-build](https://github.com/dshanpi/AtlasA1-build).
 """,
     "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL, and LPDDR4x boot sources for the T736 Aurora/AtlasA1 board.\n\nThe board uses a fixed LPDDR4x training input supplied outside this public repository. The source tree documents the expected interface and checks, but does not redistribute the authorised vendor training binary. Build and payload instructions are in AtlasA1-build.\n""",
-    "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration and browser transport sources for the T736 Aurora/AtlasA1 board.\n\nThis repository contains public source, patches, tests, and manifests. Vendor codec/GPU libraries remain external inputs. Media acceptance commands and the exact limits of each result are documented in the validation files.\n""",
+    "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration and browser transport sources for the T736 Aurora/AtlasA1 board.\n\nThe native player uses Cedar hardware decoding and the PowerVR GLES2 renderer. [Player and build instructions](tools/player/README.md) · [Playback measurements and display status](docs/PLAYBACK.md)\n\nThis repository contains public source, patches, tests, and manifests. Vendor codec/GPU libraries remain external inputs.\n""",
 }
 
 EXCLUDED_NAMES = {"__pycache__", ".git", "build", "output", "tmp", "private"}
@@ -160,6 +160,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "tools/player", "tools/player", records)
     _tree(ROOT, destination, "tools/browser/shm_v2", "tools/browser/shm_v2", records)
     for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
+                "tools/browser/panel_candidate/private-1080p-panel.patch",
+                "tools/browser/panel_candidate/cedar_panel.h",
                 "tools/browser/cedar_client.h"):
         _file(ROOT, destination, rel, rel, records)
     for source in sorted((ROOT / "tools").glob("*.py")) + sorted((ROOT / "tools").glob("*.sh")):
@@ -175,6 +177,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
     for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
                 "patches/ffmpeg/ffplay-refresh-budget.patch",
+                "evidence/atlasa1-player-armbian-rootfs-20261118.json",
+                "evidence/atlasa1-player-panel-package-20261118.json",
                 "patches/cedar/omx-4k-broker-buffers.patch",
                 "evidence/armbian-source-boot-layout-test-20261118.json",
                 "evidence/media-v30-heap-budget-build-20261118.json",
@@ -257,6 +261,7 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
                 "patches/ffmpeg/ffplay-refresh-budget.patch", "tools/build_ffplay_refresh_pair.sh",
                 "tools/build_atlasa1_player.py", "tests/test_atlasa1_player.py",
                 "evidence/atlasa1-native-player-package-20261118.json",
+                "evidence/atlasa1-player-panel-package-20261118.json",
                 "evidence/ffplay-refresh-budget-build-20261118.json"):
         _file(ROOT, destination, rel, rel, records)
     for pattern in ("tools/validation/media_*.py", "tools/validation/browser_*.py", "tools/validation/cedar_*.py", "tools/validation/*nv21*.py", "tools/validation/*omx*.py", "tools/validation/decode_*.py", "tools/validation/build_h264_*.py"):
@@ -265,7 +270,7 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
         # allowing the repository to grow that probe later.
         required = pattern != "tools/validation/*omx*.py"
         _glob(ROOT, destination, pattern, "tools/validation", records, required=required)
-    for rel in ("docs/CEDAR_BRIDGE.md", "docs/BACKUP_MEDIA_V28_20261117.md"):
+    for rel in ("docs/PLAYBACK.md", "docs/CEDAR_BRIDGE.md", "docs/BACKUP_MEDIA_V28_20261117.md"):
         _file(ROOT, destination, rel, rel, records)
     return records
 

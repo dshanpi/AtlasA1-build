@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-18",
+  "board": "AtlasA1 / T736",
+  "test": "Optional native_player Debian package in Armbian private vendor input and target rootfs customization",
+  "armbian_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "player": {
+    "package": "atlasa1-player",
+    "architecture": "arm64",
+    "version": "0.1-1",
+    "size": 5917852,
+    "sha256": "3d41ce9728f4bbc31d5d4544f26a9f241066d901767604a3def9024b977e4ca7",
+    "ffplay_sha256": "6caa18410a684e702099cb760bcdce9c480313603707092e4023d6f558545dd4",
+    "launcher_sha256": "14161ab0a218dd061e613b5a85b5e674108b0325d03f4469cd1cefcd6eff1d16"
+  },
+  "input_check": {
+    "without_player": {
+      "files": 72,
+      "manifest_sha256": "b50fc1810d116d7b71f754d1404680f60f1b92bafe62e1132308907da12864f8"
+    },
+    "with_player": {
+      "files": 73,
+      "manifest_sha256": "3265356c3d8b3a042d7549ae617c3559411938b59e83f8450cb173ea8d37e21f"
+    },
+    "all_other_entries_equal": true,
+    "same_armbian_checkout_staged_new_old_new": true,
+    "rejected_inputs": [
+      "armhf package metadata",
+      "group-writable ffplay",
+      "amd64 executable in an arm64-labelled package"
+    ]
+  },
+  "rootfs_test": {
+    "source": "read-only rootfs from t736-armbian-source-v10.raw.img (Trixie GNOME arm64); all writes confined to a temporary overlay",
+    "method": "Network-isolated build-host chroot using AArch64 binfmt; actual apt-get local installs; native player package verification through target dpkg-query, dpkg -V and ffplay -version",
+    "old_manifest_ignored_leftover_player_and_unlisted_deb": true,
+    "full_hook": "Generated userpatches/t736-private/tools/t736-customize-image.sh succeeded. Desktop packages were already present, and password reset was disabled for this run. Verified PVR vermagic/module index against an actual media-v29 module tree.",
+    "cedar_device_mode": "0600",
+    "dma_heap_mode": "0600",
+    "socket_enabled": true,
+    "package_database": "install ok installed, arm64, 0.1-1",
+    "dpkg_verify": "no differences",
+    "target_ffplay_version": "7.1.5",
+    "rootfs_build_info_hardware_acceptance": "pending"
+  },
+  "scope": "Private rootfs package integration only. Default kernel/boot selection was not changed. No image flash or end-to-end new-image boot performed."
+}

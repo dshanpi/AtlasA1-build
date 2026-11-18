@@ -18,6 +18,7 @@ import tarfile
 from typing import Iterable
 
 from write_t736_image_boot import load_boot_files
+from install_t736_vendor_debs import PLAYER_TARGET, inspect_player
 
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -295,6 +296,7 @@ def main() -> int:
     parser.add_argument("--archive", type=Path,
                         help="optional .tar.gz archive made from the directory")
     parser.add_argument("--gpu-deb", type=Path, required=True)
+    parser.add_argument("--player-deb", type=Path, help="optional arm64 atlasa1-player Debian package")
     parser.add_argument("--pvr-module", type=Path, required=True)
     parser.add_argument("--wc-archive", type=Path, required=True)
     parser.add_argument("--transport-archive", type=Path, required=True)
@@ -309,6 +311,9 @@ def main() -> int:
                  "backend_archive", "ffmpeg_archive", "ddr_boot", "boot_package"):
         setattr(args, name, require_file(getattr(args, name), f"--{name.replace('_', '-')}") )
     require_module_release(args.pvr_module, args.kernel_release)
+    if args.player_deb:
+        args.player_deb = require_file(args.player_deb, "--player-deb")
+        inspect_player(args.player_deb)
     try:
         load_boot_files(args.ddr_boot, args.boot_package)
     except ValueError as exc:
@@ -322,6 +327,10 @@ def main() -> int:
     gpu = copy_payload(args.gpu_deb, root, "gpu/t736-img-userspace.deb")
     manifest.append(entry(gpu, "/tmp/t736-vendor/gpu-userspace.deb", "gpu_userspace", "deb",
                           source="gpu/t736-img-userspace.deb"))
+    if args.player_deb:
+        player = copy_payload(args.player_deb, root, "media/atlasa1-player.deb", 0o644)
+        manifest.append(entry(player, PLAYER_TARGET, "native_player", "deb", "0644",
+                              source="media/atlasa1-player.deb"))
     pvr = copy_payload(args.pvr_module, root, "gpu/pvrsrvkm.ko")
     manifest.append(entry(pvr, f"/lib/modules/{args.kernel_release}/extra/pvrsrvkm.ko", "pvr_module",
                           mode="0644", source="gpu/pvrsrvkm.ko"))

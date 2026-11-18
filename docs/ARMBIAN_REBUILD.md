@@ -44,6 +44,10 @@ python3 tools/build_t736_vendor_input.py \
 ```
 
 PVR 内核模块的 `vermagic` 必须与实际启动的内核完全一致。上面的 media-v29 示例只适用于配套的 `6.18.63-t736-media-v29` 内核候选。
+要在 GNOME 镜像里提供「打开方式 → AtlasA1 播放器」，在 Linux 上组装私有输入时追加
+`--player-deb /private/atlasa1-player_0.1-1_arm64.deb`。构建器读取软件包的真实名称、架构和文件权限，
+把它的 SHA-256 加入清单。镜像定制阶段安装清单中的本地软件包，核对目标软件包数据库和播放器入口。
+该参数可省略。播放器的 GPU、硬解服务、已测分辨率和内核要求见[播放器说明](../tools/player/README.md)。
 公开 patch 默认产生 `6.18.63-t736-armbian`，它不会自动生成或改写厂商 PVR 模块。
 
 生成的目录或 tar.gz 可以直接传给 `build_t736_armbian_image.py --vendor-input`。

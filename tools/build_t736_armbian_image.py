@@ -17,6 +17,7 @@ import subprocess
 import time
 
 from write_t736_image_boot import load_boot_files
+from install_t736_vendor_debs import PLAYER_TARGET, inspect_player
 
 PROJECT = Path(__file__).resolve().parents[1]
 LOCK = PROJECT / "config" / "sources.lock.json"
@@ -133,6 +134,13 @@ def read_vendor(vendor: Path, stage: Path) -> tuple[Path, dict]:
         actual = sha256(payload)
         if len(str(item.get("sha256", ""))) != 64 or item["sha256"].lower() != actual:
             fail(f"vendor hash mismatch: {source} ({actual})")
+    players = [item for item in data["files"]
+               if item.get("role") == "native_player" or item.get("target") == PLAYER_TARGET]
+    if players:
+        if (len(players) != 1 or players[0].get("role") != "native_player" or
+                players[0].get("target") != PLAYER_TARGET or players[0].get("kind") != "deb"):
+            fail("conflicting native player package in vendor manifest")
+        inspect_player(root / players[0]["source"])
     boot_paths = {"ddr_boot": "boot/t736-ddr-spl.bin", "boot_package": "boot/t736-source-package.bin"}
     for role, relative in boot_paths.items():
         if [item["source"] for item in data["files"] if item["role"] == role] != [relative]:
@@ -153,6 +161,7 @@ def write_customize(armbian: Path, vendor_root: Path, manifest: Path) -> None:
     (bundle / ".gitignore").write_text("*\n", newline="\n")
     for relative in (
         "tools/t736-customize-image.sh", "tools/finalize_t736_media_rootfs.py",
+        "tools/install_t736_vendor_debs.py",
         "tools/write_t736_image_boot.py", "tools/pack_armbian_raw_v6.py",
         "tools/pack_boot_validation.py", "tools/pack_t736_media_v28_boot.py",
         "userpatches/t736-media-acceptance.py", "config/desktop-v7-packages.txt",

@@ -70,12 +70,7 @@ if [ "${T736_INSTALL_DESKTOP:-yes}" = yes ]; then
         "${root}/etc/X11/xorg.conf.d/30-t736-x11-blank.conf"
 fi
 
-deb_dir="${root}/tmp/t736-vendor"
-if compgen -G "${deb_dir}/*.deb" >/dev/null 2>&1; then
-    # Local .deb paths let apt resolve GPU runtime dependencies on a minimal
-    # rootfs as well as on a GNOME image that already contains them.
-    chroot "${root}" sh -ec 'apt-get install -y --reinstall --no-install-recommends /tmp/t736-vendor/*.deb'
-fi
+python3 "${T736_PROJECT_ROOT}/tools/install_t736_vendor_debs.py" "${root}"
 
 # Requested lab default. Override privately with T736_ROOT_PASSWORD.
 if [ "${T736_SET_ROOT_PASSWORD:-yes}" = yes ]; then
