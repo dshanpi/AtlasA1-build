@@ -16,6 +16,9 @@ static void *client_copy_probe(void *destination, const void *source, size_t siz
 
 struct cedar_decoder { unsigned width, height, pending, counter; int64_t pts; int eos; };
 static _Atomic unsigned backend_calls, auto_frames;
+#ifndef T736_TEST_OWNED_BACKEND
+static _Atomic unsigned direct_frames;
+#endif
 static pthread_mutex_t copy_probe_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t copy_probe_cond = PTHREAD_COND_INITIALIZER;
 static unsigned pause_copy, copy_entered, release_copy;
@@ -45,7 +48,7 @@ int cedar_push(cedar_decoder *d, const void *data, size_t size, int64_t pts, int
     (void)data; (void)size; (void)dts;
     d->pending++; d->pts = pts; backend_calls++; return 0;
 }
-int cedar_pull(cedar_decoder *d, cedar_frame *out, unsigned timeout)
+static int stub_pull(cedar_decoder *d, cedar_frame *out, unsigned timeout, uint8_t *dest, size_t capacity)
 {
     (void)timeout; backend_calls++;
     if (!d->pending && !auto_frames) return d->eos ? 2 : 0;
@@ -55,10 +58,29 @@ int cedar_pull(cedar_decoder *d, cedar_frame *out, unsigned timeout)
         .size = (size_t)d->width * d->height * 3 / 2,
         .pts_ns = (int64_t)value * 1000, .dts_ns = INT64_MIN,
         .color_range = 1, .color_matrix = 1 };
-    out->data = malloc(out->size); assert(out->data);
-    for (size_t i = 0; i < out->size; i++) out->data[i] = (uint8_t)(value + i * 17U);
+    if (!dest) {
+        dest = out->data = malloc(out->size);
+        assert(dest);
+    } else {
+        assert(out->size <= capacity && out->data == NULL);
+    }
+    for (size_t i = 0; i < out->size; i++) dest[i] = (uint8_t)(value + i * 17U);
     return 1;
 }
+int cedar_pull(cedar_decoder *d, cedar_frame *out, unsigned timeout)
+{
+    return stub_pull(d, out, timeout, NULL, 0);
+}
+#ifndef T736_TEST_OWNED_BACKEND
+int cedar_pull_into(cedar_decoder *d, uint8_t *dest, size_t capacity,
+                    cedar_frame *metadata, unsigned timeout)
+{
+    assert(dest);
+    int result = stub_pull(d, metadata, timeout, dest, capacity);
+    if (result == CEDAR_FRAME) direct_frames++;
+    return result;
+}
+#endif
 int cedar_eos(cedar_decoder *d) { backend_calls++; d->eos = 1; return 0; }
 int cedar_flush(cedar_decoder *d) { backend_calls++; d->pending = 0; d->eos = 0; return 0; }
 int cedar_idle(cedar_decoder *d) { return cedar_flush(d); }
@@ -109,7 +131,7 @@ static void test_roundtrip(unsigned width, unsigned height)
     int fd;
     unsigned before = open_fds();
     pthread_t thread = start_peer(&fd);
-    assert(setup_connection(fd, getuid()) == 0 && t736_client_available() == 1);
+    assert(setup_connection(fd, getuid(), getuid()) == 0 && t736_client_available() == 1);
     assert(!mprotect((void *)shared_pixels, T736_MAX_FRAME, PROT_READ));
     errno = 0;
     assert(mprotect((void *)shared_pixels, T736_MAX_FRAME, PROT_READ | PROT_WRITE) == -1 && errno == EACCES);
@@ -171,7 +193,7 @@ static void test_parallel_consumption(void)
 {
     int fd;
     pthread_t server = start_peer(&fd);
-    assert(!setup_connection(fd, getuid()));
+    assert(!setup_connection(fd, getuid(), getuid()));
     int session = t736_client_open(T736_CODEC_HEVC, 4, 4);
     assert(session > 0); auto_frames = 1;
     struct pull_worker worker = {session, 500};
@@ -256,7 +278,7 @@ static void test_client_rejects_malformed_reply(void)
         struct fake_peer peer = {sockets[1], fault};
         pthread_t thread;
         assert(!pthread_create(&thread, NULL, malformed_server, &peer));
-        int result = setup_connection(sockets[0], getuid());
+        int result = setup_connection(sockets[0], getuid(), getuid());
         if (fault == 8) assert(result == -EPROTO);
         else {
             assert(result == 0);
@@ -285,10 +307,14 @@ static void test_rejected_setup_and_sequence(void)
     assert(recv(fd, &legacy, sizeof(legacy), 0) == 0);
     close(fd); assert(!pthread_join(thread, NULL) && peers == 0 && backend_calls == before);
     thread = start_peer(&fd);
-    assert(setup_connection(fd, getuid() + 1) == -EACCES);
+    assert(setup_connection(fd, getuid() + 1, getuid()) == -EACCES);
     assert(!pthread_join(thread, NULL) && peers == 0 && backend_calls == before);
     thread = start_peer(&fd);
-    assert(!setup_connection(fd, getuid()));
+    assert(setup_connection(fd, getuid(), getuid() + 1) == -EPROTO);
+    assert(!t736_client_available() && !shared_pixels && connection == -1);
+    assert(!pthread_join(thread, NULL) && peers == 0 && backend_calls == before);
+    thread = start_peer(&fd);
+    assert(!setup_connection(fd, getuid(), getuid()));
     struct t736_message duplicate = {T736_MAGIC, 2, T736_DRAIN, 0, 1, 0, 0, 0};
     assert(!io_all(connection, &duplicate, sizeof(duplicate), 1));
     assert(recv(connection, &duplicate, sizeof(duplicate), 0) == 0);
@@ -306,6 +332,9 @@ int main(void)
     test_parallel_consumption();
     test_client_rejects_malformed_reply();
     assert(open_fds() == baseline);
-    puts("PASS: actual v2 client/broker Unix+SCM_RIGHTS setup, peer UID/version/sequence rejection before backend use, readonly sealed slot, bounded 4x4/1080p pixels, guards, no old-frame cross-talk, 1000 concurrent pulls with API lock verified inside memcpy, flush/EOS/close/reopen, both-direction v1 refusal, 8 malformed reply cases and AGAIN without stale copy, fd balance0; software backend only");
+#ifndef T736_TEST_OWNED_BACKEND
+    assert(direct_frames > 1000);
+#endif
+    puts("PASS: actual v2 client/broker Unix+SCM_RIGHTS setup, listener UID/memfd owner/version/sequence rejection before backend use, readonly sealed slot, bounded 4x4/1080p pixels, guards, no old-frame cross-talk, 1000 concurrent pulls with API lock verified inside memcpy, flush/EOS/close/reopen, both-direction v1 refusal, 8 malformed reply cases and AGAIN without stale copy, fd balance0; software backend only");
     return 0;
 }

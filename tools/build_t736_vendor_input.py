@@ -17,6 +17,8 @@ import shutil
 import tarfile
 from typing import Iterable
 
+from write_t736_image_boot import load_boot_files
+
 
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -216,14 +218,33 @@ for device in /dev/cedar_dev /dev/dma_heap/t736-ve; do
         exit 1
     fi
 done
-export LD_LIBRARY_PATH=/opt/t736-cedar-browser-backend-v5:/opt/t736-cedar-wc-v5/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-export GST_PLUGIN_SYSTEM_PATH_1_0=/usr/lib/aarch64-linux-gnu/gstreamer-1.0
+# Keep the tested private parser stack ahead of the distro plugins when it is
+# installed, while still allowing a minimal image that only has the distro
+# GStreamer parser package.  The selected directory is optional by design.
+parser_root=/opt/t736-gst-parser-v27
+if [ -d "$parser_root/selected" ]; then
+    export GST_PLUGIN_SYSTEM_PATH_1_0="$parser_root/selected:/usr/lib/aarch64-linux-gnu/gstreamer-1.0"
+else
+    export GST_PLUGIN_SYSTEM_PATH_1_0=/usr/lib/aarch64-linux-gnu/gstreamer-1.0
+fi
+old_ld=${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=/opt/t736-cedar-browser-backend-v5:/opt/t736-cedar-wc-v5/lib
+if [ -d "$parser_root/usr/lib/aarch64-linux-gnu" ]; then
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$parser_root/usr/lib/aarch64-linux-gnu"
+fi
+if [ -n "$old_ld" ]; then
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$old_ld"
+fi
 export GST_PLUGIN_PATH_1_0=/opt/t736-cedar-wc-v5/lib/gstreamer-1.0
 export GST_OMX_CONFIG_DIR="$root/config"
 export GST_REGISTRY_1_0=/run/t736-cedar/registry.bin
 export GST_REGISTRY_FORK=no
 unset GST_AW_OMX_DEFAULT_ARM_AFBC AW_AFBC_MODE
-exec "$root/bin/cedar-broker" 1000
+allowed_uid=$(id -u t736 2>/dev/null || true)
+case "$allowed_uid" in
+    ''|*[!0-9]*|0) printf 'CEDAR_SERVICE: desktop account t736 is unavailable\\n' >&2; exit 1 ;;
+esac
+exec "$root/bin/cedar-broker" "$allowed_uid"
 """,
     )
     os.chmod(path, 0o755)
@@ -279,14 +300,19 @@ def main() -> int:
     parser.add_argument("--transport-archive", type=Path, required=True)
     parser.add_argument("--backend-archive", type=Path, required=True)
     parser.add_argument("--ffmpeg-archive", type=Path, required=True)
-    parser.add_argument("--ddr-boot", type=Path, required=True)
+    parser.add_argument("--ddr-boot", type=Path, required=True, help="fixed v4 eGON LPDDR4x SPL")
+    parser.add_argument("--boot-package", type=Path, required=True, help="matching stage64/TF-A/U-Boot package")
     parser.add_argument("--kernel-release", default="6.18.63-t736-armbian")
     args = parser.parse_args()
 
     for name in ("gpu_deb", "pvr_module", "wc_archive", "transport_archive",
-                 "backend_archive", "ffmpeg_archive", "ddr_boot"):
+                 "backend_archive", "ffmpeg_archive", "ddr_boot", "boot_package"):
         setattr(args, name, require_file(getattr(args, name), f"--{name.replace('_', '-')}") )
     require_module_release(args.pvr_module, args.kernel_release)
+    try:
+        load_boot_files(args.ddr_boot, args.boot_package)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite existing output: {args.output}")
     root = args.output.expanduser().resolve()
@@ -302,6 +328,9 @@ def main() -> int:
     ddr = copy_payload(args.ddr_boot, root, "boot/t736-ddr-spl.bin")
     manifest.append(entry(ddr, "/usr/lib/u-boot/t736-ddr-spl.bin", "ddr_boot", "boot", "0644",
                           source="boot/t736-ddr-spl.bin"))
+    boot_package = copy_payload(args.boot_package, root, "boot/t736-source-package.bin")
+    manifest.append(entry(boot_package, "/usr/lib/u-boot/t736-source-package.bin", "boot_package", "boot",
+                          "0644", source="boot/t736-source-package.bin"))
 
     wc = extract_runtime(args.wc_archive, root, "t736-cedar-wc-v5")
     add_archive_entries(manifest, wc, "t736-cedar-wc-v5", "/opt/t736-cedar-wc-v5", "codec_userspace")

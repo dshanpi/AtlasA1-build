@@ -14,8 +14,8 @@
       "path": "README.md",
       "kind": "generated",
       "source": "generated/AtlasA1-build/README.md",
-      "size": 919,
-      "sha256": "372ebb3a47194ead4d45d3819cb20cb6d810ad3f2873ac158932ab70ecc6d8b9"
+      "size": 1064,
+      "sha256": "fd9db6ab174da4e24fd9fd7831ad92c8a37afae9f7dfcaca6a9521db048090e6"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/BUILD-PLAN.md",
@@ -35,15 +35,15 @@
       "path": "boards/candidates/media-v28-400mhz/combined-manifest.json",
       "kind": "source",
       "source": "mainline/boards/candidates/media-v28-400mhz/combined-manifest.json",
-      "size": 2430,
-      "sha256": "1fc40ed2e077419e8757bdc976b53a05b2c932c3daf794d0645df1242ba88911"
+      "size": 2370,
+      "sha256": "0c210e27b30985d6fc2227bfc53012118307220dc271c7e9f9226a05b5f1ff26"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/dcdc2-readonly-manifest.json",
       "kind": "source",
       "source": "mainline/boards/candidates/media-v28-400mhz/dcdc2-readonly-manifest.json",
-      "size": 1310,
-      "sha256": "0493dd4026ae5beb968e6a533c45eda7bd04baa606e95b9cabade586c14f0a55"
+      "size": 1279,
+      "sha256": "add596e790edd9c2fbac9a4a8bbd6d0a6b8f8c84c3d9cc407b1e9d8ca37730ac"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/dcdc2-readonly-snapshot.patch",
@@ -63,15 +63,15 @@
       "path": "boards/candidates/media-v28-400mhz/dcdc2-snapshot-test.log",
       "kind": "source",
       "source": "mainline/boards/candidates/media-v28-400mhz/dcdc2-snapshot-test.log",
-      "size": 199,
-      "sha256": "f8ccd8ca707d998073a48fcd6ff05f8c36dab1134e0d864768afbdc00c02e2ae"
+      "size": 198,
+      "sha256": "6eda1967087642887b8e9f71364591d7dd70edacd8472d1ade6a4b3587428864"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/manifest.json",
       "kind": "source",
       "source": "mainline/boards/candidates/media-v28-400mhz/manifest.json",
-      "size": 2083,
-      "sha256": "2bb79eb1cdae89ff1aa2989428d556ec582ea1a84dd00e037314086e269ee91a"
+      "size": 2027,
+      "sha256": "9e49b4555f184ade27fcd1dc9a6487da149c94c27d15f0edb6f109b462a7c516"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/media-v28-ve400.patch",
@@ -462,15 +462,15 @@
       "path": "config/boot-policy.json",
       "kind": "source",
       "source": "mainline/config/boot-policy.json",
-      "size": 2259,
-      "sha256": "d5bf5615cec8c37ae2ba611ceb0309312cc7962e433b11e384628d0102b747e5"
+      "size": 2207,
+      "sha256": "3289457cdbf81fa50fbbba683d3addc8b11d8590ac69ed689b87ce31bf372410"
     },
     {
       "path": "config/desktop-v7-packages.txt",
       "kind": "source",
       "source": "mainline/config/desktop-v7-packages.txt",
-      "size": 944,
-      "sha256": "3ac6f4d090b97cb60c9b40c8197a4bab43ef934fb259c416d3cff7bd901b5eee"
+      "size": 1024,
+      "sha256": "04fe19f3267a07bac7a8335621ba5691b6fda03e97dba1852a01ce5bbce91a5a"
     },
     {
       "path": "config/desktop-v7/20-t736-modesetting.conf",
@@ -499,6 +499,27 @@
       "source": "mainline/config/desktop-v7/resolved-dns-over-tls.conf",
       "size": 248,
       "sha256": "a7827c2e427ab644ff5a6135369a9d700a5dae8b3c90222d22f81a49e6df9fd3"
+    },
+    {
+      "path": "config/gpu-userspace-gnome.desktop",
+      "kind": "source",
+      "source": "mainline/config/gpu-userspace-gnome.desktop",
+      "size": 255,
+      "sha256": "7bb42617233162fc2441b8b4c432830f830c022cf8941ddb5601daaeda03d027"
+    },
+    {
+      "path": "config/gpu-userspace-run.sh",
+      "kind": "source",
+      "source": "mainline/config/gpu-userspace-run.sh",
+      "size": 476,
+      "sha256": "d291f6f304bf79dcd770fe99ab12bf52d365d78cc818f1e09398992b1bdcf2c3"
+    },
+    {
+      "path": "config/gpu-userspace-x11.env",
+      "kind": "source",
+      "source": "mainline/config/gpu-userspace-x11.env",
+      "size": 450,
+      "sha256": "deb9040372042c06745d8fbcd60da9b929ad70396f16bfa600e69cf30cbab40d"
     },
     {
       "path": "config/gpu-v10/20-t736-modesetting-1080p.conf",
@@ -553,8 +574,8 @@
       "path": "config/source-v10-inputs.json",
       "kind": "source",
       "source": "mainline/config/source-v10-inputs.json",
-      "size": 4782,
-      "sha256": "bce6facbec26589d8def151634efe7b91b23f0dcb63612ea3e719cebeacd8ffe"
+      "size": 4663,
+      "sha256": "edadde0504520b89c7fa6c64cb5e151ab7ee2b5519623a0e9f3c32cdc049c7ad"
     },
     {
       "path": "config/source-v11-inputs.template.json",
@@ -567,22 +588,22 @@
       "path": "config/sources.lock.json",
       "kind": "source",
       "source": "mainline/config/sources.lock.json",
-      "size": 1715,
-      "sha256": "c9ef4d7f767b6a09cb238a8240464ed2d444077fa76f585002542f64588ef0cb"
+      "size": 1677,
+      "sha256": "203076c6a94c523bc07af91fe3ea3269707a6279970ae1c43cef44480f3be1fd"
     },
     {
       "path": "config/t736-vendor-inputs.example.json",
       "kind": "source",
       "source": "mainline/config/t736-vendor-inputs.example.json",
-      "size": 3112,
-      "sha256": "a9d368ac81ade6496f1d3a6bbb7eb5f3fdcb0a548844279958a485ed0fe0fdd2"
+      "size": 3322,
+      "sha256": "29b2f9232156c37ce7eac582170b22a11e712b6b6a77b83b7b851d1756f07f69"
     },
     {
       "path": "docs/ARMBIAN_REBUILD.md",
       "kind": "source",
       "source": "mainline/docs/ARMBIAN_REBUILD.md",
-      "size": 6822,
-      "sha256": "871936fb9e5d2ba47f9b1932a927fe7a62f084b18794b4f06bf0f624db0ddb75"
+      "size": 7863,
+      "sha256": "8d48ff8ed4577ce97e4d52933f3afd73a578de40af149f1bfbaadf52837ee046"
     },
     {
       "path": "docs/ATLAS_REPOSITORY_LAYOUT.md",
@@ -595,22 +616,22 @@
       "path": "docs/BOOT_CHAIN.md",
       "kind": "source",
       "source": "mainline/docs/BOOT_CHAIN.md",
-      "size": 7888,
-      "sha256": "4bc7bced35d21ea2b44b79ef683b5563a54a915d7c9fc31c5b1593cf4a078692"
+      "size": 7799,
+      "sha256": "f24029af36b04b869691b19837a09cf45bd9896e6e52dce95104f9414894cdeb"
     },
     {
       "path": "docs/BUILD.md",
       "kind": "source",
       "source": "mainline/docs/BUILD.md",
-      "size": 22100,
-      "sha256": "861142b19f7a4aaff067b413fad777364eaa9b8f082ccbf477542940e5ae44b3"
+      "size": 21761,
+      "sha256": "c3810e8fcbe7704bbb0211db85ec380d7d3dfe17d487be88ce78f2d50b1dc6c4"
     },
     {
       "path": "docs/CODE_MAP.md",
       "kind": "source",
       "source": "mainline/docs/CODE_MAP.md",
-      "size": 12081,
-      "sha256": "4f18c901fb258328a5a40c648cc2e424646c7fb856bd23dfcbc2d745fa73930c"
+      "size": 11972,
+      "sha256": "db1d00a3ed870f1a84fe4c049f59299f79fe0d8c52665a113952442945ad6531"
     },
     {
       "path": "docs/ETHERNET.md",
@@ -641,11 +662,81 @@
       "sha256": "349c3492e771f2c4cae53a5dcb2270ca10e3e46eb3bf5a71d73c825bdb425f16"
     },
     {
+      "path": "evidence/armbian-source-boot-layout-test-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/armbian-source-boot-layout-test-20261118.json",
+      "size": 1443,
+      "sha256": "b6529da04db49f4f5df20caf14fa21fc9ea4735061e810f5d8e772110ff348c6"
+    },
+    {
+      "path": "evidence/atlas-display-media-v29-reboot-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/atlas-display-media-v29-reboot-20261118.json",
+      "size": 4018,
+      "sha256": "c9eab826be163602b3341bf32daa0af6630f56e21096776fc5f3017237bf9273"
+    },
+    {
+      "path": "evidence/media-v30-4k-browser-hardware-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-4k-browser-hardware-20261118.json",
+      "size": 7063,
+      "sha256": "278eb6e59124524356b91298d75ec0593d256221394b3fae4946d4f7d3666b46"
+    },
+    {
+      "path": "evidence/media-v30-4k-firefox-dr1-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-4k-firefox-dr1-20261118.json",
+      "size": 1734,
+      "sha256": "3a7df110ad9d287f8a868e5051fc9e65148eead861fd4a982dedfcaf79a60c2d"
+    },
+    {
+      "path": "evidence/media-v30-4k-wc-parallel-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-4k-wc-parallel-20261118.json",
+      "size": 2488,
+      "sha256": "f49b2a3b0f815b6ec2d894236842d8f3ab39c73d1f08f6b92a3c6f025d76fd28"
+    },
+    {
+      "path": "evidence/media-v30-gnome-display-idle-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-gnome-display-idle-20261118.json",
+      "size": 4360,
+      "sha256": "8380139329949f6723f184e6d1786927a3049f9187a68795c4145d96447d0236"
+    },
+    {
+      "path": "evidence/media-v30-heap-budget-build-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-heap-budget-build-20261118.json",
+      "size": 2157,
+      "sha256": "dc28dc030824175cc80b99889e0ef17f02d7b6093bf7adba8299eb62f08e68cf"
+    },
+    {
+      "path": "evidence/media-v30-parallel-slot-build-20261118.json",
+      "kind": "source",
+      "source": "mainline/evidence/media-v30-parallel-slot-build-20261118.json",
+      "size": 4194,
+      "sha256": "e6a8723289052adf4498623b483e96833ffc35331810356be1082b0b7ae4dec6"
+    },
+    {
+      "path": "patches/cedar/omx-4k-broker-buffers.patch",
+      "kind": "source",
+      "source": "mainline/patches/cedar/omx-4k-broker-buffers.patch",
+      "size": 1223,
+      "sha256": "4cabef8c5b0af45ffe10d5b9a94e0667841f35bbbcabb82ca4b2ebdc347cb5c5"
+    },
+    {
+      "path": "patches/linux/media-v30-cedar-heap-quota.patch",
+      "kind": "source",
+      "source": "mainline/patches/linux/media-v30-cedar-heap-quota.patch",
+      "size": 2426,
+      "sha256": "81d272ad12e93583cac6e53abf4639c74b17be31d8680f4349c029e9259c4549"
+    },
+    {
       "path": "patches/t736-armbian-open-source.patch",
       "kind": "source",
       "source": "mainline/patches/t736-armbian-open-source.patch",
-      "size": 159383,
-      "sha256": "50973166b38bfcf15a230c9b190bca4086a3247ee06437e602fe566bea406749"
+      "size": 161523,
+      "sha256": "ff8b61ec251c57b4dba8ee57a77c8391247bc46a06f072c67d1326ec115f50cb"
     },
     {
       "path": "tests/cedar_nv21_compare_test.py",
@@ -672,8 +763,8 @@
       "path": "tests/test_cedar_backend.c",
       "kind": "source",
       "source": "mainline/tests/test_cedar_backend.c",
-      "size": 16703,
-      "sha256": "770333f1786593b61a460d28a3693cbf5d1dc7dc58cb434863ff4e6eafefc70b"
+      "size": 17811,
+      "sha256": "ed946fbe464c9cc715dddcc8019f05bb18ff55e28a534554c89e6c91cef9820a"
     },
     {
       "path": "tests/test_cedar_fault_trace.c",
@@ -714,8 +805,8 @@
       "path": "tests/test_cedar_shm_client_fork.c",
       "kind": "source",
       "source": "mainline/tests/test_cedar_shm_client_fork.c",
-      "size": 6172,
-      "sha256": "f1d2710f5555ac5065330b71d15898c5424e3f30792285335fc2fb6f370765a4"
+      "size": 7548,
+      "sha256": "3b4d87cf1d92dcb8936dcc377800fbbea8fbe5ff14c20ed992b67c066a2e5cad"
     },
     {
       "path": "tests/test_cedar_shm_seals.c",
@@ -728,8 +819,8 @@
       "path": "tests/test_cedar_shm_transport.c",
       "kind": "source",
       "source": "mainline/tests/test_cedar_shm_transport.c",
-      "size": 14084,
-      "sha256": "b0689c6aa1593d94ecbb1748ce41b0744988cc758bc5bcba845598db881bcc9f"
+      "size": 15147,
+      "sha256": "697a87e6df8e5ab538bb9d4bd0b6f8deb387fec9705bed0fdcf69d14ed1f21b6"
     },
     {
       "path": "tests/test_cedar_wc_core.py",
@@ -900,6 +991,20 @@
       "sha256": "a9abbbf59a7c414e101e3b22b4ba2466b2ee2e819fd0f9d8ffc2cb6eaa8b4148"
     },
     {
+      "path": "tools/browser/cedarc.conf",
+      "kind": "source",
+      "source": "mainline/tools/browser/cedarc.conf",
+      "size": 112,
+      "sha256": "df9f8915fca4e773efd5760caee71c521d7c50fba364270fb896c1e112a2ee4a"
+    },
+    {
+      "path": "tools/browser/gstomx.conf",
+      "kind": "source",
+      "source": "mainline/tools/browser/gstomx.conf",
+      "size": 591,
+      "sha256": "ee435630b57faf0de41e48c4150247d2f42736da531acde4907bcb45af922fb3"
+    },
+    {
       "path": "tools/build_armbian_kernel.sh",
       "kind": "source",
       "source": "mainline/tools/build_armbian_kernel.sh",
@@ -928,6 +1033,13 @@
       "sha256": "c71d8e08693701fde68aeecb5ceb1cec2303dce5b69bf6eeddbe31abfc14f084"
     },
     {
+      "path": "tools/build_cedar_4k_omx.py",
+      "kind": "source",
+      "source": "mainline/tools/build_cedar_4k_omx.py",
+      "size": 2062,
+      "sha256": "fa783eec374644f6c42e2aaaa8f94ba7ae5f4cf2878a8fac0ef9473c4ca4026d"
+    },
+    {
       "path": "tools/build_cedar_bridge.py",
       "kind": "source",
       "source": "mainline/tools/build_cedar_bridge.py",
@@ -938,8 +1050,8 @@
       "path": "tools/build_cedar_browser_backend.py",
       "kind": "source",
       "source": "mainline/tools/build_cedar_browser_backend.py",
-      "size": 7568,
-      "sha256": "5e57c1cfba3f87637d250340f46bb9f21521e9fb5a8e05b9f17b3086598d8853"
+      "size": 7450,
+      "sha256": "3922c029b2a772646de2fa22d31011653fd2e1f3d0db4d664cbe5d0464063c8b"
     },
     {
       "path": "tools/build_cedar_demo_diagnostic.py",
@@ -952,8 +1064,8 @@
       "path": "tools/build_cedar_shm_transport.py",
       "kind": "source",
       "source": "mainline/tools/build_cedar_shm_transport.py",
-      "size": 9093,
-      "sha256": "823dd94db697f3ed957a533db8aa0515540a98da647ac76a137d91eda26803c1"
+      "size": 9740,
+      "sha256": "0f4cbdf655c287eda2a1f40edf7e8e071925a91d5c28357933232758f79f0791"
     },
     {
       "path": "tools/build_cedar_wc_candidate.py",
@@ -1096,6 +1208,13 @@
       "sha256": "d7df7d6ad6fbad75e24bdbcba6b1b87c7b9539e9b77de181fbcd236cb8eff079"
     },
     {
+      "path": "tools/build_media_v30_candidate.sh",
+      "kind": "source",
+      "source": "mainline/tools/build_media_v30_candidate.sh",
+      "size": 2910,
+      "sha256": "691e707c90b66aa08185c4ec14b77ca2356924a3cf142659c8a47dd8bd859b89"
+    },
+    {
       "path": "tools/build_minimal_kernel.sh",
       "kind": "source",
       "source": "mainline/tools/build_minimal_kernel.sh",
@@ -1169,8 +1288,8 @@
       "path": "tools/build_source_rootfs_v10.sh",
       "kind": "source",
       "source": "mainline/tools/build_source_rootfs_v10.sh",
-      "size": 26199,
-      "sha256": "4b90c90ae3034c08282534edd4730123c39dcfa83df2c9360ce5b4bfb577086a"
+      "size": 26548,
+      "sha256": "255d6f165fbcc8d2fb4ead39de2a7849e7e6f136d363f38260868f08328a2255"
     },
     {
       "path": "tools/build_source_rootfs_v11.sh",
@@ -1274,8 +1393,8 @@
       "path": "tools/build_t736_armbian_image.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_armbian_image.py",
-      "size": 9304,
-      "sha256": "19806affcc7bec0126e65c8ff92af47dc41d6473d10d29ed53c547efbccf5def"
+      "size": 12393,
+      "sha256": "b81a4b16df0b5fa947045742e4ff0e771c4f60e25a04801547b1191c849e5f4c"
     },
     {
       "path": "tools/build_t736_ccu_probe.py",
@@ -1288,57 +1407,57 @@
       "path": "tools/build_t736_control_state_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_control_state_probe.py",
-      "size": 4486,
-      "sha256": "2e869916168533166e6e2790400cd023f9dd1e4fa2a599f7d8b76b5b383d9d3a"
+      "size": 4410,
+      "sha256": "18ba7fc118e3b6c8111390684f183fd903adfc360466e9a7c02a95492f3ee302"
     },
     {
       "path": "tools/build_t736_controller_config_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_controller_config_probe.py",
-      "size": 4870,
-      "sha256": "69e1a5338befa5c40acc2564140e822e4c76a7db8f636f89ce0d13bbec3bb34a"
+      "size": 4791,
+      "sha256": "553f420b7c009ead316032a1872406df85512806067a85aa00a6a73cc3d7dee7"
     },
     {
       "path": "tools/build_t736_controller_init_read_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_controller_init_read_probe.py",
-      "size": 5196,
-      "sha256": "6157909cd01f3b91c970b0e33d863f280134ea1f7870d972fac52432b939c197"
+      "size": 5113,
+      "sha256": "d5fa074b6840483adac978d7054abe87e1edf58456badb56f8ec1601c004e5de"
     },
     {
       "path": "tools/build_t736_controller_static_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_controller_static_probe.py",
-      "size": 5246,
-      "sha256": "b880ebb50f5504a13d020ce1b6b11fe30d21f1de9b8594785bacaa4e698939aa"
+      "size": 5164,
+      "sha256": "fdb6e17b2d7bdc1cb8f3fc9f144ebcb67b03e6c3c5454e5fe447fa96d4bec00f"
     },
     {
       "path": "tools/build_t736_controller_static_rollback_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_controller_static_rollback_probe.py",
-      "size": 5209,
-      "sha256": "3c04d3e307ada48a94d75062c25316866caa4aba0d0c9237fea3d9a9a1f2f9c6"
+      "size": 5127,
+      "sha256": "343658945a09e939b2caa2ada7b83b0f9e89fc0c12a7a30eab68416853cba674"
     },
     {
       "path": "tools/build_t736_controller_static_v2_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_controller_static_v2_probe.py",
-      "size": 5288,
-      "sha256": "50a050555b18166414295ebeee348b9747d7af4ee563b22ab7a6f64f2ee9d159"
+      "size": 5206,
+      "sha256": "1bb7c92ebcff7c622ee65249b0c714697347cb56f470fbcef105e675e4dd4bdf"
     },
     {
       "path": "tools/build_t736_domain_setup_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_domain_setup_probe.py",
-      "size": 4064,
-      "sha256": "90b99c6de42bcd86a93fc955d0ad48738bb0fc66bc88476bbfb5f1e560e516f0"
+      "size": 3993,
+      "sha256": "e67a71b69a20bd23db5443fe431f83d9ac7eb0913f8475aa2b3e641f278e90a6"
     },
     {
       "path": "tools/build_t736_emmc_spl.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_emmc_spl.py",
-      "size": 5120,
-      "sha256": "2baa42c2a42c6e261b237eb0df20b9c23d74b0454defdb961a027f4a83443525"
+      "size": 5064,
+      "sha256": "fa4ac8c66b5e0baea77a77667e058e1ad353c3c11ffb8ec11c031507391b1c34"
     },
     {
       "path": "tools/build_t736_entry_diag.py",
@@ -1351,43 +1470,43 @@
       "path": "tools/build_t736_phy_acsm_state_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_acsm_state_probe.py",
-      "size": 5101,
-      "sha256": "3a350dcab2e86bc36490e4a5012da0cee0116553baa76e83bfe55b4d889eb0eb"
+      "size": 5019,
+      "sha256": "1efeb38e8e474ee7d065a9787c50a4367a014470041c423432b56df5dc43645f"
     },
     {
       "path": "tools/build_t736_phy_analog_setup_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_analog_setup_probe.py",
-      "size": 4520,
-      "sha256": "4a5267b0e0e8e6d88cace9fd3317d474fdaac70dff18551c1e9b99b59adfca28"
+      "size": 4445,
+      "sha256": "bdb4d481e5470f168d6ab766e63995e288db0d16b4e95aa3cdcbdbd129cf226a"
     },
     {
       "path": "tools/build_t736_phy_release_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_release_probe.py",
-      "size": 4455,
-      "sha256": "275eb010cd4ccdd03aaece165da86043be2ceabf0f24d57d609e29411f9203bc"
+      "size": 4379,
+      "sha256": "a2fc09c0eee67e7f2a3399e3ff1dace5c17ea470be85f678db9b57378c997d99"
     },
     {
       "path": "tools/build_t736_phy_static_read_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_static_read_probe.py",
-      "size": 4528,
-      "sha256": "64e9e10fcb2b5227e1903e963f407d34d80f174c1cfd592220dc41238b7e274c"
+      "size": 4453,
+      "sha256": "28250d8ce799dcade2fdb43e1c8f38289f764df9013c55d066d369d57be6586b"
     },
     {
       "path": "tools/build_t736_phy_zcal_clock_read_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_clock_read_probe.py",
-      "size": 5206,
-      "sha256": "601d055e37bac20dc24fb3767a7ae98242cc9db50893ef289b1c91bbea04d652"
+      "size": 5124,
+      "sha256": "06c6d58a2d0d4b9290d50f989dfcb2ecd2d2fbe6718d64f48c3099412289a7fb"
     },
     {
       "path": "tools/build_t736_phy_zcal_codetrack_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_codetrack_probe.py",
-      "size": 5354,
-      "sha256": "2379a8e708c315971fefac6c832b67a4a4a7e93698793b8596a708ca9b1a4460"
+      "size": 5271,
+      "sha256": "1dc47efa96131a7369cecbce2b64f02d0197ec5b6a55a048513b2d7a1b8178b1"
     },
     {
       "path": "tools/build_t736_phy_zcal_companion_probe.py",
@@ -1400,92 +1519,92 @@
       "path": "tools/build_t736_phy_zcal_dfi_update_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_dfi_update_probe.py",
-      "size": 5297,
-      "sha256": "6ef976c36627290f583b471eadaeb59b6834b5fa477f2498018bd1dd42168ab0"
+      "size": 5214,
+      "sha256": "499d7221e89d42d63303a67993b17107ec3d19d48942f3b86a50acf766df3f15"
     },
     {
       "path": "tools/build_t736_phy_zcal_inflight_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_inflight_probe.py",
-      "size": 5287,
-      "sha256": "574b0c156ceae097c2485fb6ef92aa8d9293c580ea4addd669dadf9e63d45543"
+      "size": 5204,
+      "sha256": "b3ecf38c3857b0552bcf3d7eb4cb099d904c894f351deb2c7a21bb6366320fb6"
     },
     {
       "path": "tools/build_t736_phy_zcal_longwait_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_longwait_probe.py",
-      "size": 5343,
-      "sha256": "20ac24794a4ab1811b27f19d682de776fc628c4c4c1693ea6f2ef156bcecfe45"
+      "size": 5260,
+      "sha256": "458739e1db2194f3a1cc33bb9be7a675257b1b08d1fd2a1428a2a7f4bc494429"
     },
     {
       "path": "tools/build_t736_phy_zcal_precompanion_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_precompanion_probe.py",
-      "size": 5330,
-      "sha256": "0330aa22055ef6956b94262c2a5039a7b3b39be1a109b716d68cf899f3ae4ff5"
+      "size": 5247,
+      "sha256": "665d1283caf55fbd6f128e5c7cd78833c1a5aa899a18e36b9c313f1fd541885c"
     },
     {
       "path": "tools/build_t736_phy_zcal_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_probe.py",
-      "size": 4563,
-      "sha256": "bc08d8e50bb1b03cb85db4987fcccbd38f5ae673140a0823951d6749b1ac6ee4"
+      "size": 4487,
+      "sha256": "f10028456671abb9079327c2a5e7825f1f9dff27e72f4ae4aa44a4131a7e7499"
     },
     {
       "path": "tools/build_t736_phy_zcal_probe_v2.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_probe_v2.py",
-      "size": 4594,
-      "sha256": "77ff6c76bd5614f7445620f2393bdbc24f5974fa980202dc35321a49a042e57d"
+      "size": 4518,
+      "sha256": "d75a4ae1c60a1504c31bf0c5dd4cb9df8061617c8804912e9a640e29b78095d9"
     },
     {
       "path": "tools/build_t736_phy_zcal_pubmode_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_pubmode_probe.py",
-      "size": 5388,
-      "sha256": "dbd87826fe4e7cadf458091ae107159bc328323e88ec8a2e11906e9142d793d9"
+      "size": 5305,
+      "sha256": "73682486e3c6f8c9de41aad4e12a37766900dcd46dbf62dd9c3554ffaa9ac42d"
     },
     {
       "path": "tools/build_t736_phy_zcal_pubmode_read_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_pubmode_read_probe.py",
-      "size": 5230,
-      "sha256": "d634c93a7b31942450c6dc0418f70b6aa68f13425f9065ebb607bbb8f05d089c"
+      "size": 5148,
+      "sha256": "21eff777657872ea1a59876b5277e1de76ed45f1f6c3040000ae06e841eceabb"
     },
     {
       "path": "tools/build_t736_phy_zcal_rate_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_rate_probe.py",
-      "size": 4564,
-      "sha256": "74df369328fc7575dc6f3b459d58f198605c6985a0bf6aac9e03944e8e1634ca"
+      "size": 4488,
+      "sha256": "6fd8c43a44cc7ce2d3ada749db98e7d28c5607b467c6d8346bb722cf03a7bdd1"
     },
     {
       "path": "tools/build_t736_phy_zcal_rawcode_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_rawcode_probe.py",
-      "size": 5175,
-      "sha256": "7dd2cddd8c2903269b2036aa9eae3b3ff8ad053b96a705e43cf873241e99452b"
+      "size": 5093,
+      "sha256": "bcb87ef08f027287c1c9ba55c5ddfc0d0ec3de7ff9cf922ea028dade0e29fc4d"
     },
     {
       "path": "tools/build_t736_phy_zcal_stall_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_stall_probe.py",
-      "size": 4574,
-      "sha256": "1b25a9232f133e5d552aff40905d412ace3937f512ca7fb9d2119019f4eee164"
+      "size": 4498,
+      "sha256": "8f32b1b2181b0f1329c977e28bc37f6ef885beac73507f88bab60e598a6400ab"
     },
     {
       "path": "tools/build_t736_phy_zcal_state_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_state_probe.py",
-      "size": 5097,
-      "sha256": "3f4d37426ff1856d04b596d16220a1e2802dff6bfababc2ce2f8a4524979b8d1"
+      "size": 5015,
+      "sha256": "8f4d7ea941deaac888a57a19943ddc3619c68a34d3bb1947dfae3a66dfa5f4cf"
     },
     {
       "path": "tools/build_t736_phy_zcal_ucclkfull_probe.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_phy_zcal_ucclkfull_probe.py",
-      "size": 5351,
-      "sha256": "6b3bac293003db836de2bbf35a0d224f648f7b5dc40310aeb32370206ed75c77"
+      "size": 5268,
+      "sha256": "0d3925af2430d24b1f29838dc0086ab3c8a40581b73ed1acd34f9979fde721cb"
     },
     {
       "path": "tools/build_t736_source_handoff.py",
@@ -1512,8 +1631,8 @@
       "path": "tools/build_t736_vendor_input.py",
       "kind": "source",
       "source": "mainline/tools/build_t736_vendor_input.py",
-      "size": 16888,
-      "sha256": "999a17cfdb24eab372179bef455c77622ce60edec2ecda894d23658a3e5f10bc"
+      "size": 17929,
+      "sha256": "913f77e362339bb065f722577b0fc23a0da9633da2e6f655d6f923b158d6f1d2"
     },
     {
       "path": "tools/build_tfa_independent_candidate.sh",
@@ -1603,8 +1722,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 13898,
-      "sha256": "e4179bb2180864f33929cc6de95e1baf35568f0de089ee7108f592bbf224d65f"
+      "size": 17714,
+      "sha256": "13b87381cd4fa8f0f06479b3973118e83ce414e4698acc8bfb39c561b23c28a5"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -1617,8 +1736,15 @@
       "path": "tools/export_t736_armbian_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_t736_armbian_patch.py",
-      "size": 3123,
-      "sha256": "c0da1968c7f34377fd590818e5040808cc9e5d34f2f87e61d94fe2a37c120350"
+      "size": 3312,
+      "sha256": "a4acdde31535c955ef3be4b6bd14ecad359cddb224cb909a55bbbab7c7e40e2b"
+    },
+    {
+      "path": "tools/finalize_t736_media_rootfs.py",
+      "kind": "source",
+      "source": "mainline/tools/finalize_t736_media_rootfs.py",
+      "size": 2754,
+      "sha256": "e0fb9c9f830db20f129d17dc4b6396baa894b34106398d94c52abc83a4172891"
     },
     {
       "path": "tools/import_target_evidence.py",
@@ -1652,8 +1778,8 @@
       "path": "tools/install_t736_media_runtime.py",
       "kind": "source",
       "source": "mainline/tools/install_t736_media_runtime.py",
-      "size": 4170,
-      "sha256": "03f670ec28411017c58a6f4633fc5ea4b47a68f6586d0d703e587a7d0427dff9"
+      "size": 4957,
+      "sha256": "d8baefef222b5496326da25ec60de02507297d130bd2330b03e52dc7995013ee"
     },
     {
       "path": "tools/install_usb1_v4.sh",
@@ -1708,8 +1834,8 @@
       "path": "tools/pack_t736_cpu_c_boot.py",
       "kind": "source",
       "source": "mainline/tools/pack_t736_cpu_c_boot.py",
-      "size": 7013,
-      "sha256": "9dc1455b57d2a4c956e1bf22905cdb10fa5781bbea50aae5707085316ffff6c2"
+      "size": 6880,
+      "sha256": "e0f9d2c7bb1db604abf16f8653da02112906c14e7fcffa9a208fb8b95227a271"
     },
     {
       "path": "tools/pack_t736_cpu_d_boot.py",
@@ -1813,8 +1939,8 @@
       "path": "tools/t736-customize-image.sh",
       "kind": "source",
       "source": "mainline/tools/t736-customize-image.sh",
-      "size": 6588,
-      "sha256": "c45c2dcb220a196494f6adcf124fbd9346aebc27ff1269640ad83533277c0761"
+      "size": 6230,
+      "sha256": "f69b4b212ce1a65eac005aacd87968ab0969d4685567cb1d05259cb5b30a9739"
     },
     {
       "path": "tools/test_t736_entry_diag.py",
@@ -1834,15 +1960,36 @@
       "path": "tools/validation/README.md",
       "kind": "source",
       "source": "mainline/tools/validation/README.md",
-      "size": 10427,
-      "sha256": "ce6f3cb2503124f6afaa0a78eb14054f950644bfdd22d80e1eef095ad7fbbca6"
+      "size": 10443,
+      "sha256": "8d813c793c276df2c502202c9221a9c1bf0d46b95e9eee9adc1fcdb4bf71a614"
+    },
+    {
+      "path": "tools/validation/ffplay_offscreen.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/ffplay_offscreen.py",
+      "size": 6730,
+      "sha256": "a7b2b538a5603ecf7af60da1273cf739f04cd1f29c75d94ce55beeb285dc86e6"
+    },
+    {
+      "path": "tools/validation/firefox_headless_playback.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/firefox_headless_playback.py",
+      "size": 14177,
+      "sha256": "4dab5c7dae3db23eb3ef1db4dd7ffc4f246464f58750280e635a91fce690fa73"
+    },
+    {
+      "path": "tools/validation/media_acceptance.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/media_acceptance.py",
+      "size": 20476,
+      "sha256": "93a426fb01f9cb56991b0c8669c348c8ba03f40522ad082e7f48a0b7ef052474"
     },
     {
       "path": "tools/validation/update_t736_media_v29.py",
       "kind": "source",
       "source": "mainline/tools/validation/update_t736_media_v29.py",
-      "size": 34280,
-      "sha256": "0c8073be98bdf3740347f43524c675ebcc1595a1bdfb769adfce2e4fdd882149"
+      "size": 33645,
+      "sha256": "6c9b896a1977f411181584fd3031f6486df73637d4db1d45b769b38749f96e08"
     },
     {
       "path": "tools/workspace_policy.py",
@@ -1852,11 +1999,18 @@
       "sha256": "a0d90523b732688dd10c53c5b1dbe0a5f8d0d05affdf84227ddafed73fae9901"
     },
     {
+      "path": "tools/write_t736_image_boot.py",
+      "kind": "source",
+      "source": "mainline/tools/write_t736_image_boot.py",
+      "size": 4221,
+      "sha256": "59e931d9172bbc5b53dfd298d665e44a16cda9d2649d61cf4e5c31fde0253d85"
+    },
+    {
       "path": "userpatches/config/boards/t736-mainline.conf",
       "kind": "source",
       "source": "mainline/userpatches/config/boards/t736-mainline.conf",
-      "size": 367,
-      "sha256": "da660e3e0d8e3ff60a69c2d840366a0d40dded4b02a236e8695164027483f1b2"
+      "size": 803,
+      "sha256": "223e54696bfab840176317a330fce92560fddea0842aebe0ef40f0e122f92b8a"
     },
     {
       "path": "userpatches/config/boards/t736-mainline.wip",
@@ -1869,8 +2023,43 @@
       "path": "userpatches/config/sources/families/t736-mainline.conf",
       "kind": "source",
       "source": "mainline/userpatches/config/sources/families/t736-mainline.conf",
-      "size": 1763,
-      "sha256": "52f0ee2e276494584328d907003d2bac6ceb46d149c4ae721f925063b3e02700"
+      "size": 1662,
+      "sha256": "0e4ae5a2a2d865ede1048a0be2277e02030b0a11c791574f4ff539c943a021e8"
+    },
+    {
+      "path": "userpatches/config/t736-display/30-t736-x11-blank.conf",
+      "kind": "source",
+      "source": "mainline/userpatches/config/t736-display/30-t736-x11-blank.conf",
+      "size": 60,
+      "sha256": "414fae48ec32dd5c480951447b4dbddfa1be1e658be268ce2197552ac2a50502"
+    },
+    {
+      "path": "userpatches/config/t736-display/95-t736-greeter",
+      "kind": "source",
+      "source": "mainline/userpatches/config/t736-display/95-t736-greeter",
+      "size": 124,
+      "sha256": "8e85a28ab2ae1404a5e17cb00d7db7c221a9a5f00de28aeb3de0b3d96e1aad60"
+    },
+    {
+      "path": "userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch",
+      "kind": "source",
+      "source": "mainline/userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch",
+      "size": 30650,
+      "sha256": "86aec2dd2ea99fd73a1a91bab8c28a8aaf72c8b5b1016e804873877e9c34945f"
+    },
+    {
+      "path": "userpatches/kernel/t736-mainline-6.18/0002-t736-main-pio-layout.patch",
+      "kind": "source",
+      "source": "mainline/userpatches/kernel/t736-mainline-6.18/0002-t736-main-pio-layout.patch",
+      "size": 4665,
+      "sha256": "bf891a0283341fd2ba9cc3f6a883d651f9146d3d0e231d48e3ea792a11fff580"
+    },
+    {
+      "path": "userpatches/kernel/t736-mainline-6.18/0003-sunxi-first-populated-irq-bank.patch",
+      "kind": "source",
+      "source": "mainline/userpatches/kernel/t736-mainline-6.18/0003-sunxi-first-populated-irq-bank.patch",
+      "size": 834,
+      "sha256": "c8812d2a832ad65c9b6fdbbedcd1f3704545e1f81a423a8f152cc69be181960a"
     },
     {
       "path": "userpatches/linux-t736-mainline-current.config",
@@ -1883,8 +2072,15 @@
       "path": "userpatches/t736-media-acceptance.py",
       "kind": "source",
       "source": "mainline/userpatches/t736-media-acceptance.py",
-      "size": 19391,
-      "sha256": "fc2f2a58da4e38141f603e1efcdb19966c9cc24bb28f9a80e8f5c8bc26400d27"
+      "size": 20476,
+      "sha256": "93a426fb01f9cb56991b0c8669c348c8ba03f40522ad082e7f48a0b7ef052474"
+    },
+    {
+      "path": "userpatches/u-boot/u-boot-t736-mainline/0001-t736-uart-memory-mmc.patch",
+      "kind": "source",
+      "source": "mainline/userpatches/u-boot/u-boot-t736-mainline/0001-t736-uart-memory-mmc.patch",
+      "size": 13988,
+      "sha256": "378d2bf542bdfbc470caede39f856b45a4231aaa01941a0bb5899b367c06a923"
     }
   ]
 }

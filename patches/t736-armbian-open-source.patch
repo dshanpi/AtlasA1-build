@@ -4,10 +4,10 @@
 
 diff --git a/userpatches/config/boards/t736-mainline.conf b/userpatches/config/boards/t736-mainline.conf
 new file mode 100644
-index 0000000..51d1487
+index 0000000..1d82e81
 --- /dev/null
 +++ b/userpatches/config/boards/t736-mainline.conf
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,19 @@
 +# T736 Aurora/Atlas open SBC board definition for Armbian.
 +# This file is also emitted by tools/export_t736_armbian_patch.py.
 +BOARD_NAME="T736 Aurora/Atlas"
@@ -18,12 +18,21 @@ index 0000000..51d1487
 +SERIALCON="ttyS0"
 +BOOT_FDT_FILE="allwinner/t736-mainline-bringup.dtb"
 +HAS_VIDEO_OUTPUT="yes"
++
++function post_family_tweaks__t736_display_idle() {
++    [[ "${BUILD_DESKTOP:-no}" == yes ]] || return 0
++    local files="${USERPATCHES_PATH}/config/t736-display"
++    install -D -m 0644 "${files}/30-t736-x11-blank.conf" "${SDCARD}/etc/X11/xorg.conf.d/30-t736-x11-blank.conf"
++    if [[ -d "${SDCARD}/usr/share/gdm/dconf" ]]; then
++        install -m 0644 "${files}/95-t736-greeter" "${SDCARD}/usr/share/gdm/dconf/95-t736-greeter"
++    fi
++}
 diff --git a/userpatches/config/sources/families/t736-mainline.conf b/userpatches/config/sources/families/t736-mainline.conf
 new file mode 100644
-index 0000000..2a086f8
+index 0000000..269aedd
 --- /dev/null
 +++ b/userpatches/config/sources/families/t736-mainline.conf
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,41 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +# Independent board family. Do not include sun60iw2 vendor families.
 +ARCH="arm64"
@@ -41,24 +50,22 @@ index 0000000..2a086f8
 +KERNEL_EXTRA_DRIVERS="no"
 +SERIALCON="ttyS0"
 +
-+# The independent T736 U-Boot patch produces a conventional u-boot.bin.  Keep
-+# the raw placement identical to the tested boot layout: 8 KiB offset, 1 KiB
-+# alignment.  This is deliberately small and auditable; it does not invoke
-+# Tina packers or silently substitute a vendor loader.
++function prepare_image_size__t736_require_source_layout() {
++    if [[ ${USE_HOOK_FOR_PARTITION:-no} != yes || ${FIXED_IMAGE_SIZE:-0} != 8192 ]]; then
++        exit_with_error "T736 requires the source packer's 8 GiB GPT and root partition 4; the generic Armbian partitioner cannot create this image"
++        return 1
++    fi
++}
++
 +write_uboot_platform() {
-+	local uboot_dir="$1"
-+	local device="$2"
-+	local image="${uboot_dir}/u-boot.bin"
-+	[[ -f "${image}" ]] || exit_with_error "T736: missing ${image}"
-+	# The licensed fixed LPDDR4x training stage is supplied out-of-tree. When
-+	# the integration entrypoint provides it, place it at the board's raw boot
-+	# offset before the independently built U-Boot. Without this input the
-+	# build is intentionally rejected by the entrypoint as incomplete.
-+	local ddr_spl="${T736_VENDOR_ROOT:-}/boot/t736-ddr-spl.bin"
-+	if [[ -f "${ddr_spl}" ]]; then
-+		dd if="${ddr_spl}" of="${device}" conv=fsync bs=512 seek=0 status=none
-+	fi
-+	dd if="${image}" of="${device}" conv=fsync bs=1024 seek=8 status=none
++    local bundle="${USERPATCHES_PATH:-}/t736-private"
++    if [[ -z ${SDCARD:-} || -z ${USERPATCHES_PATH:-} || ! -f "${bundle}/tools/write_t736_image_boot.py" ]]; then
++        printf '%s\n' "T736 boot installation requires the build image, fixed eGON SPL, and stage64/TF-A/U-Boot source package" >&2
++        return 1
++    fi
++    python3 "${bundle}/tools/write_t736_image_boot.py" "${SDCARD}.raw" \
++        "${bundle}/vendor/boot/t736-ddr-spl.bin" "${bundle}/vendor/boot/t736-source-package.bin" \
++        "${1}/u-boot.bin" --loop "${2}"
 +}
 +
 +setup_write_uboot_platform() {
@@ -69,21 +76,22 @@ index 0000000..2a086f8
 +}
 diff --git a/userpatches/t736-media-acceptance.py b/userpatches/t736-media-acceptance.py
 new file mode 100644
-index 0000000..293ab72
+index 0000000..1280de8
 --- /dev/null
 +++ b/userpatches/t736-media-acceptance.py
-@@ -0,0 +1,371 @@
+@@ -0,0 +1,393 @@
 +#!/usr/bin/env python3
 +"""Run bounded, non-display T736 Cedar/GStreamer media acceptance tests.
 +
 +The tool intentionally reports ``pending`` when a required fixture, GStreamer
 +component, encoder, or zero-copy proof is absent.  It never treats software
 +fallback (decodebin, avdec_*, or a successful process exit without frames) as
-+hardware acceptance.  All pipelines end in fakesink and do not touch HDMI/X11.
++hardware acceptance.  Decoded output ends in fakesink. Encoded output is verified in a temporary file.
 +"""
 +from __future__ import annotations
 +
 +import argparse
++from fractions import Fraction
 +import json
 +import os
 +import platform
@@ -94,6 +102,7 @@ index 0000000..293ab72
 +import shutil
 +import subprocess
 +import sys
++import tempfile
 +import time
 +from typing import Any
 +
@@ -101,11 +110,7 @@ index 0000000..293ab72
 +STATUSES = ("pass", "fail", "pending")
 +FPS_RE = re.compile(r"(?:rendered|frames)[:= ]+([0-9]+)")
 +DROP_RE = re.compile(r"(?:dropped|drop)[:= ]+([0-9]+)")
-+# ``fpsdisplaysink`` prints decimal rates such as ``average: 59.98 fps``.
-+# Match both the decimal point and the trailing ``fps`` form.
-+FPS_VALUE_RE = re.compile(
-+    r"(?:fps|avg)[^0-9]*([0-9]+(?:\.[0-9]+)?)|"
-+    r"([0-9]+(?:\.[0-9]+)?)\s*fps", re.I)
++FPS_VALUE_RE = re.compile(r"(?:average:\s*|avg[:= ]+)([0-9]+(?:\.[0-9]+)?)", re.I)
 +
 +
 +def result(status: str, reason: str, **fields: Any) -> dict[str, Any]:
@@ -151,7 +156,7 @@ index 0000000..293ab72
 +    raise ValueError(f"unsupported codec: {codec}")
 +
 +
-+def make_pipeline(path: Path, codec: str, decoder: str, *, loop: bool = False) -> str:
++def make_pipeline(path: Path, codec: str, decoder: str, *, caps: str, paced: bool) -> str:
 +    parser, _, _ = codec_elements(codec)
 +    # Annex-B fixtures are preferred because the parser/decoder is explicit.
 +    # MP4/MKV still use a demuxer but never decodebin, so a software decoder
@@ -167,17 +172,38 @@ index 0000000..293ab72
 +        source = f"filesrc location={shlex.quote(str(path))} ! {parser}"
 +    else:
 +        source = f"filesrc location={shlex.quote(str(path))} ! {demux} ! {parser}"
-+    # fakesink keeps the test headless.  fpsdisplaysink supplies frame and
-+    # drop counters; sync=false measures decoder throughput without display.
-+    repeat = " ! queue max-size-buffers=0 max-size-bytes=0 max-size-time=0" if loop else ""
-+    return (f"{source}{repeat} ! {decoder} ! video/x-raw ! fpsdisplaysink "
-+            "text-overlay=false video-sink=fakesink sync=false signal-fps-measurements=true")
++    sync = "true" if paced else "false"
++    return (f"{source} ! {decoder} ! {caps} ! fpsdisplaysink "
++            f"text-overlay=false video-sink=fakesink sync={sync}")
++
++
++def video_info(path: Path, *, count_frames: bool = False) -> dict:
++    cmd = ["ffprobe", "-v", "error", "-select_streams", "v:0"]
++    if count_frames:
++        cmd.append("-count_frames")
++    cmd.extend(["-show_entries", "stream=width,height,codec_name,avg_frame_rate,nb_read_frames",
++                "-of", "json", str(path)])
++    data = subprocess.check_output(cmd, text=True, timeout=60)
++    return json.loads(data)["streams"][0]
++
++
++def cedar_irqs() -> int | None:
++    try:
++        lines = Path("/proc/interrupts").read_text().splitlines()
++    except OSError:
++        return None
++    for line in lines:
++        if "t736-cedar-wc" in line:
++            match = re.search(r":\s*((?:\d+\s+)+)", line)
++            return sum(map(int, match[1].split())) if match else None
++    return None
 +
 +
 +def run_pipeline(gst_launch: str, pipeline: str, timeout_s: float) -> dict[str, Any]:
 +    env = os.environ.copy()
 +    env.setdefault("GST_DEBUG", "2")
-+    argv = [gst_launch, "-e"] + shlex.split(pipeline, posix=True)
++    env["LC_ALL"] = "C"
++    argv = [gst_launch, "-v", "-e"] + shlex.split(pipeline, posix=True)
 +    started = time.monotonic()
 +    try:
 +        proc = subprocess.run(argv, text=True, stdout=subprocess.PIPE,
@@ -209,14 +235,8 @@ index 0000000..293ab72
 +
 +
 +def parse_float(text: str, pattern: re.Pattern[str]) -> float | None:
-+    values = []
-+    for match in pattern.findall(text):
-+        # FPS_VALUE_RE has two capture groups so accept either form.
-+        if isinstance(match, tuple):
-+            match = next((value for value in match if value), "")
-+        if match:
-+            values.append(float(match))
-+    return values[-1] if values else None
++    values = pattern.findall(text)
++    return float(values[-1]) if values else None
 +
 +
 +def run_decode(name: str, path: Path | None, codec: str, expected_fps: float,
@@ -232,54 +252,39 @@ index 0000000..293ab72
 +    if missing:
 +        return result("pending", "missing GStreamer elements", test=name,
 +                      fixture=str(path), missing=missing)
-+    pipeline = make_pipeline(path, codec, decoder)
++    try:
++        info = video_info(path)
++        fps = float(Fraction(info["avg_frame_rate"]))
++    except (OSError, KeyError, IndexError, ValueError, ZeroDivisionError, subprocess.SubprocessError) as exc:
++        return result("pending", f"could not verify fixture metadata: {exc}", test=name)
++    size = (info["width"], info["height"])
++    wanted = {"1080p60": (1920, 1080), "4k": (3840, 2160)}.get(name)
++    if (wanted and size != wanted) or info["codec_name"] != codec or fps + .15 < expected_fps:
++        return result("pending", "fixture dimensions, frame rate or codec do not match the test",
++                      test=name, fixture_info=info)
++    caps = f"video/x-raw,width={size[0]},height={size[1]}"
++    pipeline = make_pipeline(path, codec, decoder, caps=caps, paced=sustained)
++    before = cedar_irqs()
 +    run = run_pipeline(args.gst_launch, pipeline, timeout_s or args.timeout)
-+    frames = run.get("frames") or 0
-+    dropped = run.get("dropped")
++    after = cedar_irqs()
++    irqs = after - before if after is not None and before is not None else None
++    observation = dict(test=name, fixture=str(path), fixture_info=info, expected_fps=expected_fps,
++                       pipeline=pipeline, irq_delta=irqs, **run)
 +    if run["timed_out"] and not sustained:
-+        return result("fail", "pipeline exceeded timeout", test=name, fixture=str(path),
-+                      expected_fps=expected_fps, pipeline=pipeline, **run)
-+    if run["timed_out"] and sustained:
-+        if frames <= 0 or run.get("dropped") not in (None, 0):
-+            return result("fail", "long-play timeout had no clean frame stream", test=name, fixture=str(path),
-+                          expected_fps=expected_fps, pipeline=pipeline, **run)
-+        observed = run.get("fps")
-+        if observed is None:
-+            return result("pending", "long-play ran for the target interval but fps was not reported",
-+                          test=name, fixture=str(path), expected_fps=expected_fps,
-+                          pipeline=pipeline, **run)
-+        if observed + 1.0 < expected_fps:
-+            return result("fail", "long-play observed decoder rate below target", test=name,
-+                          fixture=str(path), expected_fps=expected_fps, observed_fps=observed,
-+                          pipeline=pipeline, **run)
-+        return result("pass", "pipeline sustained the target interval with no reported drops",
-+                      test=name, fixture=str(path), expected_fps=expected_fps,
-+                      observed_fps=observed, pipeline=pipeline, **run)
-+    if run["returncode"] != 0:
-+        return result("fail", "GStreamer pipeline failed", test=name, fixture=str(path),
-+                      expected_fps=expected_fps, pipeline=pipeline, **run)
-+    if frames <= 0:
-+        return result("pending", "pipeline exited without measurable rendered frames",
-+                      test=name, fixture=str(path), expected_fps=expected_fps,
-+                      pipeline=pipeline, **run)
-+    # A file may contain fewer frames than a requested rate.  We therefore
-+    # record the observed rate but only pass when fpsdisplaysink reported a
-+    # stable rate and no drops.  The JSON includes all raw data for review.
-+    observed = run.get("fps")
-+    if dropped not in (None, 0):
-+        return result("fail", "decoder reported dropped frames", test=name, fixture=str(path),
-+                      expected_fps=expected_fps, pipeline=pipeline, **run)
-+    if observed is None:
-+        return result("pending", "rendered frames observed but fps was not reported",
-+                      test=name, fixture=str(path), expected_fps=expected_fps,
-+                      pipeline=pipeline, **run)
-+    if observed + 1.0 < expected_fps:
-+        return result("fail", "observed decoder rate below target", test=name, fixture=str(path),
-+                      expected_fps=expected_fps, observed_fps=observed,
-+                      pipeline=pipeline, **run)
-+    return result("pass", "explicit hardware decoder pipeline rendered frames with no drops",
-+                  test=name, fixture=str(path), expected_fps=expected_fps,
-+                  observed_fps=observed, pipeline=pipeline, **run)
++        return result("fail", "pipeline timed out", **observation)
++    if not run["timed_out"] and run["returncode"] != 0:
++        return result("fail", "pipeline returned an error", **observation)
++    if sustained and run["elapsed_seconds"] < timeout_s - .5:
++        return result("pending", "fixture ended before the target wall time", **observation)
++    frames, dropped, observed = run["frames"], run["dropped"], run["fps"]
++    if not frames or observed is None or dropped is None or irqs is None:
++        return result("pending", "frame/drop/rate/IRQ evidence incomplete", **observation)
++    if dropped > 0 or irqs < .95 * frames or observed < .98 * expected_fps:
++        return result("fail", "frame drops, low throughput or missing hardware progress", **observation)
++    if sustained and frames < .98 * max(1, timeout_s - 2) * expected_fps:
++        return result("fail", "insufficient frames over the long-play interval", **observation)
++    return result("pass", "verified OMX output dimensions, frame counters and VE IRQ progress",
++                  **observation)
 +
 +
 +def run_encoder(path: Path | None, codec: str, args: argparse.Namespace,
@@ -289,21 +294,40 @@ index 0000000..293ab72
 +    ok, fixture_reason = fixture_ok(path)
 +    if not ok:
 +        return result("pending", fixture_reason, test="encode", fixture=str(path))
-+    _, _, encoder = codec_elements(codec)
-+    missing = [e for e in (encoder, "videotestsrc", "fakesink") if not elements.get(e, False)]
++    parser, _, encoder = codec_elements(codec)
++    missing = [element for element in (encoder, parser, "y4mdec", "videoconvert", "filesink")
++               if not elements.get(element, False)]
 +    if missing:
-+        return result("pending", "vendor encoder is unavailable", test="encode",
++        return result("pending", "required encoder pipeline elements are unavailable", test="encode",
 +                      fixture=str(path), missing=missing)
-+    # Verify the input can be driven through a raw source and the vendor
-+    # encoder.  The file is only used to make the test input explicit.
-+    pipeline = ("videotestsrc num-buffers=120 ! video/x-raw,width=1920,height=1080,"
-+                "framerate=60/1,format=NV12 ! " + encoder + " ! fakesink sync=false")
-+    run = run_pipeline(args.gst_launch, pipeline, args.timeout)
-+    if run["timed_out"] or run["returncode"] != 0:
-+        return result("fail", "vendor encoder pipeline failed", test="encode",
-+                      fixture=str(path), pipeline=pipeline, **run)
-+    return result("pass", "vendor encoder pipeline completed", test="encode",
-+                  fixture=str(path), pipeline=pipeline, **run)
++    try:
++        source = video_info(path, count_frames=True)
++        expected = int(source["nb_read_frames"])
++    except (OSError, KeyError, IndexError, ValueError, subprocess.SubprocessError) as exc:
++        return result("pending", f"Y4M input could not be verified: {exc}", test="encode")
++    if source["codec_name"] != "rawvideo" or expected < 1:
++        return result("pending", "encoder test requires raw Y4M input frames", test="encode")
++    with tempfile.TemporaryDirectory(prefix="t736-encode-") as directory:
++        encoded = Path(directory) / ("sample.h264" if codec == "h264" else "sample.h265")
++        media = "video/x-h264" if codec == "h264" else "video/x-h265"
++        pipeline = (f"filesrc location={shlex.quote(str(path))} ! y4mdec ! videoconvert ! "
++                    f"{encoder} ! {parser} ! {media},stream-format=byte-stream,alignment=au ! "
++                    f"filesink location={shlex.quote(str(encoded))}")
++        run = run_pipeline(args.gst_launch, pipeline, args.timeout)
++        fields = dict(test="encode", fixture=str(path), input_frames=expected, pipeline=pipeline, **run)
++        if run["timed_out"] or run["returncode"] != 0:
++            return result("fail", "encoder pipeline did not finish successfully", **fields)
++        try:
++            decoded = video_info(encoded, count_frames=True)
++            bytes_encoded = encoded.stat().st_size
++            frames = int(decoded["nb_read_frames"])
++        except (OSError, KeyError, IndexError, ValueError, subprocess.SubprocessError) as exc:
++            return result("fail", f"encoded output could not be decoded: {exc}", **fields)
++        fields.update(decoded=decoded, bytes_encoded=bytes_encoded)
++        if (frames != expected or decoded["codec_name"] != codec or bytes_encoded <= 0
++                or any(decoded[k] != source[k] for k in ("width", "height"))):
++            return result("fail", "encoded stream readback differs from the input format/count", **fields)
++        return result("pass", "explicit OMX encoder output decoded at the expected size and count", **fields)
 +
 +
 +def main() -> int:
@@ -350,7 +374,7 @@ index 0000000..293ab72
 +        write_record(args.output, record)
 +        return 2
 +    names = ["h264parse", "h265parse", "omxh264dec", "omxhevcvideodec", "omxh264enc",
-+             "omxh265enc", "fpsdisplaysink", "fakesink", "videotestsrc"]
++             "omxh265enc", "fpsdisplaysink", "fakesink", "y4mdec", "videoconvert", "filesink"]
 +    elements: dict[str, bool] = {}
 +    inspect_tail: dict[str, str] = {}
 +    for element in names:
@@ -364,6 +388,11 @@ index 0000000..293ab72
 +        record["tests"]["preflight"] = result("pending", "Cedar device nodes are missing or inaccessible")
 +    else:
 +        record["tests"]["preflight"] = result("pass", "Cedar device nodes and GStreamer tools found")
++    if not device_ready:
++        for name in ("1080p60", "4k", "long_play", "stream_switch", "encode", "zero_copy"):
++            record["tests"][name] = result("pending", "Cedar device access is required")
++        write_record(args.output, record)
++        return 2
 +    record["tests"]["1080p60"] = run_decode("1080p60", args.video1080p60, args.codec,
 +                                               60.0, args, elements)
 +    record["tests"]["4k"] = run_decode("4k", args.video4k, args.codec, 30.0, args, elements)
@@ -446,7 +475,7 @@ index 0000000..293ab72
 +    sys.exit(main())
 diff --git a/userpatches/config/linux-t736-mainline-current.config b/userpatches/config/linux-t736-mainline-current.config
 new file mode 100644
-index 0000000..1d7d60c
+index 0000000..28dd843
 --- /dev/null
 +++ b/userpatches/config/linux-t736-mainline-current.config
 @@ -0,0 +1,3135 @@
@@ -3585,9 +3614,29 @@ index 0000000..1d7d60c
 +# end of Kernel hacking
 +
 +CONFIG_IO_URING_ZCRX=y
+diff --git a/userpatches/config/t736-display/30-t736-x11-blank.conf b/userpatches/config/t736-display/30-t736-x11-blank.conf
+new file mode 100644
+index 0000000..240aab8
+--- /dev/null
++++ b/userpatches/config/t736-display/30-t736-x11-blank.conf
+@@ -0,0 +1,3 @@
++Section "ServerFlags"
++    Option "BlankTime" "0"
++EndSection
+diff --git a/userpatches/config/t736-display/95-t736-greeter b/userpatches/config/t736-display/95-t736-greeter
+new file mode 100644
+index 0000000..b10c5d4
+--- /dev/null
++++ b/userpatches/config/t736-display/95-t736-greeter
+@@ -0,0 +1,5 @@
++[org/gnome/desktop/session]
++idle-delay=uint32 0
++
++[org/gnome/settings-daemon/plugins/power]
++sleep-inactive-ac-type='nothing'
 diff --git a/userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch b/userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch
 new file mode 100644
-index 0000000..d1cdf12
+index 0000000..5728276
 --- /dev/null
 +++ b/userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch
 @@ -0,0 +1,985 @@
@@ -4578,7 +4627,7 @@ index 0000000..d1cdf12
 ++builtin_platform_driver(t736_pio_driver);
 diff --git a/userpatches/kernel/t736-mainline-6.18/0002-t736-main-pio-layout.patch b/userpatches/kernel/t736-mainline-6.18/0002-t736-main-pio-layout.patch
 new file mode 100644
-index 0000000..1db9736
+index 0000000..c54565d
 --- /dev/null
 +++ b/userpatches/kernel/t736-mainline-6.18/0002-t736-main-pio-layout.patch
 @@ -0,0 +1,137 @@
@@ -4721,7 +4770,7 @@ index 0000000..1db9736
 + 		pctl->dlevel_field_width = D1_DLEVEL_FIELD_WIDTH;
 diff --git a/userpatches/kernel/t736-mainline-6.18/0003-sunxi-first-populated-irq-bank.patch b/userpatches/kernel/t736-mainline-6.18/0003-sunxi-first-populated-irq-bank.patch
 new file mode 100644
-index 0000000..be7f725
+index 0000000..15d93ed
 --- /dev/null
 +++ b/userpatches/kernel/t736-mainline-6.18/0003-sunxi-first-populated-irq-bank.patch
 @@ -0,0 +1,20 @@
@@ -4747,7 +4796,7 @@ index 0000000..be7f725
 + 		int bank = (pin->pin.number - pin_base) / PINS_PER_BANK;
 diff --git a/userpatches/u-boot/u-boot-t736-mainline/0001-t736-uart-memory-mmc.patch b/userpatches/u-boot/u-boot-t736-mainline/0001-t736-uart-memory-mmc.patch
 new file mode 100644
-index 0000000..3a8b143
+index 0000000..0a64d55
 --- /dev/null
 +++ b/userpatches/u-boot/u-boot-t736-mainline/0001-t736-uart-memory-mmc.patch
 @@ -0,0 +1,499 @@

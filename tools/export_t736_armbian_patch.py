@@ -19,6 +19,9 @@ FILES = [
     (ROOT / "userpatches/t736-media-acceptance.py", "userpatches/t736-media-acceptance.py"),
     (ROOT / "userpatches/linux-t736-mainline-current.config", "userpatches/config/linux-t736-mainline-current.config"),
 ]
+for name in ("30-t736-x11-blank.conf", "95-t736-greeter"):
+    relative = f"userpatches/config/t736-display/{name}"
+    FILES.append((ROOT / relative, relative))
 for path in sorted((ROOT / "userpatches/kernel/t736-mainline-6.18").glob("*.patch")):
     FILES.append((path, f"userpatches/kernel/t736-mainline-6.18/{path.name}"))
 for path in sorted((ROOT / "userpatches/u-boot/u-boot-t736-mainline").glob("*.patch")):
@@ -26,15 +29,16 @@ for path in sorted((ROOT / "userpatches/u-boot/u-boot-t736-mainline").glob("*.pa
 
 
 def patch_for(source: Path, target: str) -> str:
-    raw = source.read_bytes()
+    raw = source.read_bytes().replace(b"\r\n", b"\n")
     if b"\0" in raw:
         raise SystemExit(f"binary input is not allowed in the open patch: {source}")
+    blob_id = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
     text = raw.decode("utf-8")
     lines = text.splitlines(keepends=True)
     out = [
         f"diff --git a/{target} b/{target}\n",
         "new file mode 100644\n",
-        f"index 0000000..{hashlib.sha1(raw).hexdigest()[:7]}\n",
+        f"index 0000000..{blob_id[:7]}\n",
         "--- /dev/null\n",
         f"+++ b/{target}\n",
         f"@@ -0,0 +1,{len(lines)} @@\n",

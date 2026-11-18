@@ -76,6 +76,13 @@
       "kind": "boot",
       "role": "ddr_boot",
       "sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "source": "boot/t736-source-package.bin",
+      "target": "/usr/lib/u-boot/t736-source-package.bin",
+      "kind": "boot",
+      "role": "boot_package",
+      "sha256": "REPLACE_WITH_SHA256"
     }
   ],
   "notes": [

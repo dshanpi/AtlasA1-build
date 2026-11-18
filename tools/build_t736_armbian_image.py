@@ -13,13 +13,14 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import shutil
-import shlex
 import subprocess
 import time
 
+from write_t736_image_boot import load_boot_files
+
 PROJECT = Path(__file__).resolve().parents[1]
 LOCK = PROJECT / "config" / "sources.lock.json"
-BOARD_TEMPLATE = PROJECT / "userpatches" / "config" / "boards" / "t736-mainline.wip"
+BOARD_TEMPLATE = PROJECT / "userpatches" / "config" / "boards" / "t736-mainline.conf"
 FAMILY_TEMPLATE = PROJECT / "userpatches" / "config" / "sources" / "families" / "t736-mainline.conf"
 
 
@@ -67,6 +68,8 @@ def stage_userpatches(armbian: Path) -> dict[str, str]:
     (up / "u-boot").mkdir(exist_ok=True)
     shutil.copy2(BOARD_TEMPLATE, up / "config" / "boards" / "t736-mainline.conf")
     shutil.copy2(FAMILY_TEMPLATE, up / "config" / "sources" / "families" / "t736-mainline.conf")
+    shutil.copy2(PROJECT / "userpatches/t736-media-acceptance.py", up / "t736-media-acceptance.py")
+    copy_tree(PROJECT / "userpatches/config/t736-display", up / "config/t736-display")
     copy_tree(PROJECT / "userpatches" / "kernel" / "t736-mainline-6.18", up / "kernel" / "t736-mainline-6.18")
     copy_tree(PROJECT / "userpatches" / "u-boot" / "u-boot-t736-mainline", up / "u-boot" / "u-boot-t736-mainline")
     config = up / "config" / "linux-t736-mainline-current.config"
@@ -111,7 +114,7 @@ def read_vendor(vendor: Path, stage: Path) -> tuple[Path, dict]:
     required_roles = {
         "gpu_userspace", "pvr_module", "codec_backend", "codec_service",
         "codec_userspace", "codec_config", "browser_bridge",
-        "browser_service", "device_rules", "ddr_boot",
+        "browser_service", "device_rules", "ddr_boot", "boot_package",
     }
     roles = {item.get("role") for item in data.get("files", [])}
     missing_roles = sorted(required_roles - roles)
@@ -130,19 +133,66 @@ def read_vendor(vendor: Path, stage: Path) -> tuple[Path, dict]:
         actual = sha256(payload)
         if len(str(item.get("sha256", ""))) != 64 or item["sha256"].lower() != actual:
             fail(f"vendor hash mismatch: {source} ({actual})")
+    boot_paths = {"ddr_boot": "boot/t736-ddr-spl.bin", "boot_package": "boot/t736-source-package.bin"}
+    for role, relative in boot_paths.items():
+        if [item["source"] for item in data["files"] if item["role"] == role] != [relative]:
+            fail(f"expected exactly one {role} input at {relative}")
+    try:
+        load_boot_files(root / boot_paths["ddr_boot"], root / boot_paths["boot_package"])
+    except ValueError as exc:
+        fail(str(exc))
     return root, data
 
 
 def write_customize(armbian: Path, vendor_root: Path, manifest: Path) -> None:
     up = armbian / "userpatches"
-    target = up / "customize-image.sh"
-    shutil.copy2(PROJECT / "tools" / "t736-customize-image.sh", target)
-    target.chmod(0o755)
-    (up / "t736-vendor.env").write_text(
-        f"export T736_PROJECT_ROOT={shlex.quote(str(PROJECT))}\n"
-        f"export T736_VENDOR_ROOT={shlex.quote(str(vendor_root))}\n"
-        f"export T736_VENDOR_MANIFEST={shlex.quote(str(manifest))}\n"
-    )
+    # Only paths below userpatches are guaranteed to travel into the Armbian
+    # build container. Keep these on the build host, outside the rootfs overlay.
+    bundle = up / "t736-private"
+    bundle.mkdir(exist_ok=True)
+    (bundle / ".gitignore").write_text("*\n", newline="\n")
+    for relative in (
+        "tools/t736-customize-image.sh", "tools/finalize_t736_media_rootfs.py",
+        "tools/write_t736_image_boot.py", "tools/pack_armbian_raw_v6.py",
+        "tools/pack_boot_validation.py", "tools/pack_t736_media_v28_boot.py",
+        "userpatches/t736-media-acceptance.py", "config/desktop-v7-packages.txt",
+        "config/gpu-userspace-gnome.desktop", "config/gpu-userspace-x11.env",
+        "config/gpu-userspace-run.sh", "userpatches/config/t736-display/95-t736-greeter",
+        "userpatches/config/t736-display/30-t736-x11-blank.conf",
+    ):
+        target = bundle / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(PROJECT / relative, target)
+    for relative in ["manifest.json", *(item["source"] for item in json.loads(manifest.read_text())["files"])]:
+        target = bundle / "vendor" / relative
+        source = vendor_root / relative
+        if source.resolve() != target.resolve():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+
+    # The pinned framework sources customize-image-host.sh, then runs
+    # customize-image.sh *inside* the target. The host hook can chroot and can
+    # see the private inputs. Keep any other board hooks and their settings.
+    host_hook = up / "customize-image-host.sh"
+    previous = host_hook.read_text() if host_hook.exists() else "#!/usr/bin/env bash\n"
+    marker = "# T736 media rootfs customization"
+    if marker not in previous.splitlines():
+        with host_hook.open("a", encoding="utf-8", newline="\n") as stream:
+            if not host_hook.stat().st_size:
+                stream.write(previous)
+            stream.write("""
+# T736 media rootfs customization
+if [[ "${BOARD:-}" == t736-mainline ]]; then
+    SDCARD="${SDCARD:?}" T736_PROJECT_ROOT="$USERPATCHES_PATH/t736-private" \\
+        T736_VENDOR_ROOT="$USERPATCHES_PATH/t736-private/vendor" \\
+        T736_VENDOR_MANIFEST="$USERPATCHES_PATH/t736-private/vendor/manifest.json" \\
+        bash "$USERPATCHES_PATH/t736-private/tools/t736-customize-image.sh"
+fi
+""")
+    chroot_hook = up / "customize-image.sh"
+    if (not chroot_hook.exists() or
+            '${T736_VENDOR_MANIFEST:?missing vendor manifest}' in chroot_hook.read_text()):
+        chroot_hook.write_text("#!/usr/bin/env bash\nexit 0\n", newline="\n")
 
 
 def main() -> int:
@@ -186,15 +236,16 @@ def main() -> int:
         "image_output": str(armbian / "output"),
     }
     (stage / "t736-build-inputs.json").write_text(json.dumps(record, indent=2) + "\n")
-    if args.check_only:
+    if args.check_only or not args.run:
         print(json.dumps(record, indent=2))
         return 0
-    env = os.environ.copy()
-    env.update({"T736_PROJECT_ROOT": str(PROJECT), "T736_VENDOR_ROOT": str(vendor_root), "T736_VENDOR_MANIFEST": str(vendor_manifest)})
     command = ["./compile.sh", "BOARD=t736-mainline", f"BRANCH={args.branch}", f"RELEASE={args.release}",
-               "BUILD_DESKTOP=yes", "DESKTOP_APPGROUPS_SELECTED=gnome", "EXPERT=yes",
+               "BUILD_DESKTOP=yes", "DESKTOP_ENVIRONMENT=gnome", "DESKTOP_TIER=full", "EXPERT=yes",
                "BUILD_MINIMAL=no", "SHARE_LOG=no", f"JOBS={args.jobs}"]
     print("running:", " ".join(command))
+    # The board family's boot writer also consumes the DDR payload in this tree.
+    env = dict(os.environ, T736_VENDOR_ROOT=str(armbian / "userpatches/t736-private/vendor"),
+               T736_PROJECT_ROOT=str(PROJECT), T736_VENDOR_MANIFEST=str(vendor_manifest))
     subprocess.run(command, cwd=armbian, env=env, check=True)
     return 0
 

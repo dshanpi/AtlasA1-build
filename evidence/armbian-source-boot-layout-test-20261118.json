@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-18",
+  "test": "Armbian family write_uboot_platform on a Linux build host with a disposable sparse file and its loop device",
+  "image_bytes": 8589934592,
+  "logical_sector_bytes": 512,
+  "partition_map": "tools/pack_armbian_raw_v6.py:gpt, as used by tools/pack_t736_source_boot.py",
+  "source_spl": {
+    "lba": 16,
+    "bytes": 221184,
+    "sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea"
+  },
+  "source_boot_package": {
+    "lba": 24576,
+    "bytes": 326144,
+    "sha256": "4742e0d36c2f35c9b58e4b70fad657fb7d265248451c3f618b46ab07b84385f0"
+  },
+  "positive": [
+    "Matching source U-Boot, exact fixed GPT and matched Linux loop mapping",
+    "Both payloads read back byte-for-byte at their respective LBAs",
+    "Primary GPT, compatibility mirror, backup GPT and root partition sentinel preserved",
+    "Second invocation succeeded with the same bytes"
+  ],
+  "negative": [
+    "Default Armbian partition configuration rejected before image creation",
+    "Non-block target rejected",
+    "Wrong standalone U-Boot rejected with both boot slots still empty",
+    "Corrupt compatibility GPT mirror rejected with both boot slots still empty"
+  ],
+  "remaining": "The public Armbian board definition still needs a partition creation hook that generates the matching layout and an integrated U-Boot configuration that reproduces the package. This test did not build or boot a complete image."
+}

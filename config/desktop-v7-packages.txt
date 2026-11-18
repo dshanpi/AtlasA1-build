@@ -9,6 +9,10 @@ gnome-settings-daemon
 # GTK media needs glsinkbin/glupload/glcolorconvert with --no-install-recommends.
 gstreamer1.0-gl
 gstreamer1.0-tools
+# Demuxers, H.264/HEVC parsers, frame counters and stream inspection.
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+ffmpeg
 nautilus
 gnome-console
 gnome-text-editor

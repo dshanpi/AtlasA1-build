@@ -363,6 +363,8 @@ install -m 755 "$runtime_tool" "$stage/usr/local/sbin/t736-gpu-runtime-check"
 install -m 755 "$state/gpu-helpers/t736-mutter-1080p" "$stage/usr/local/sbin/t736-mutter-1080p"
 install -m 755 "$root/config/gpu-v10/t736-hdmi-session-init.sh" "$stage/usr/local/sbin/t736-hdmi-session-init"
 install -D -m 644 "$root/config/gpu-v10/t736-hdmi-session-init.desktop" "$stage/etc/xdg/autostart/t736-hdmi-session-init.desktop"
+install -D -m 644 "$root/userpatches/config/t736-display/95-t736-greeter" "$stage/usr/share/gdm/dconf/95-t736-greeter"
+install -D -m 644 "$root/userpatches/config/t736-display/30-t736-x11-blank.conf" "$stage/etc/X11/xorg.conf.d/30-t736-x11-blank.conf"
 # Preserve the tested physical 1080p layout for both login and user sessions;
 # account paths/ownership come from the copied rootfs, not host passwd entries.
 for account in t736 Debian-gdm; do
@@ -406,6 +408,7 @@ paths += ['/usr/share/t736-gpu-profile/20-t736-modesetting-1080p.conf',
           '/usr/local/sbin/t736-gpu-profile', '/usr/local/sbin/t736-gpu-runtime-check',
           '/usr/local/sbin/t736-mutter-1080p', '/usr/local/sbin/t736-hdmi-session-init',
           '/etc/xdg/autostart/t736-hdmi-session-init.desktop',
+          '/usr/share/gdm/dconf/95-t736-greeter', '/etc/X11/xorg.conf.d/30-t736-x11-blank.conf',
           '/usr/local/lib/t736-validation/t736-cpu-clock-readonly-storage-v16.ko',
           '/home/t736/.config/monitors.xml', '/var/lib/gdm3/.config/monitors.xml',
           '/etc/sysctl.d/90-t736-console.conf']

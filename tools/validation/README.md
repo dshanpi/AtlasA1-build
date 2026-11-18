@@ -76,20 +76,27 @@ python3 tools/validation/verify_source_v7_gpt.py \
 
 ## Cedar 媒体验收（无显示输出）
 
-`media_acceptance.py` 只在已经启动的板上运行，所有 GStreamer 流程以 `fakesink` 结束，不切换 HDMI、不连接 X11，也不自动烧录或重启。它要求显式 OMX 解码器（`omxh264dec` 或 `omxhevcvideodec`），不会把 `decodebin`、`avdec_*` 或“进程退出码为 0”当成硬解通过。
+`media_acceptance.py` 使用 GStreamer 的显式 OMX 解码器和 `fakesink`。运行用户需能读写两个 Cedar 节点，环境需指定私有 OMX 配置和插件路径。工具使用 `ffprobe` 核对输入分辨率、帧率与编码格式。编码测试读取 Y4M 文件，将厂家编码器的输出写入临时文件，再解码核对格式、分辨率及帧数。
 
 ```sh
 python3 tools/validation/media_acceptance.py \
   --output /var/tmp/t736-media-acceptance.json \
-  --video1080p60 /root/media/1080p60.h264 \
-  --video4k /root/media/4k.h264 \
-  --long-input /root/media/long.h264 --long-seconds 600 \
-  --switch-a /root/media/a.h264 --switch-b /root/media/b.h264 \
-  --encode-input /root/media/encode-reference.y4m \
+  --video1080p60 /var/tmp/media/1080p60.h264 \
+  --video4k /var/tmp/media/4k.h264 \
+  --long-input /var/tmp/media/long.h264 --long-seconds 600 \
+  --switch-a /var/tmp/media/a.h264 --switch-b /var/tmp/media/b.h264 \
+  --encode-input /var/tmp/media/encode-reference.y4m \
   --codec h264
 ```
 
-输入文件、Cedar 设备节点、GStreamer 工具或厂家 encoder 缺失时，结果为 `pending`。每个测试保存实际 pipeline、原始日志尾部、渲染帧数、丢帧数和测得帧率。长时测试只有在达到时间上限且持续有帧、无丢帧时才通过；文件提前结束不会伪装成长时通过。没有提供 `--switch-command` 时，双流仅做两个显式 decoder session 的重开 smoke test，切流项保持 `pending`。切流 helper 必须在同一进程完成 flush/reconfigure，并输出 `T736_SWITCH_FRAMES=<n>` 与 `T736_SWITCH_DROPS=<n>`。零拷贝保持 `pending`，除非另行提供 `video/x-raw(memory:DMABuf)` caps 和 fd 生命周期证据。任何 pipeline 错误返回 `fail`，总体状态按 `fail`、`pending`、`pass` 优先级汇总，未完全通过时进程退出码为 2。
+长播启用 GStreamer 时钟同步，记录指定墙钟时长内累计的输出帧、丢帧、平均帧率和 VE 中断。输入提前结束或缺少必要计数时记录 `pending`。顺序重新打开两个文件单独记录，切流仍需同进程的切换测试。SHM 路径的端到端零拷贝保持待验证。总状态为 `pending` 或 `fail` 时退出码为 2。
+
+`firefox_headless_playback.py` 通过临时 Firefox profile 播放本地 MP4。以 root 执行时，脚本以普通桌面用户运行 Firefox，保留 RDD 沙箱，通过本机 HTTP 收集页面的帧计数，并核对 VE 中断以及同次 broker 会话。测量窗口默认 20 秒，另有约 2 秒预热。结果反映 Firefox 离屏呈现，实体 HDMI 扫描输出须另行测量。
+
+```sh
+python3 tools/validation/firefox_headless_playback.py \
+  /var/tmp/media/hevc-1080p60-1800.mp4 --output /var/tmp/browser60.json
+```
 
 ## 帧缓冲抓图
 

@@ -4,39 +4,39 @@
 
 **当前仓库是源码与证据检查点，不能仅下载 Armbian build、套用补丁，就生成与最后实板状态相同的完整镜像。** 内核/U-Boot 的板级改动、补丁、配置及构建入口已上传；上游完整源码按各阶段锁定输入取得。授权 DDR/GPU/codec 二进制、私人采集和账户凭据不在公开仓库。
 
-以下状态来自 2026-11-18 的源码整理、构建机测试和已归档实板结果；媒体 v29 候选仍需匹配内核重新上板。完整问题、下一步和通过标准见 [机器可读问题登记](../evidence/source-project-issues-20261117.json)。P0 是完整镜像交付的前置项，P1 是重要使用/稳定性问题，P2 是独立功能或替代实现。
+2026-11-18 的实板记录已覆盖 v29 从 eMMC 重启、PVR 自动加载、GDM 和 Cedar 的 4K 解码尝试。P0 是完整镜像交付的前置项，P1 是重要使用或稳定性问题，P2 是独立功能或替代实现。[v29 实板记录](../evidence/atlas-display-media-v29-reboot-20261118.json)
 
 | 编号 | 优先级 | 问题 | 状态与后续 |
 |---|---|---|---|
-| BUILD-01 | P0 | 完整镜像可重建流程 | 已补齐源码入口 `tools/build_t736_armbian_image.py`；已通过锁定 Armbian checkout 的 `--check-only`。Linux 构建机全量运行、厂家输入归档和实板验收仍待完成。 |
-| BUILD-02 | P0 | 运行内核与持久启动不一致 | 未完成；选定最终内核/DTB/PVR组合，纳入rootfs和镜像，保留可验证恢复入口。 |
-| BUILD-03 | P0 | 私有库与桌面配置打包 | 已加入外部 vendor manifest、SHA256 校验和 `customize-image.sh`；实际厂家包、服务版本和 rootfs 安装结果仍待在 Linux 构建机运行。 |
+| BUILD-01 | P0 | 完整镜像可重建流程 | 构建入口通过锁定 Armbian checkout 的 `--check-only`。已在已有 GNOME rootfs 副本验证安装，仍需从干净源码构建完整镜像并冷启动验收。 |
+| BUILD-02 | P0 | 内核、DTB 与 PVR 配套 | v29 实板从 eMMC 重启后已自动加载 PVR，GDM 为 1080p60。最终分发镜像还需复验。 |
+| BUILD-03 | P0 | 私有库与桌面配置打包 | 构建机用 v29 厂家包、已有 GNOME 根文件系统副本和 `customize-image-host.sh` 验证了 PVR 包安装、目标内核模块索引和 Cedar socket 启用。完整镜像冷启动另行验收。 |
 | MEDIA-01 | P1 | 浏览器1080p60硬解 | 未通过；在正确连接硬解服务后测量解码、传输和显示时序，保持原始时间戳、沙箱和丢帧统计。 |
-| MEDIA-02 | P1 | 共享内存客户端与Firefox用户namespace | 源码已适配；使用 root-owned systemd socket、uid_map 解析、SO_PEERCRED、memfd seals 和 DONTFORK。匹配 media-v29 内核上的 Firefox RDD 仍待实板复测。 |
+| MEDIA-02 | P1 | 共享内存客户端与 Firefox 用户 namespace | v29 实板 Firefox RDD 已通过协议 v2 连接 broker。HEVC 1080p60 离屏播放约 20 秒，硬件中断增加 1190，浏览器计入 1190 帧并丢弃 1178 帧。 |
 | MEDIA-03 | P1 | DMA生命周期与通用视频切换 | 未解决；先通过受控重启恢复预算再开展新硬件会话；实现并证明DMA停止/退役条件后才允许回收，测试跨流和并发回退。 |
 | MEDIA-04 | P1 | VE DMA隔离 | 未实现；明确可用IOMMU域、设备映射和所有权设计，单独评审/测试；不把用户态沙箱称为DMA隔离。 |
-| MEDIA-05 | P2 | 视频编码与端到端零拷贝 | 未验收；编码与零拷贝分别立项，完成资源、缓存一致性、帧所有权和格式约束设计。 |
+| MEDIA-05 | P2 | 视频编码与端到端零拷贝 | Tina SDK 已找到四个编码库。实板仍缺 VE2 内核支持和配套运行时，尚无硬编码输出。端到端零拷贝也待验证。 |
 | NET-01 | P1 | 千兆以太网链路 | 未通过；用已在其他设备跑到千兆的线缆和端口对照，再结合PHY状态、错误计数和驱动配置定位。 |
 | DDR-01 | P2 | 纯源码LPDDR4x训练/ZCal | 未解决，当前使用授权库；保留授权库启动基线；后续单独排查ZCal时钟、使能和反馈路径。 |
 | QA-01 | P1 | 完整镜像与长期稳定性验收 | 未完成；镜像集成后制定冷启动/恢复、存储、图形、网络、媒体及音频/热插拔覆盖矩阵。 |
 
 30fps 网页硬解的有界成功与用户“明显流畅了”的反馈均保留；60fps 软件播放或原生解码传输 81.8fps 不能写成浏览器硬解60fps通过。共享内存 namespace 适配已进入 SHM-v2 源码和私有候选；拷贝优化仍是隔离候选，均未宣称浏览器 60fps 或长期稳定性通过。
 
-交付顺序：先统一构建输入与库/桌面安装配置，再生成最终镜像并完成烧录、冷启动和恢复验收，最后针对该固定版本验证网络、媒体与长期稳定性。当前 v29 一次性运行、v16 持久默认和近满的 DMA 保留预算都必须作为续接条件记录，不能直接重启实验服务反复分配。
+完成构建输入集成后，需在同一镜像上验收烧录、冷启动、恢复、网络和长时间媒体播放。v29 中已退役缓冲占用的 Cedar 预算随重启释放，每轮媒体对照需记录初始占用。
 
 
 ## 2026-11-18 媒体接入构建
 
 本轮源码按内核、OMX/WC、backend、传输和 FFmpeg 分开冻结。实际版本见 [浏览器说明](../tools/browser/README.md) 与 `evidence/browser-code-sync-checkpoint-20261117.json`；后面的 v7/v6 镜像章节是历史流程。源码同步不会自动生成新固件或把实验内核设为默认。
 
-- `tools/build_media_v29_candidate.py`：在独立 O 目录构建 v29，复用受保护 v28 源码；启用 `CONFIG_ADVISE_SYSCALLS`、将 CMA 从 256 MiB 提升到 512 MiB 并修改 release。现有 `evidence/media-v29-build-20261117.json` 仍是 256 MiB 构建记录，需重建后生成新的绑定记录。
+- `tools/build_media_v29_candidate.py` 复用 v28 源码，在独立输出目录生成 v29，启用 `CONFIG_ADVISE_SYSCALLS` 并把默认 CMA 从 256 MiB 提升到 512 MiB。v29 实机已确认 `CmaTotal=524288 kB`。
 - `tools/validation/update_t736_media_v29.py --kernel <deb> --pvr <ko>`：默认只检查；`--apply` 仅安装版本化内核/PVR/initrd，核对 v16/v27/v28 及原启动项保持不变。不是一键刷机或默认启动切换工具。
 - `tools/build_cedar_browser_backend.py --work <新的独立目录>`：构建 backend 与无设备检查；已有 v5 产物不可直接覆盖。
 - `tools/build_cedar_shm_transport.py --work <新的独立目录>`：构建 matching wire2 broker/client 和 native/QEMU 测试。纯 ARM64 的 DONTFORK 必须用真实内核验证；QEMU 用户模式结果不能替代该检查。
 - `tools/browser/build_browser_ffmpeg.py`：使用锁定 FFmpeg 7.1.5 输入生成 v8 候选；精确产物以 `build/browser-ffmpeg-build-v2-20261118/` 和媒体集成记录为准。
 - `tools/validation/media_acceptance.py`：显式 OMX/GStreamer 的 1080p60、4K、长播、切流、编码和零拷贝证据入口；缺设备、元素或证据时保持 pending。
 
-媒体候选的 HEVC 1080p/4K 入口要求 `CONFIG_CMA_SIZE_MBYTES=512`，并要求板上 `CmaTotal` 至少约 512 MiB。验收记录需同时保存 `CmaFree`、`/proc/cmdline` 中的 `cma=` 值和 `CdcDmaheapAllocFd` 返回码。当前 v29 实板记录的 256 MiB 池在空闲约 74 MiB 时出现 `errno=28` 与 176x144 输出，属于资源不足的待复测基线，不能作为 1080p/4K 通过结论。
+HEVC 测试需要同时记录系统 CMA 和 Cedar 独立配额。v29 的 512 MiB CMA 测试中，4K 输入提交 64 次、输出硬件帧数为 0，Cedar 已占用 123,863,040 / 134,217,728 字节。v30 从 eMMC 一次性启动后，Cedar 在 256 MiB 配额下开始输出 3840×2160 硬件帧。这次 Firefox 测量计入 599 帧、丢弃 596 帧，同期 VE 中断增加 599。持续实时播放仍待解决。[v29 记录](../evidence/atlas-display-media-v29-reboot-20261118.json) · [v30 实板测量](../evidence/media-v30-4k-browser-hardware-20261118.json)
 
 这些工具依赖私有构建机已锁定的 Tina 工具链、厂商 codec 库和 GStreamer 输入。公开仓库记录源码改动、输入路径及 hash，不分发厂商二进制，也不是从空目录一条命令即可重现全部依赖的系统。安装时必须 root 拥有候选库，启用精确设备权限规则；不把 `/dev/cedar_dev` 或 heap 开放给桌面用户。当前保留的 protocol1 浏览器路径和未推广的 wire2 候选应分别运行，不可混用 endpoint。
 

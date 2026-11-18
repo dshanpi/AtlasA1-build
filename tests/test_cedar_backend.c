@@ -67,7 +67,7 @@ static void test_format(GstVideoFormat fmt, unsigned w, unsigned h)
     cedar_frame out = {0};
     GstSample *sample = sample_for(fmt, TRUE, 2, 2, w, h);
     unsigned cw = (w+1)/2, ch = (h+1)/2;
-    assert(copy_sample(&d, sample, &out) == CEDAR_FRAME);
+    assert(copy_sample(&d, sample, &out, NULL, 0) == CEDAR_FRAME);
     assert(out.width == w && out.height == h);
     assert(out.size == w*h + 2*cw*ch);
     assert(out.pts_ns == 123456789 && out.dts_ns == CEDAR_NOPTS);
@@ -81,6 +81,15 @@ static void test_format(GstVideoFormat fmt, unsigned w, unsigned h)
             assert(out.data[w*h + cw*ch + y*cw+x] == 160 + (y+1)*4 + x+1);
         }
     }
+    uint8_t slot[98];
+    cedar_frame metadata = {0};
+    assert(out.size + 2 <= sizeof(slot));
+    memset(slot, 0x55, sizeof(slot));
+    assert(copy_sample(&d, sample, &metadata, slot + 1, out.size) == CEDAR_FRAME);
+    assert(metadata.data == NULL && metadata.size == out.size && metadata.pts_ns == out.pts_ns);
+    assert(!memcmp(slot + 1, out.data, out.size));
+    assert(slot[0] == 0x55 && slot[1 + out.size] == 0x55);
+    cedar_frame_free(&metadata);
     cedar_frame_free(&out);
     assert(out.data == NULL && out.size == 0);
     ram_pool_close(&d);
@@ -118,7 +127,17 @@ static void test_owned_frames_across_pull_flush_close(void)
     d->bus = gst_element_get_bus(d->pipeline);
     assert(gst_element_set_state(d->pipeline, GST_STATE_PLAYING) != GST_STATE_CHANGE_FAILURE);
     queue_raw_sample(d, 0);
+    uint8_t slot[sizeof(expected) + 2];
+    memset(slot, 0x72, sizeof(slot));
+    cedar_frame metadata = {0};
+    assert(cedar_pull_into(d, NULL, sizeof(expected), &metadata, 1000) == CEDAR_ERROR);
+    assert(cedar_pull_into(d, slot + 1, sizeof(expected) - 1, &metadata, 1000) == CEDAR_ERROR);
+    assert(cedar_pull_into(d, slot + 1, sizeof(expected), &metadata, 1000) == CEDAR_FRAME);
+    assert(metadata.data == NULL && metadata.size == sizeof(expected) && !d->ram_pool);
+    assert(slot[0] == 0x72 && slot[sizeof(slot)-1] == 0x72);
+    queue_raw_sample(d, 0);
     assert(cedar_pull(d, &first, 1000) == CEDAR_FRAME && first.size == sizeof(expected));
+    assert(!memcmp(first.data, slot + 1, sizeof(expected)));
     memcpy(expected, first.data, sizeof(expected));
     queue_raw_sample(d, 1);
     assert(cedar_pull(d, &second, 1000) == CEDAR_FRAME);
@@ -346,7 +365,7 @@ int main(int argc, char **argv)
         GstSample *sample = sample_for(GST_VIDEO_FORMAT_NV21, bad != 0,
                                        bad == 1 ? 1 : 2, 2,
                                        bad == 2 ? 9 : bad == 3 ? 2 : 4, 4);
-        assert(copy_sample(&d, sample, &out) == CEDAR_ERROR);
+        assert(copy_sample(&d, sample, &out, NULL, 0) == CEDAR_ERROR);
         assert(d.failed && out.data == NULL);
         gst_sample_unref(sample);
     }
@@ -362,7 +381,7 @@ int main(int argc, char **argv)
             meta->offset[1] = 140;
         else
             gst_buffer_resize(buffer, 0, 100);
-        assert(copy_sample(&d, sample, &out) == CEDAR_ERROR);
+        assert(copy_sample(&d, sample, &out, NULL, 0) == CEDAR_ERROR);
         assert(d.failed && out.data == NULL);
         gst_sample_unref(sample);
     }

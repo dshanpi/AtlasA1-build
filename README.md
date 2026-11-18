@@ -1,14 +1,9 @@
 # AtlasA1-build
 
-Public Armbian integration for the T736 Aurora/AtlasA1 board.
+Armbian build integration for the DshanPI AtlasA1 (Allwinner T736).
 
-## Build
+Apply `patches/t736-armbian-open-source.patch` to the official Armbian revision in `config/sources.lock.json`, then select `BOARD=t736-mainline`. The patch supplies the board definition, Linux and U-Boot patches, kernel configuration, display defaults, and a board-side media test. The framework fetches its pinned upstream sources.
 
-1. Clone the pinned Armbian framework listed in `config/sources.lock.json`.
-2. Apply `patches/t736-armbian-open-source.patch` at the framework root, or copy the checked-in `userpatches/` tree to `USERPATCHES_PATH`.
-3. Fetch the matching Linux and U-Boot sources and apply the patches from the AtlasA1-linux and AtlasA1-uboot repositories.
-4. Run the commands in `docs/ARMBIAN_REBUILD.md` on a case-sensitive Linux build host.
+The accelerated GNOME image also needs the board's matching LPDDR4x training stage, GPU module and userspace, and Cedar runtime. The build hook verifies the supplied archive, installs the desktop dependencies, indexes the target kernel modules and enables the decoder socket. A clean public-patch build has yet to reproduce the complete image running on the board. [Build commands and matching inputs](docs/ARMBIAN_REBUILD.md)
 
-The build repository contains source and configuration only. It does not contain Tina, DDR, GPU, or codec binaries. Those authorised inputs must be supplied separately and checked against the recorded hashes before a board image is assembled.
-
-Media support is maintained in AtlasA1-media. Its public source and patches can be built independently, while the licensed runtime remains an external input.
+Cedar integration and playback measurements are maintained in [AtlasA1-media](https://github.com/dshanpi/AtlasA1-media). Kernel candidates are maintained in [AtlasA1-linux](https://github.com/dshanpi/AtlasA1-linux).

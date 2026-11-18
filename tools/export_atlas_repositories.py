@@ -17,8 +17,24 @@ from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = {
-    "AtlasA1-build": """# AtlasA1-build\n\nPublic Armbian integration for the T736 Aurora/AtlasA1 board.\n\n## Build\n\n1. Clone the pinned Armbian framework listed in `config/sources.lock.json`.\n2. Apply `patches/t736-armbian-open-source.patch` at the framework root, or copy the checked-in `userpatches/` tree to `USERPATCHES_PATH`.\n3. Fetch the matching Linux and U-Boot sources and apply the patches from the AtlasA1-linux and AtlasA1-uboot repositories.\n4. Run the commands in `docs/ARMBIAN_REBUILD.md` on a case-sensitive Linux build host.\n\nThe build repository contains source and configuration only. It does not contain Tina, DDR, GPU, or codec binaries. Those authorised inputs must be supplied separately and checked against the recorded hashes before a board image is assembled.\n\nMedia support is maintained in AtlasA1-media. Its public source and patches can be built independently, while the licensed runtime remains an external input.\n""",
-    "AtlasA1-linux": """# AtlasA1-linux\n\nLinux 6.18 board, Ethernet, GPU-kernel, and configuration sources for the T736 Aurora/AtlasA1 board.\n\nApply the patches to the pinned Linux commit in `config/sources.lock.json`, then use the build instructions in AtlasA1-build. Hardware acceptance records are kept with the build repository and state the scope of each result.\n""",
+    "AtlasA1-build": """# AtlasA1-build
+
+Armbian build integration for the DshanPI AtlasA1 (Allwinner T736).
+
+Apply `patches/t736-armbian-open-source.patch` to the official Armbian revision in `config/sources.lock.json`, then select `BOARD=t736-mainline`. The patch supplies the board definition, Linux and U-Boot patches, kernel configuration, display defaults, and a board-side media test. The framework fetches its pinned upstream sources.
+
+The accelerated GNOME image also needs the board's matching LPDDR4x training stage, GPU module and userspace, and Cedar runtime. The build hook verifies the supplied archive, installs the desktop dependencies, indexes the target kernel modules and enables the decoder socket. A clean public-patch build has yet to reproduce the complete image running on the board. [Build commands and matching inputs](docs/ARMBIAN_REBUILD.md)
+
+Cedar integration and playback measurements are maintained in [AtlasA1-media](https://github.com/dshanpi/AtlasA1-media). Kernel candidates are maintained in [AtlasA1-linux](https://github.com/dshanpi/AtlasA1-linux).
+""",
+    "AtlasA1-linux": """# AtlasA1-linux
+
+Linux board patches, kernel configurations, Ethernet support, GPU module integration and Cedar driver changes for the DshanPI AtlasA1.
+
+The v30 candidate adds the boot parameter `t736_cedar_wc.heap_limit_mib` to the v29 512 MiB CMA configuration. Its default is 128 MiB, with a 256 MiB upper bound. A one-shot eMMC boot at 256 MiB produced 3840×2160 hardware output. The first Firefox measurement presented 3 of 599 frames. The driver keeps retired imported buffers pinned until reboot. [Build recipe](tools/build_media_v30_candidate.sh) · [Package and module checksums](evidence/media-v30-heap-budget-build-20261118.json) · [Board measurement](evidence/media-v30-4k-browser-hardware-20261118.json)
+
+Armbian integration and pinned upstream revisions are available in [AtlasA1-build](https://github.com/dshanpi/AtlasA1-build).
+""",
     "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL, and LPDDR4x boot sources for the T736 Aurora/AtlasA1 board.\n\nThe board uses a fixed LPDDR4x training input supplied outside this public repository. The source tree documents the expected interface and checks, but does not redistribute the authorised vendor training binary. Build and payload instructions are in AtlasA1-build.\n""",
     "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration and browser transport sources for the T736 Aurora/AtlasA1 board.\n\nThis repository contains public source, patches, tests, and manifests. Vendor codec/GPU libraries remain external inputs. Media acceptance commands and the exact limits of each result are documented in the validation files.\n""",
 }
@@ -51,6 +67,16 @@ def _copy(destination_root: Path, source: Path, relative: Path, records: dict[st
     destination = destination_root / relative
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)
+    # Git stores the public text sources with LF. Hash those same bytes on
+    # every build host, including a Windows checkout with core.autocrlf.
+    data = destination.read_bytes()
+    if b"\r\n" in data and b"\0" not in data:
+        try:
+            data.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+        else:
+            destination.write_bytes(data.replace(b"\r\n", b"\n"))
     records[rel] = (source, "source")
 
 
@@ -108,7 +134,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
         "config/board-facts.json", "config/boot-policy.json", "config/independent-boot-plan.json",
         "config/patch-ledger.json", "config/reference-components.json", "config/source-v10-inputs.json",
         "config/source-v11-inputs.template.json", "config/sources.lock.json", "config/t736-vendor-inputs.example.json",
-        "config/desktop-v7-packages.txt",
+        "config/desktop-v7-packages.txt", "config/gpu-userspace-gnome.desktop",
+        "config/gpu-userspace-x11.env", "config/gpu-userspace-run.sh",
     ):
         _file(ROOT, destination, rel, rel, records)
     for rel in ("config/desktop-v7", "config/gpu-v10"):
@@ -117,10 +144,13 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     # self-contained in the build repository.  The same source is also
     # distributed in the component repositories where it is consumed.
     _tree(ROOT, destination, "boards", "boards", records)
-    for rel in ("userpatches/config",):
+    for rel in ("userpatches/config", "userpatches/kernel/t736-mainline-6.18",
+                "userpatches/u-boot/u-boot-t736-mainline"):
         _tree(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "userpatches/linux-t736-mainline-current.config", "userpatches/linux-t736-mainline-current.config", records)
     _file(ROOT, destination, "userpatches/t736-media-acceptance.py", "userpatches/t736-media-acceptance.py", records)
+    for rel in ("tools/browser/cedarc.conf", "tools/browser/gstomx.conf"):
+        _file(ROOT, destination, rel, rel, records)
     for rel in ("docs/ARMBIAN_REBUILD.md", "docs/BUILD.md", "docs/BOOT_CHAIN.md", "docs/CODE_MAP.md", "docs/ETHERNET.md", "docs/HARDWARE_MAP.md", "docs/VALIDATION.md", "docs/WIRELESS.md", "docs/ATLAS_REPOSITORY_LAYOUT.md"):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, "tests", "tests", records)
@@ -131,9 +161,21 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     for rel in ("tools/build_media_v29_candidate.py", "tools/validation/update_t736_media_v29.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "tools/export_atlas_repositories.py", "tools/export_atlas_repositories.py", records)
-    for rel in ("tools/validation/README.md",):
+    for rel in ("tools/validation/README.md", "tools/validation/ffplay_offscreen.py",
+                "tools/validation/firefox_headless_playback.py", "tools/validation/media_acceptance.py"):
         _file(ROOT, destination, rel, rel, records)
     _file(ROOT, destination, "patches/t736-armbian-open-source.patch", "patches/t736-armbian-open-source.patch", records)
+    for rel in ("patches/linux/media-v30-cedar-heap-quota.patch",
+                "patches/cedar/omx-4k-broker-buffers.patch",
+                "evidence/armbian-source-boot-layout-test-20261118.json",
+                "evidence/media-v30-heap-budget-build-20261118.json",
+                "evidence/media-v30-4k-browser-hardware-20261118.json",
+                "evidence/media-v30-4k-wc-parallel-20261118.json",
+                "evidence/media-v30-parallel-slot-build-20261118.json",
+                "evidence/media-v30-gnome-display-idle-20261118.json",
+                "evidence/media-v30-4k-firefox-dr1-20261118.json",
+                "evidence/atlas-display-media-v29-reboot-20261118.json"):
+        _file(ROOT, destination, rel, rel, records)
     return records
 
 
@@ -143,6 +185,9 @@ def _export_linux(destination: Path) -> dict[str, tuple[Path, str]]:
     for source in sorted((ROOT / "userpatches").glob("linux-t736-*.config")):
         _copy(destination, source, Path("userpatches") / source.name, records)
     _tree(ROOT, destination, "patches/linux", "patches/linux", records)
+    for rel in ("tools/build_media_v30_candidate.sh", "evidence/media-v30-heap-budget-build-20261118.json",
+                "evidence/media-v30-4k-browser-hardware-20261118.json", "config/sources.lock.json"):
+        _file(ROOT, destination, rel, rel, records)
     for source in sorted((ROOT / "patches").glob("pvr-*.patch")):
         _copy(destination, source, Path("patches") / source.name, records)
     for source in sorted((ROOT / "tools").glob("build_*kernel.sh")):
@@ -175,10 +220,26 @@ def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "tools/browser", "tools/browser", records)
     for pattern in ("tools/build_cedar*.py", "tools/build_media*.py", "tools/prepare_media*.py"):
         _glob(ROOT, destination, pattern, "tools", records)
-    for rel in ("tools/install_t736_media_runtime.py", "tools/port_media_iommu.py", "tools/prepare_media_kernel.py"):
+    for rel in ("tools/install_t736_media_runtime.py", "tools/port_media_iommu.py", "tools/prepare_media_kernel.py",
+                "evidence/media-v30-heap-budget-build-20261118.json",
+                "patches/linux/media-v30-cedar-heap-quota.patch", "tools/build_media_v30_candidate.sh"):
         _file(ROOT, destination, rel, rel, records)
     for rel in ("tools/validation/update_t736_media_v29.py", "tools/validation/audit_media_v29_package.py"):
         _file(ROOT, destination, rel, rel, records)
+    for rel in ("tools/validation/firefox_headless_playback.py", "tools/validation/ffplay_offscreen.py",
+                "tests/test_ffmpeg_cedar_dr1.c", "tests/test_cedar_backend.c", "tests/test_cedar_shm_transport.c",
+                "tests/test_cedar_parallel_direct.c", "tools/build_cedar_parallel_slot.sh",
+                "evidence/media-v30-4k-browser-hardware-20261118.json",
+                "evidence/media-v30-4k-wc-parallel-20261118.json",
+                "evidence/media-v30-parallel-slot-build-20261118.json",
+                "evidence/media-v30-gnome-display-idle-20261118.json",
+                "evidence/media-v30-4k-firefox-dr1-20261118.json",
+                "tests/test_cedar_shm_seals.c", "tests/test_cedar_shm_client_fork.c",
+                "evidence/cedar-direct-slot-build-20261118.json",
+                "evidence/atlas-display-media-v29-reboot-20261118.json",
+                "evidence/firefox-headless-hevc1080p60-v8-first-20261118.json"):
+        _file(ROOT, destination, rel, rel, records)
+    _glob(ROOT, destination, "evidence/firefox-hevc1080p60-v8-*-20261118.json", "evidence", records)
     for pattern in ("tools/validation/media_*.py", "tools/validation/browser_*.py", "tools/validation/cedar_*.py", "tools/validation/*nv21*.py", "tools/validation/*omx*.py", "tools/validation/decode_*.py", "tools/validation/build_h264_*.py"):
         # The OMX probe is optional because the current public tree has no
         # standalone *omx*.py validator.  Keep the export deterministic while
