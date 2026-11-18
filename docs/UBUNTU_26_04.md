@@ -23,7 +23,9 @@ bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atl
 
 默认构建使用 v30 内核和双格式 Cedar 服务。在最后一条命令末尾追加 `--pcie-v34`，并指定新的输出目录，即可选用 v34 内核、DTB、PowerVR 模块、initrd 和启动别名。v34 已在 J58 空槽的实板上冷启动，内建驱动枚举出根端口并完成重扫。板载 Wi-Fi 已有 SDIO 主控，仍未枚举无线芯片，蓝牙 UART 也尚未收到 HCI 响应。[v34 干净构建](../evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [PCIe 实测](../evidence/atlasa1-pcie-v34-coldboot-20261118.json) · [无线实测](../evidence/atlasa1-wireless-v33-hardware-20261118.json)
 
-v34 的整盘打包验证复用了 RC1 根文件系统，在其可写叠加层安装 v34 和双格式 Cedar 服务。产出的 8 GiB 镜像通过了 GPT、ext4 文件系统及启动文件回读检查。该镜像保留了原装 Firefox，尚未整盘重刷；v34 的实板冷启动使用已刷 RC1 上的独立启动文件。[整盘打包记录](../evidence/atlasa1-v34-image-integration-20261118.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
+11 月 19 日的 v34 硬件预览复用 RC1 根文件系统，在可写叠加层安装 v34 内核、配套 PowerVR 模块、双格式 Cedar 服务和 Firefox 160 的 Cedar 硬解入口。8 GiB 原始镜像的 SHA-256 为 `80975eb72bf80e53e549e7d4351600719cdc2d09113e30790a03df24e1636622`。离线检查通过了 GPT、ext4 和启动文件回读，并以普通用户核对了 Firefox 入口及 H.264、HEVC 解码器。该预览整盘仍待 FES 重刷和冷启动验证。已通过 FES 整盘烧录的是 RC1，v34 内核的冷启动使用该板 eMMC 上的独立启动文件。[最终预览镜像记录](../evidence/atlasa1-v34-firefox-image-20261119.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
+
+11 月 18 日的早期 v34 整盘也通过了 GPT、ext4 和启动文件回读检查，当时镜像保留了原装 Firefox。[早期镜像记录](../evidence/atlasa1-v34-image-integration-20261118.json)
 
 `/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
 
@@ -37,7 +39,7 @@ Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS
 | IMG X11 和 Cedar/OMX 运行库 | 总入口从上述 SDK 提取匹配的 GPU 固件、IMG 用户态和编解码库。若已有配套的包，可同时设置 `ATLAS_IMG_DEB` 与 `ATLAS_CEDAR_WC` 复用它们。最终叠加源码重新生成的 4K OMX 解码库和解码服务。 |
 | SDL2 开发根 | 默认从 Debian 下载 arm64 的 `libsdl2-dev` 和 `libsdl2-2.0-0` 2.32.4，校验 SHA-256 后解包，并交叉编译一个链接 SDL2 的小程序。可用 `ATLAS_SDL_SYSROOT` 指向已准备的相同开发根。 |
 
-AtlasA1 成品镜像经项目方授权随镜像发布 LPDDR4x 训练库、PowerVR 用户态和 Cedar 编解码库。从源码重建时，由具有相应权限的构建方提供 Tina SDK。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
+单补丁提供板级改动和构建脚本。从官方 Armbian 源码重建完整镜像仍须提供上表的 Tina SDK，复用 IMG 和 Cedar 中间包时也一样。成品镜像经授权包含链接了 LPDDR4x 训练库的 SPL、配套 PowerVR 模块与用户态、Cedar 运行库，可直接用于烧录。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
 
 ```sh
 recipe=$PWD/userpatches/atlasa1-release/tools
