@@ -16,6 +16,8 @@ INPUTS = (
     'tools/validation/sdl_packed_yuv_planes.c', 'tools/validation/cedar_gpu_import.c',
     'tools/validation/cedar_frame_export_probe.c', 'tools/validation/cedar_gnome_dmabuf_player.c',
     'tools/validation/run_gnome_dmabuf_probe.sh',
+    'tools/validation/summarize_dmabuf_timing.py',
+    'tools/validation/run_gnome_display_trace.sh',
     'tools/build_gnome_media_probes.sh',
     'config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
     'tools/stage_atlasa1_gnome_wayland.sh', 'tools/validation/wayland_present.c',

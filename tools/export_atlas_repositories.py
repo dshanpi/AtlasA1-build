@@ -145,6 +145,8 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
                 'tools/validation/sdl_packed_yuv_planes.c', 'tools/validation/cedar_gpu_import.c',
                 'tools/validation/cedar_frame_export_probe.c', 'tools/validation/cedar_gnome_dmabuf_player.c',
                 'tools/validation/run_gnome_dmabuf_probe.sh',
+                'tools/validation/summarize_dmabuf_timing.py',
+                'tools/validation/run_gnome_display_trace.sh',
                 'tools/build_gnome_media_probes.sh',
                 'evidence/atlasa1-gnome-wayland-20261119.json'):
         _file(ROOT, destination, rel, rel, records)
