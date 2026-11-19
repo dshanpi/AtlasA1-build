@@ -10,8 +10,17 @@ PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
     'docs/GNOME_WAYLAND.md', 'config/gnome-wayland/*',
+    'docs/GNOME_MEDIA.md', 'evidence/gnome-media-20261119/*.json', 'evidence/gnome-media-20261119/*.log',
+    'tools/build_gnome_media_candidate.sh', 'patches/linux/gnome-media-20261119/*',
+    'tools/validation/sdl_texture_ring.c', 'tools/validation/sdl_packed_yuv.c',
+    'tools/validation/sdl_packed_yuv_planes.c', 'tools/validation/cedar_gpu_import.c',
+    'tools/validation/cedar_frame_export_probe.c', 'tools/validation/cedar_gnome_dmabuf_player.c',
+    'tools/validation/run_gnome_dmabuf_probe.sh',
+    'tools/build_gnome_media_probes.sh',
     'config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
     'tools/stage_atlasa1_gnome_wayland.sh', 'tools/validation/wayland_present.c',
+    'tools/validation/ffplay_wayland_present.c', 'tools/validation/ffplay_offscreen.py',
+    'tools/validation/ffplay_present_trace.c', 'tests/test_atlasa1_player.py',
     'tools/validation/gnome_wayland_browser.py', 'tools/validation/firefox_renderer_probe.py',
     'evidence/atlasa1-gnome-wayland-20261119.json', 'evidence/gnome-wayland-20261119/*',
     BOARD_PATCH, 'docs/UBUNTU_26_04.md',

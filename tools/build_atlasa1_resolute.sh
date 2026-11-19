@@ -60,7 +60,7 @@ curl --fail --location --retry 3 -o ffmpeg.tar.xz https://ffmpeg.org/releases/ff
 check_file de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f ffmpeg.tar.xz
 tar -xf ffmpeg.tar.xz
 bash "$tools/build_atlasa1_resolute_player.sh" "$out/sources/ffmpeg-7.1.5" "$sdl" "$out/player"
-player="$out/player/atlasa1-player_0.1-5~resolute1_arm64.deb"
+player="$out/player/atlasa1-player_0.1-6~resolute1_arm64.deb"
 if [[ -z ${ATLAS_FIREFOX_DEB:-} ]]; then
     bash "$tools/browser/build_firefox_resolute_ffmpeg.sh" --ubuntu-archive "$out/firefox"
     firefox="$out/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb"

@@ -137,13 +137,20 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
 
 def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]]) -> None:
     for rel in ('config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
-                'tools/stage_atlasa1_gnome_wayland.sh', 'docs/GNOME_WAYLAND.md',
+                'tools/stage_atlasa1_gnome_wayland.sh', 'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
                 'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
                 'tools/validation/firefox_renderer_probe.py',
+                'tools/validation/ffplay_wayland_present.c',
+                'tools/validation/sdl_texture_ring.c', 'tools/validation/sdl_packed_yuv.c',
+                'tools/validation/sdl_packed_yuv_planes.c', 'tools/validation/cedar_gpu_import.c',
+                'tools/validation/cedar_frame_export_probe.c', 'tools/validation/cedar_gnome_dmabuf_player.c',
+                'tools/validation/run_gnome_dmabuf_probe.sh',
+                'tools/build_gnome_media_probes.sh',
                 'evidence/atlasa1-gnome-wayland-20261119.json'):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, 'config/gnome-wayland', 'config/gnome-wayland', records)
     _tree(ROOT, destination, 'evidence/gnome-wayland-20261119', 'evidence/gnome-wayland-20261119', records)
+    _tree(ROOT, destination, 'evidence/gnome-media-20261119', 'evidence/gnome-media-20261119', records)
 
 
 def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
@@ -165,7 +172,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "boards", "boards", records)
     _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
     for rel in ("spl", "patches/u-boot", "patches/tf-a", "patches/linux/media-v30-replay",
-                "patches/linux/media-v30-pvr-replay"):
+                "patches/linux/media-v30-pvr-replay", "patches/linux/gnome-media-20261119"):
         _tree(ROOT, destination, rel, rel, records)
     for rel in ("config/u-boot-source-v6.config", "config/t736-lp4x-fixed.fex", "evidence/source-uboot-backup-audit-20261115.json",
                 "config/atlasa1-resolute-vendor-files.json", "tools/validation/gpu_userspace_probe.c",
@@ -263,6 +270,9 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
 
 def _export_linux(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
+    _file(ROOT, destination, "tools/build_gnome_media_candidate.sh", "tools/build_gnome_media_candidate.sh", records)
+    _file(ROOT, destination, "docs/GNOME_MEDIA.md", "docs/GNOME_MEDIA.md", records)
+    _tree(ROOT, destination, "evidence/gnome-media-20261119", "evidence/gnome-media-20261119", records)
     _tree(ROOT, destination, "userpatches/kernel", "userpatches/kernel", records)
     for source in sorted((ROOT / "userpatches").glob("linux-t736-*.config")):
         _copy(destination, source, Path("userpatches") / source.name, records)
