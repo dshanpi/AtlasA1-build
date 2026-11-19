@@ -9,6 +9,11 @@ BASE = Path(__file__).resolve().parents[1]
 PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
+    'docs/GNOME_WAYLAND.md', 'config/gnome-wayland/*',
+    'config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
+    'tools/stage_atlasa1_gnome_wayland.sh', 'tools/validation/wayland_present.c',
+    'tools/validation/gnome_wayland_browser.py', 'tools/validation/firefox_renderer_probe.py',
+    'evidence/atlasa1-gnome-wayland-20261119.json', 'evidence/gnome-wayland-20261119/*',
     BOARD_PATCH, 'docs/UBUNTU_26_04.md',
     'tools/validation/atlasa1_finalize_gpt.py', 'tools/validation/atlasa1_io_inventory.py',
     'tools/validation/atlasa1_resolute_live.py', 'tools/build_atlasa1_rc1_broker_update.sh',

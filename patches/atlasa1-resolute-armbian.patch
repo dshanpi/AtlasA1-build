@@ -6026,6 +6026,65 @@ index 0000000000000000000000000000000000000000..e7de31e8a54772bf1d906af4f26dd542
 +    "opt/t736-img-ddk-24.2-x11/lib/libvulkan.so.1.3.280": "f91ccd196bfa9fef3ecf7ec4b8da74174b476cc196345f96e9c0f49b3816c0ba"
 +  }
 +}
+diff --git a/userpatches/atlasa1-release/config/gnome-wayland/50-atlasa1-wayland.conf b/userpatches/atlasa1-release/config/gnome-wayland/50-atlasa1-wayland.conf
+new file mode 100644
+index 0000000000000000000000000000000000000000..24cf46eb78f20235790e270bfeadca741821b3f9
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gnome-wayland/50-atlasa1-wayland.conf
+@@ -0,0 +1,10 @@
++[Service]
++Environment=LD_LIBRARY_PATH=/opt/atlasa1-img-wayland/runtime-gles
++Environment=LIBGL_DRIVERS_PATH=/opt/atlasa1-img-wayland/lib/dri
++Environment=COGL_DRIVER=gles2
++Environment=GDK_BACKEND=wayland
++Environment=GSK_RENDERER=gl
++Environment=GDK_DISABLE=gl-api,vulkan
++# sunxi-drm vblank queries can block. Submit without the KMS deadline timer.
++Environment=MUTTER_DEBUG_KMS_SCHEDULING_PRIORITY=normal
++ExecStartPre=/usr/bin/dbus-update-activation-environment --systemd LD_LIBRARY_PATH LIBGL_DRIVERS_PATH COGL_DRIVER GDK_BACKEND GSK_RENDERER GDK_DISABLE
+diff --git a/userpatches/atlasa1-release/config/gnome-wayland/61-atlasa1-gnome.rules b/userpatches/atlasa1-release/config/gnome-wayland/61-atlasa1-gnome.rules
+new file mode 100644
+index 0000000000000000000000000000000000000000..57e3fa1eb1bd26c7d8ef8d3f6ad6e8fbbca49cf6
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gnome-wayland/61-atlasa1-gnome.rules
+@@ -0,0 +1,2 @@
++# Render on the display device to avoid Mutter's cross-device framebuffer copy.
++SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="sunxi-drm", TAG+="mutter-device-preferred-primary"
+diff --git a/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome-session b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome-session
+new file mode 100755
+index 0000000000000000000000000000000000000000..5dd5610f734c4419d7beba2291f5103d2417d753
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome-session
+@@ -0,0 +1,15 @@
++#!/bin/sh
++set -eu
++. /opt/atlasa1-img-wayland/session.env
++python3 "$T736_IMG_ROOT/bin/gpu-runtime-view" --prefix "$T736_IMG_ROOT" --verify >/dev/null
++dbus-update-activation-environment --systemd LD_LIBRARY_PATH LIBGL_DRIVERS_PATH \
++    COGL_DRIVER GDK_BACKEND GSK_RENDERER GDK_DISABLE
++
++clear_graphics_environment() {
++    dbus-update-activation-environment LD_LIBRARY_PATH= LIBGL_DRIVERS_PATH= \
++        COGL_DRIVER= GDK_BACKEND= GSK_RENDERER= GDK_DISABLE= || true
++    systemctl --user unset-environment LD_LIBRARY_PATH LIBGL_DRIVERS_PATH \
++        COGL_DRIVER GDK_BACKEND GSK_RENDERER GDK_DISABLE || true
++}
++trap clear_graphics_environment EXIT
++gnome-session --session=gnome "$@"
+diff --git a/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome.desktop b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome.desktop
+new file mode 100644
+index 0000000000000000000000000000000000000000..3eeee57ab8694145457e2f5238c88763f388e667
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome.desktop
+@@ -0,0 +1,8 @@
++[Desktop Entry]
++Name=AtlasA1 GNOME
++Comment=GNOME Wayland with AtlasA1 PowerVR rendering
++Exec=/usr/local/bin/atlasa1-gnome-session
++TryExec=/usr/bin/gnome-session
++Type=Application
++DesktopNames=GNOME
++X-GDM-SessionRegisters=true
 diff --git a/userpatches/atlasa1-release/config/gpu-userspace-gnome.desktop b/userpatches/atlasa1-release/config/gpu-userspace-gnome.desktop
 new file mode 100644
 index 0000000000000000000000000000000000000000..f000b81963ebe94b1b922d2546f8b182e56cda58
@@ -6056,6 +6115,32 @@ index 0000000000000000000000000000000000000000..a73c927e71094ea277f96cf0dfb54ffb
 +    gnome-session) shift; exec /usr/bin/gnome-session --session=gnome "$@" ;;
 +    *) printf 'Usage: t736-img-run probe-x11 | probe-gbm /dev/dri/renderD<N> | gnome-session\n' >&2; exit 2 ;;
 +esac
+diff --git a/userpatches/atlasa1-release/config/gpu-userspace-wayland-run.sh b/userpatches/atlasa1-release/config/gpu-userspace-wayland-run.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..78171428b24d744313b305958603504364977238
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gpu-userspace-wayland-run.sh
+@@ -0,0 +1,5 @@
++#!/bin/sh
++set -eu
++. /opt/atlasa1-img-wayland/session.env
++python3 "$T736_IMG_ROOT/bin/gpu-runtime-view" --prefix "$T736_IMG_ROOT" --verify >/dev/null
++exec "$@"
+diff --git a/userpatches/atlasa1-release/config/gpu-userspace-wayland.env b/userpatches/atlasa1-release/config/gpu-userspace-wayland.env
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d1ae37d646881efd236a96a34cbb71315360bd4
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gpu-userspace-wayland.env
+@@ -0,0 +1,9 @@
++# Load for the AtlasA1 GNOME Wayland session and its applications.
++T736_IMG_ROOT=/opt/atlasa1-img-wayland
++export LD_LIBRARY_PATH="$T736_IMG_ROOT/runtime-gles"
++export LIBGL_DRIVERS_PATH="$T736_IMG_ROOT/lib/dri"
++export COGL_DRIVER=gles2
++export GDK_BACKEND=wayland GSK_RENDERER=gl GDK_DISABLE=gl-api,vulkan
++unset VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES
++unset LIBGL_ALWAYS_SOFTWARE GALLIUM_DRIVER MESA_LOADER_DRIVER_OVERRIDE
++unset LD_PRELOAD __EGL_VENDOR_LIBRARY_FILENAMES __GLX_VENDOR_LIBRARY_NAME
 diff --git a/userpatches/atlasa1-release/config/gpu-userspace-x11.env b/userpatches/atlasa1-release/config/gpu-userspace-x11.env
 new file mode 100644
 index 0000000000000000000000000000000000000000..33d85a7295ff87aa518a2eb68bbe997edf516e7a
@@ -7482,12 +7567,74 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_FSPI_CONF_HEADER is not set
 +# CONFIG_TOOLS_MKFWUMDATA is not set
 +# CONFIG_TOOLS_FWUMDATA is not set
+diff --git a/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md b/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..1cfa35d8e6d0e35239d364cabc966f62ac17229b
+--- /dev/null
++++ b/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md
+@@ -0,0 +1,56 @@
++# AtlasA1 GNOME 50 / Wayland candidate
++
++Ubuntu 26.04 的 GNOME/Wayland 已在实板接通 PowerVR。2026-11-19 用户确认：撤销继承到应用的 CPU 绑核限制后，桌面明显改善，可以正常使用。该配置仍是候选：浏览器动画和 HDMI 呈现尚未达到稳定 60 fps，现有 RC1/v34 Release 镜像仍默认 Xfce。
++
++本轮测试为 Linux `6.18.63-t736-media-v30`、1920×1080@60、IMG DDK `24.2.6603887`、GNOME 50.1。未修改内核或烧写 eMMC。完整测量摘要见 [实板记录](../evidence/atlasa1-gnome-wayland-20261119.json)。
++
++## 已验证的修复
++
++- 从同版 Tina SDK 的 `img-bxm/.../wayland` 构建独立 `atlasa1-img-wayland` 包，放在 `/opt/atlasa1-img-wayland`。X11 包继续独立保留。系统 Wayland 库和 Vulkan loader 不被厂家版本覆盖。
++- udev 将 sunxi-drm 显示设备指定为 Mutter primary。默认选中 PVR card1 时，跨设备 framebuffer 导入失败且呈现很慢。
++- GNOME/GTK 使用 EGL/GLES，避免启动不受支持的 Vulkan/桌面 GL 路径。正常 D-Bus 启动的“设置”已确认加载 PVR。
++- `MUTTER_DEBUG_KMS_SCHEDULING_PRIORITY=normal` 禁用 Mutter 的 KMS deadline timer；当前 sunxi-drm 的 vblank 查询可能阻塞。该设置是此组合的用户态兼容配置，未宣称内核时序缺陷已修复。
++- **不绑 CPU 核心。** 曾将 Shell 主线程固定到 CPU6/7，独立测试略快，但从 Shell 启动的 Chromium 继承了该 affinity，多个进程挤在两个核上。已从配置删除并在实板恢复八核调度。
++- Firefox 原生 Wayland 原先混用厂商 EGL 与系统 `libGL` 函数入口，无法建立有效 GL 上下文。Firefox 专用的 `firefox-gles/libGL.so.1` 将查找导向配套 GLES，启动器同时选择 GLES context。这个目录只加入该浏览器进程的搜索路径，不能当作系统 OpenGL/GLX 实现使用。实测硬件 WebRender 与 `PowerVR B-Series BXM-4-64` 均已确认。
++
++## 构建与安装候选
++
++在已配置交叉工具链和 Tina SDK 的构建机运行：
++
++```sh
++python3 tools/build_gpu_userspace.py --tina /path/to/tina \
++  --platform wayland --work /path/to/new-wayland-build
++```
++
++在 AtlasA1 Ubuntu 26.04 安装 `gnome-shell gnome-session gnome-control-center gdm3 nautilus rtkit at-spi2-core evolution-data-server`，然后安装生成的 `atlasa1-img-wayland_24.2.6603887-3_arm64.deb`。GPU 内核模块/固件仍须使用同版 DDK 的已验证组合。
++
++在本工程根目录运行：
++
++```sh
++sudo bash tools/stage_atlasa1_gnome_wayland.sh /
++sudo install -m755 tools/browser/firefox-resolute /usr/bin/atlasa1-firefox
++sudo udevadm control --reload
++sudo udevadm trigger --subsystem-match=drm
++```
++
++stage 脚本只安装 GNOME 配置与会话入口，不更改默认显示管理器。通过 GDM 选择 **AtlasA1 GNOME**。测试切换前保存工作并保留 LightDM/Xfce 回退；不要把临时自动登录配置写入发行镜像。离线根文件系统可作为 stage 的参数。
++
++用户偏好的不息屏配置应在目标桌面用户的会话中设置：
++
++```sh
++gsettings set org.gnome.desktop.session idle-delay 0
++gsettings set org.gnome.desktop.screensaver lock-enabled false
++gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
++```
++
++## 测量与限制
++
++`tools/validation/gnome_wayland_browser.py --output NEW.json` 必须以桌面用户运行；它使用临时 Firefox profile，验证实际 WebRender 渲染器，并测量页面动画回调。测试专用的系统访问只用于短生命周期的本机诊断实例，未加入生产启动器。
++
++页面 `requestAnimationFrame` 回调率不等于 HDMI 呈现率。`tools/validation/wayland_present.c` 使用 `wp_presentation` 时间戳测量实际提交反馈，需用 `wayland-scanner` 生成稳定协议 `xdg-shell` 和 `presentation-time` 的 client header/private code，再链接 `EGL GLESv2 wayland-client wayland-egl`。每次测试运行约 12 秒，必须同时记录负载和长帧数。
++
++恢复八核调度后，在另一个 Chromium 仍运行的情况下，Firefox 测试由约 22.43 提升至 38.05 回调/秒，启动监听时间由 7.01 降至 4.13 秒。这是同机前后对照，不是无负载的严格性能基准。最终原生呈现测试约 47.60 fps；之前较低负载、仅 Shell 主线程绑核时约 53–54 fps，后者配置已撤销。
++
++Xwayland 的 `depth 30 ... Falling back to software` 日志来自单个像素格式的探测；不能据此断言整个 Xwayland 在软件渲染。Chromium 本身和 GNOME 会话内的编解码播放尚未在本轮完成验收。浏览器 GPU 接通不等于视频硬解、零拷贝或 60fps 播放已通过。
++
++本轮保留当前可用的 GNOME 会话，并停用自动回退定时器，避免用户操作中突然切换桌面。保存的开机默认仍是 LightDM/Xfce；未发布新的 GNOME 镜像，也未对 GDM 正常登录和冷启动做完整验收。
 diff --git a/userpatches/atlasa1-release/docs/UBUNTU_26_04.md b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..ce8e4e719f8615713a08755b7ac7e34bf75978e2
+index 0000000000000000000000000000000000000000..fa631c59a93a36ea0c36e8b0056e4b5324ef6f17
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
-@@ -0,0 +1,126 @@
+@@ -0,0 +1,128 @@
 +# AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 +
 +本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
@@ -7513,7 +7660,9 @@ index 0000000000000000000000000000000000000000..ce8e4e719f8615713a08755b7ac7e34b
 +
 +默认构建使用 v30 内核和双格式 Cedar 服务。在最后一条命令末尾追加 `--pcie-v34`，并指定新的输出目录，即可选用 v34 内核、DTB、PowerVR 模块、initrd 和启动别名。v34 已在 J58 空槽的实板上冷启动，内建驱动枚举出根端口并完成重扫。板载 Wi-Fi 已有 SDIO 主控，仍未枚举无线芯片，蓝牙 UART 也尚未收到 HCI 响应。[v34 干净构建](../evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [PCIe 实测](../evidence/atlasa1-pcie-v34-coldboot-20261118.json) · [无线实测](../evidence/atlasa1-wireless-v33-hardware-20261118.json)
 +
-+v34 的整盘打包验证复用了 RC1 根文件系统，在其可写叠加层安装 v34 和双格式 Cedar 服务。产出的 8 GiB 镜像通过了 GPT、ext4 文件系统及启动文件回读检查。该镜像保留了原装 Firefox，尚未整盘重刷；v34 的实板冷启动使用已刷 RC1 上的独立启动文件。[整盘打包记录](../evidence/atlasa1-v34-image-integration-20261118.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
++11 月 19 日的 v34 硬件预览复用 RC1 根文件系统，在可写叠加层安装 v34 内核、配套 PowerVR 模块、双格式 Cedar 服务和 Firefox 160 的 Cedar 硬解入口。8 GiB 原始镜像的 SHA-256 为 `80975eb72bf80e53e549e7d4351600719cdc2d09113e30790a03df24e1636622`。离线检查通过了 GPT、ext4 和启动文件回读，并以普通用户核对了 Firefox 入口及 H.264、HEVC 解码器。该预览整盘仍待 FES 重刷和冷启动验证。已通过 FES 整盘烧录的是 RC1，v34 内核的冷启动使用该板 eMMC 上的独立启动文件。[最终预览镜像记录](../evidence/atlasa1-v34-firefox-image-20261119.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
++
++11 月 18 日的早期 v34 整盘也通过了 GPT、ext4 和启动文件回读检查，当时镜像保留了原装 Firefox。[早期镜像记录](../evidence/atlasa1-v34-image-integration-20261118.json)
 +
 +`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
 +
@@ -7527,7 +7676,7 @@ index 0000000000000000000000000000000000000000..ce8e4e719f8615713a08755b7ac7e34b
 +| IMG X11 和 Cedar/OMX 运行库 | 总入口从上述 SDK 提取匹配的 GPU 固件、IMG 用户态和编解码库。若已有配套的包，可同时设置 `ATLAS_IMG_DEB` 与 `ATLAS_CEDAR_WC` 复用它们。最终叠加源码重新生成的 4K OMX 解码库和解码服务。 |
 +| SDL2 开发根 | 默认从 Debian 下载 arm64 的 `libsdl2-dev` 和 `libsdl2-2.0-0` 2.32.4，校验 SHA-256 后解包，并交叉编译一个链接 SDL2 的小程序。可用 `ATLAS_SDL_SYSROOT` 指向已准备的相同开发根。 |
 +
-+AtlasA1 成品镜像经项目方授权随镜像发布 LPDDR4x 训练库、PowerVR 用户态和 Cedar 编解码库。从源码重建时，由具有相应权限的构建方提供 Tina SDK。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
++单补丁提供板级改动和构建脚本。从官方 Armbian 源码重建完整镜像仍须提供上表的 Tina SDK，复用 IMG 和 Cedar 中间包时也一样。成品镜像经授权包含链接了 LPDDR4x 训练库的 SPL、配套 PowerVR 模块与用户态、Cedar 运行库，可直接用于烧录。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
 +
 +```sh
 +recipe=$PWD/userpatches/atlasa1-release/tools
@@ -8314,6 +8463,71 @@ index 0000000000000000000000000000000000000000..4e7e3bc32530dd4fe21df3abaef1d07b
 +    "different_source_path_deb_sha256": "b15db7645343203cdb9eba780cb46b64cf9dd0cd1c80cffa765e35c02d132393",
 +    "reason_for_path_sensitivity": "FFmpeg embeds source paths in assertion strings."
 +  }
++}
+diff --git a/userpatches/atlasa1-release/evidence/atlasa1-gnome-wayland-20261119.json b/userpatches/atlasa1-release/evidence/atlasa1-gnome-wayland-20261119.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c4e5b0c0f55e3a9d373eacdf3918455f3afeac7
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/atlasa1-gnome-wayland-20261119.json
+@@ -0,0 +1,59 @@
++{
++  "schema": 1,
++  "board": "AtlasA1 / T736",
++  "date": "2026-11-19",
++  "status": "usable_gnome_candidate_user_confirmed",
++  "kernel": "6.18.63-t736-media-v30",
++  "desktop": "GNOME 50.1 Wayland",
++  "hdmi_mode": "1920x1080@60",
++  "gpu": "PowerVR B-Series BXM-4-64",
++  "package": "atlasa1-img-wayland_24.2.6603887-3_arm64.deb",
++  "package_sha256": "52e710550ab23ab5046a4a6046cd3224b6e519fac5ef40b90827dfbbbb6bfba2",
++  "runtime_manifest_sha256": "3447705ec0d424d1b6f6f82f3a882ccffe3ff18c98564f4ec9b7e448f386c0dc",
++  "user_feedback_after_affinity_restore": "明显改善，已经可以正常使用",
++  "validated": [
++    "GNOME and Settings use vendor EGL/GLES/PVR",
++    "Wayland package installation and runtime link verification",
++    "AtlasA1 GNOME session wrapper actually launched through GDM",
++    "Firefox 160.0.1 reports hardware WebRender and PowerVR",
++    "Firefox test leaves normal browser profiles unchanged",
++    "CPU affinity inherited by Chromium from Shell restored from 6,7 to 0-7",
++    "X11 GPU package regression build succeeds"
++  ],
++  "measurements": {
++    "native_initial_fps": 44.244,
++    "native_package_main_thread_pinned_fps": [53.677, 53.451],
++    "native_final_eight_core_with_chromium_fps": 47.595,
++    "native_final_max_gap_ms": 83.689,
++    "native_final_gaps_over_25ms": 79,
++    "headless_control_fps": 57.75,
++    "firefox_hardware_webrender": true,
++    "firefox_before_affinity_restore_callback_fps": 22.4265,
++    "firefox_after_affinity_restore_callback_fps": 38.0532,
++    "firefox_before_affinity_restore_startup_seconds": 7.0117,
++    "firefox_after_affinity_restore_startup_seconds": 4.1300,
++    "note": "Callback FPS is not physical presentation FPS. Concurrent Chromium remained active; workloads were not strictly controlled."
++  },
++  "rejected_changes": [
++    "CPU6/7 affinity: inherited by desktop-launched applications and caused contention",
++    "continuous redraw, disabled triple buffering, simple KMS and sync-frame: no demonstrated benefit",
++    "Firefox DRM device override and disabling robustness: did not resolve EGL failure"
++  ],
++  "remaining": [
++    "Stable 60fps presentation and animation not achieved",
++    "Cold-start GDM greeter/login and GNOME default image not validated",
++    "Chromium rendering and codec path not validated in this GNOME session",
++    "GNOME-session video decoding, encoding and zero-copy not revalidated"
++  ],
++  "final_state": {
++    "running_session": "AtlasA1 GNOME Wayland",
++    "saved_boot_default": "LightDM / AtlasA1 Xfce",
++    "rollback_timer": "stopped",
++    "temporary_gdm_autologin": "removed",
++    "screen_idle": "disabled per user preference",
++    "kernel_changed": false,
++    "emmc_flashed": false,
++    "release_image_changed": false
++  },
++  "raw_measurements": "gnome-wayland-20261119/"
 +}
 diff --git a/userpatches/atlasa1-release/evidence/atlasa1-hw-v34-kernel-replay-20261118.json b/userpatches/atlasa1-release/evidence/atlasa1-hw-v34-kernel-replay-20261118.json
 new file mode 100644
@@ -9752,6 +9966,204 @@ index 0000000000000000000000000000000000000000..f41990fdf07ca9f3eae9bf7db1c06a11
 +    "runtime_status": "SDIO host, controlled power rail and UART/rfkill established. Wi-Fi connectivity and Bluetooth discovery not validated."
 +  }
 +}
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/app-gpu-maps.txt b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/app-gpu-maps.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..74ff455b543db56a7d2fb430b5c814b7fa30f079
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/app-gpu-maps.txt
+@@ -0,0 +1,12 @@
++gnome-shell
++pid 129005's current affinity list: 0-7
++/opt/atlasa1-img-wayland/lib/libEGL.so.1.0.0
++/opt/atlasa1-img-wayland/lib/libGLESv2_PVR_MESA.so.24.2.6603887
++/opt/atlasa1-img-wayland/lib/libGLESv2.so.2.0.0
++/opt/atlasa1-img-wayland/lib/libsrv_um.so.24.2.6603887
++gnome-control-center
++pid 170776's current affinity list: 0-7
++/opt/atlasa1-img-wayland/lib/libEGL.so.1.0.0
++/opt/atlasa1-img-wayland/lib/libGLESv2_PVR_MESA.so.24.2.6603887
++/opt/atlasa1-img-wayland/lib/libGLESv2.so.2.0.0
++/opt/atlasa1-img-wayland/lib/libsrv_um.so.24.2.6603887
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/egl-wayland-context.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/egl-wayland-context.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..4aeee890e3c335850551de530534cb2b7ff5f52f
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/egl-wayland-context.log
+@@ -0,0 +1,7 @@
++EGL 1.5 extensions=EGL_ANDROID_native_fence_sync EGL_EXT_buffer_age EGL_EXT_create_context_robustness EGL_EXT_image_dma_buf_import EGL_EXT_image_dma_buf_import_modifiers EGL_EXT_present_opaque EGL_EXT_image_gl_colorspace EGL_EXT_query_reset_notification_strategy EGL_EXT_swap_buffers_with_damage EGL_EXT_yuv_surface EGL_IMG_context_priority EGL_KHR_cl_event2 EGL_KHR_config_attribs EGL_KHR_create_context EGL_KHR_fence_sync EGL_KHR_get_all_proc_addresses EGL_KHR_gl_colorspace EGL_KHR_gl_renderbuffer_image EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_3D_image EGL_KHR_gl_texture_cubemap_image EGL_KHR_image_base EGL_KHR_no_config_context EGL_KHR_partial_update EGL_KHR_reusable_sync EGL_KHR_surfaceless_context EGL_KHR_swap_buffers_with_damage EGL_EXT_pixel_format_float EGL_KHR_wait_sync EGL_MESA_configless_context EGL_MESA_drm_image EGL_MESA_image_dma_buf_export EGL_MESA_query_driver EGL_WL_bind_wayland_display EGL_WL_create_wayland_buffer_from_image EGL_IMG_cl_image
++ES2 context=0xaaab0afa8d30 error=0x3000
++surfaceless current=1 error=0x3000
++GL_VERSION direct=OpenGL ES 3.2 build 24.2@6603887 proc=OpenGL ES 3.2 build 24.2@6603887 gl_error=0x0
++ES3 context=0xaaab0afa8d30 error=0x3000
++surfaceless current=1 error=0x3000
++GL_VERSION direct=OpenGL ES 3.2 build 24.2@6603887 proc=OpenGL ES 3.2 build 24.2@6603887 gl_error=0x0
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-before-errors.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-before-errors.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..35da869a230ca09bdf567887b9b80ce54886f40a
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-before-errors.log
+@@ -0,0 +1,3 @@
++Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Failed to create EGLContext!: 0x3000 (t=2.16579) [GFX1-]: Failed to create EGLContext!: 0x3000
++Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Failed to create EGLContext!: 0x3000 (t=2.16579) |[1][GFX1-]: Failed to create EGLContext!: 0x300c (t=2.16979) [GFX1-]: Failed to create EGLContext!: 0x300c
++Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Failed to create EGLContext!: 0x3000 (t=2.16579) |[16][GFX1-]: RcANGLE(no shared GL) (t=5.23393) |[17][GFX1-]: Failed to connect WebRenderBridgeChild. isParent=true (t=5.23393) |[18][GFX1-]: Fallback WR to SW-WR (t=5.23393) |[4][GFX1-]: Failed to create EGLContext!: 0x300c (t=2.17779) |[5][GFX1-]: Failed GL context creation for hardware WebRender: true (t=2.17779) |[6][GFX1-]: Failed to create EGLContext!: 0x3000 (t=5.11393) |[7][GFX1-]: Failed to create EGLContext!: 0x300c (t=5.11393) |[8][GFX1-]: Failed GL context creation for hardware WebRender: true (t=5.11393) |[9][GFX1-]: Failed to create EGLContext!: 0x3000 (t=5.12193) |[10][GFX1-]: Failed to create EGLContext!: 0x300c (t=5.12193) |[11][GFX1-]: Failed GL context creation for hardware WebRender: true (t=5.12193) |[12][GFX1-]: Failed to create EGLContext!: 0x3000 (t=5.15393) |[13][GFX1-]: Error in eglDestroySurface: 0x300d (t=5.15393) |[14][GFX1-]: Failed to create EGLContext!: 0x300c (t=5.22993) |[15][GFX1-]: Failed GL context creation for WebRender: 0 (t=5.23393) [GFX1-]: Fallback WR to SW-WR
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-eight-core.json b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-eight-core.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..7d7a4ea89ac135e085b8e0086aa1828382065618
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-eight-core.json
+@@ -0,0 +1,36 @@
++{
++  "session_type": "wayland",
++  "complete": true,
++  "graphics_pass": true,
++  "animation_metric": "requestAnimationFrame callbacks, not HDMI frames",
++  "startup_seconds": 4.129974580995622,
++  "graphics": {
++    "features": {
++      "compositor": "webrender",
++      "hwCompositing": {
++        "status": "available"
++      },
++      "gpuProcess": {
++        "status": "unused"
++      },
++      "webrender": {
++        "status": "available"
++      },
++      "wrCompositor": {
++        "status": "blocklisted:FEATURE_FAILURE_WEBRENDER_COMPOSITOR_DISABLED"
++      },
++      "openglCompositing": {
++        "status": "available"
++      }
++    },
++    "renderer": "PowerVR B-Series BXM-4-64"
++  },
++  "animation": {
++    "callbacks": 397,
++    "visible": "visible",
++    "fps": 38.05321299805506,
++    "maxGapMs": 207.57999999999993,
++    "gapsOver25ms": 90
++  },
++  "browser_version": "160.0.1"
++}
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-v3.json b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-v3.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..cd0ead5de14b1eb5168188bd4dc6ae76c00b6d84
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/firefox-installed-v3.json
+@@ -0,0 +1,36 @@
++{
++  "session_type": "wayland",
++  "complete": true,
++  "graphics_pass": true,
++  "animation_metric": "requestAnimationFrame callbacks, not HDMI frames",
++  "startup_seconds": 7.0116734750045,
++  "graphics": {
++    "features": {
++      "compositor": "webrender",
++      "hwCompositing": {
++        "status": "available"
++      },
++      "gpuProcess": {
++        "status": "unused"
++      },
++      "webrender": {
++        "status": "available"
++      },
++      "wrCompositor": {
++        "status": "blocklisted:FEATURE_FAILURE_WEBRENDER_COMPOSITOR_DISABLED"
++      },
++      "openglCompositing": {
++        "status": "available"
++      }
++    },
++    "renderer": "PowerVR B-Series BXM-4-64"
++  },
++  "animation": {
++    "callbacks": 232,
++    "visible": "visible",
++    "fps": 22.426487720769842,
++    "maxGapMs": 536.0599999999995,
++    "gapsOver25ms": 80
++  },
++  "browser_version": "160.0.1"
++}
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/headless-present.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/headless-present.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..0078669c8b5f9705029c9bc701779a259de0b9a4
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/headless-present.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=684 presented=683 discarded=1 elapsed=12.002 presented_fps=57.753 max_gap_ms=167.513 gaps_over_25ms=8 gaps_over_40ms=4 flags=0x4
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-eight-core.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-eight-core.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..5ac4d39141834d6d331b8d4afeb1f1d86ac0a1c3
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-eight-core.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=571 presented=569 discarded=0 elapsed=12.031 presented_fps=47.595 max_gap_ms=83.689 gaps_over_25ms=79 gaps_over_40ms=59 flags=0x7
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-normal-kms.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-normal-kms.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..3d8aa3f80938c7d8dda0390127a5d62cfe32e354
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-normal-kms.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=582 presented=579 discarded=1 elapsed=12.003 presented_fps=49.051 max_gap_ms=150.629 gaps_over_25ms=70 gaps_over_40ms=47 flags=0x7
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package-warm.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package-warm.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..6cf69d73804aa0ddffc630631efdc346df337691
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package-warm.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=641 presented=638 discarded=1 elapsed=12.011 presented_fps=53.451 max_gap_ms=50.217 gaps_over_25ms=73 gaps_over_40ms=2 flags=0x7
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..7cf7b308eada4c02adc176ecd1fef3307a026c63
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present-package.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=641 presented=638 discarded=1 elapsed=12.009 presented_fps=53.677 max_gap_ms=50.212 gaps_over_25ms=71 gaps_over_40ms=1 flags=0x7
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2bc71351f6379cce6a3cc07151fc1567fc868d5
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/native-present.log
+@@ -0,0 +1,2 @@
++renderer=PowerVR B-Series BXM-4-64
++submitted=531 presented=529 discarded=1 elapsed=12.036 presented_fps=44.244 max_gap_ms=66.960 gaps_over_25ms=151 gaps_over_40ms=27 flags=0x7
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/packages.txt b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/packages.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..8b97a22f650b3ee0936b75f2091cdf6ef1722126
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/packages.txt
+@@ -0,0 +1,5 @@
++6.18.63-t736-media-v30
++GNOME Shell 50.1
++atlasa1-img-wayland	24.2.6603887-3
++gdm3	50.1-0ubuntu0.1
++gnome-control-center	1:50.3-0ubuntu0.2
+diff --git a/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/xwayland-gles-probe.log b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/xwayland-gles-probe.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..814def5b9438eeb7ff8a463720be3a29d2c28c05
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-wayland-20261119/xwayland-gles-probe.log
+@@ -0,0 +1,9 @@
++glamor: Implementation returned 0x1908/0x1401 read format/type for depth 30, expected 0x1908/0x8368.  Falling back to software.
++The XKEYBOARD keymap compiler (xkbcomp) reports:
++> Warning:          Unsupported maximum keycode 708, clipping.
++>                   X11 cannot support keycodes above 255.
++> Warning:          Virtual modifier Hyper multiply defined
++>                   Using 0, ignoring 0
++> Warning:          Virtual modifier ScrollLock multiply defined
++>                   Using 0, ignoring 0
++Errors from xkbcomp are not fatal to the X server
 diff --git a/userpatches/atlasa1-release/evidence/source-uboot-backup-audit-20261115.json b/userpatches/atlasa1-release/evidence/source-uboot-backup-audit-20261115.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..7105b167541dee403ddaefb46de39ec6dfed7376
@@ -40515,10 +40927,10 @@ index 0000000000000000000000000000000000000000..8b71d1144b013e0cf2286b484e4ab284
 +CEDAR_DECODER(ff_hevc_cedar_decoder, "hevc_cedar", AV_CODEC_ID_HEVC);
 diff --git a/userpatches/atlasa1-release/tools/browser/firefox-resolute b/userpatches/atlasa1-release/tools/browser/firefox-resolute
 new file mode 100755
-index 0000000000000000000000000000000000000000..a11e394cd36dd217c2d5f52e9c1c64a8358b3ef8
+index 0000000000000000000000000000000000000000..825a711b0371c32b109fb75f785edd16e74340e9
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/browser/firefox-resolute
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,32 @@
 +#!/bin/sh
 +# Launch the AtlasA1 Firefox profile with the Cedar codec built for libavcodec62.
 +set -eu
@@ -40531,9 +40943,23 @@ index 0000000000000000000000000000000000000000..a11e394cd36dd217c2d5f52e9c1c64a8
 +fi
 +unset T736_CEDAR_TEST_CLIENT T736_CEDAR_NATIVE_PLAYER
 +export T736_CEDAR_ENABLE=1
-+export LD_LIBRARY_PATH="$lib:/opt/t736-img-ddk-24.2-x11/runtime-gles${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
++gpu=/opt/t736-img-ddk-24.2-x11
++lookup=
++if [ "${XDG_SESSION_TYPE:-}" = wayland ] && [ -n "${WAYLAND_DISPLAY:-}" ] &&
++   [ -r /opt/atlasa1-img-wayland/runtime-gles/libEGL.so.1 ] &&
++   [ -r /opt/atlasa1-img-wayland/firefox-gles/libGL.so.1 ]; then
++    gpu=/opt/atlasa1-img-wayland
++    lookup="$gpu/firefox-gles:"
++    export MOZ_ENABLE_WAYLAND=1
++    # The Wayland DDK implements GLES. Match Firefox's context and symbol API.
++    pref='user_pref("gfx.egl.prefer-gles.enabled", true);'
++    if ! grep -Fqx "$pref" "$profile/user.js" 2>/dev/null; then
++        printf '\n%s\n' "$pref" >> "$profile/user.js"
++    fi
++fi
++export LD_LIBRARY_PATH="$lib:${lookup}$gpu/runtime-gles${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 +export LD_PRELOAD="$lib/libt736_cedar_client.so:$lib/libavcodec.so.62${LD_PRELOAD:+:$LD_PRELOAD}"
-+export LIBGL_DRIVERS_PATH="${LIBGL_DRIVERS_PATH:-/opt/t736-img-ddk-24.2-x11/lib/dri}"
++export LIBGL_DRIVERS_PATH="${LIBGL_DRIVERS_PATH:-$gpu/lib/dri}"
 +export MOZ_X11_EGL=1
 +if [ -n "${T736_CEDAR_PROFILE:-}" ]; then set -- --no-remote "$@"; fi
 +exec /usr/bin/firefox --profile "$profile" "$@"
@@ -44098,10 +44524,10 @@ index 0000000000000000000000000000000000000000..be965162a18ac8601c7d986255945327
 +    main()
 diff --git a/userpatches/atlasa1-release/tools/build_gpu_userspace.py b/userpatches/atlasa1-release/tools/build_gpu_userspace.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7cae03a60
+index 0000000000000000000000000000000000000000..fc0ea4799052be12a88507b6b62ef2c1f652264e
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_gpu_userspace.py
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,206 @@
 +#!/usr/bin/env python3
 +"""Build an isolated, removable IMG userspace candidate; never access a board."""
 +import argparse
@@ -44139,11 +44565,26 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +    parser = argparse.ArgumentParser(description=__doc__)
 +    parser.add_argument('--tina', type=Path, default=SDK)
 +    parser.add_argument('--work', type=Path, default=ROOT/'build/gpu-userspace-v2')
++    parser.add_argument('--platform', choices=['x11', 'wayland'], default='x11')
 +    parser.add_argument('--without-gnome-x11', action='store_true',
 +                        help='Omit the GNOME Xorg session on distributions with Wayland-only GNOME')
 +    args = parser.parse_args()
 +    sdk = args.tina.resolve(strict=True)
-+    source = sdk/SOURCE_SUBDIR
++    source_subdir = SOURCE_SUBDIR.parent / args.platform
++    prefix = PREFIX
++    package_name = 't736-img-userspace-candidate'
++    version = VERSION
++    runner = 't736-img-run'
++    environment_file = 'config/gpu-userspace-x11.env'
++    runner_file = 'config/gpu-userspace-run.sh'
++    if args.platform == 'wayland':
++        version = '24.2.6603887-3'
++        prefix = Path('opt/atlasa1-img-wayland')
++        package_name = 'atlasa1-img-wayland'
++        runner = 't736-img-wayland-run'
++        environment_file = 'config/gpu-userspace-wayland.env'
++        runner_file = 'config/gpu-userspace-wayland-run.sh'
++    source = sdk/source_subdir
 +    assert source.is_dir()
 +    for name, expected in FIRMWARE.items():
 +        assert digest(source / 'lib/firmware' / name) == expected, name
@@ -44151,13 +44592,13 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +    build.mkdir(parents=True, exist_ok=True)
 +    stage = build / 'package-root'
 +    stage.mkdir()  # Refuse to overwrite a previous candidate.
-+    private = stage / PREFIX
++    private = stage / prefix
 +    (private / 'lib').mkdir(parents=True)
 +    provenance = {}
 +    for subtree in ['usr/lib', 'usr/local/lib']:
 +        src = source / subtree
 +        for entry in sorted(src.iterdir()):
-+            if entry.name == 'pkgconfig':
++            if entry.name == 'pkgconfig' or entry.name.startswith('libwayland-'):
 +                continue
 +            dest = private / 'lib' / entry.name
 +            assert not dest.exists() and not dest.is_symlink(), dest
@@ -44173,7 +44614,7 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +                    provenance[str(target.relative_to(stage))] = str(original.relative_to(sdk))
 +    shutil.copytree(source / 'lib/firmware', private / 'firmware')
 +    for original in (source / 'lib/firmware').iterdir():
-+        provenance[str(PREFIX / 'firmware' / original.name)] = str(original.relative_to(sdk))
++        provenance[str(prefix / 'firmware' / original.name)] = str(original.relative_to(sdk))
 +    (private / 'bin').mkdir()
 +    command = ['aarch64-linux-gnu-gcc', '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
 +               str(ROOT / 'tools/validation/gpu_userspace_probe.c'), '-ldl',
@@ -44181,18 +44622,24 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +    result = subprocess.run(command, text=True, capture_output=True)
 +    (build / 'probe-build.log').write_text(result.stdout + result.stderr)
 +    result.check_returncode()
-+    shutil.copy2(ROOT / 'config/gpu-userspace-x11.env', private / 'session.env')
-+    shutil.copy2(ROOT / 'config/gpu-userspace-run.sh', private / 'bin/t736-img-run')
-+    (private / 'bin/t736-img-run').chmod(0o755)
++    shutil.copy2(ROOT / environment_file, private / 'session.env')
++    shutil.copy2(ROOT / runner_file, private / 'bin' / runner)
++    (private / 'bin' / runner).chmod(0o755)
 +    shutil.copy2(ROOT / 'tools/validation/gpu_runtime_view.py', private / 'bin/gpu-runtime-view')
 +    (private / 'bin/gpu-runtime-view').chmod(0o755)
 +    (stage / 'usr/bin').mkdir(parents=True)
-+    (stage / 'usr/bin/t736-img-run').symlink_to('/' + str(PREFIX / 'bin/t736-img-run'))
-+    if not args.without_gnome_x11:
++    (stage / 'usr/bin' / runner).symlink_to('/' + str(prefix / 'bin' / runner))
++    if args.platform == 'wayland':
++        # Firefox's EGL backend looks up GL entry points in libGL first.
++        # Keep this GLES-only lookup private to its native Wayland launcher;
++        # it is not a desktop OpenGL/GLX implementation or a system replacement.
++        (private / 'firefox-gles').mkdir()
++        (private / 'firefox-gles/libGL.so.1').symlink_to('../lib/libGLESv2.so.2')
++    if args.platform == 'x11' and not args.without_gnome_x11:
 +        (stage / 'usr/share/xsessions').mkdir(parents=True)
 +        shutil.copy2(ROOT / 'config/gpu-userspace-gnome.desktop', stage / 'usr/share/xsessions/t736-img.desktop')
 +    icd = json.loads((source / 'powervr_icd.json').read_text())
-+    icd['ICD']['library_path'] = '/' + str(PREFIX / 'lib/libVK_IMG.so')
++    icd['ICD']['library_path'] = '/' + str(prefix / 'lib/libVK_IMG.so')
 +    (private / 'powervr_icd.json').write_text(json.dumps(icd, indent=2) + '\n')
 +    (private / 'README.txt').write_text(
 +        'Isolated IMG X11 DDK 24.2.6603887 candidate. No system Mesa replacement.\n'
@@ -44209,13 +44656,22 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +        'A PASS is not GNOME or physical-display acceptance. No GLX test is claimed.\n'
 +        'The image-level desktop integration selects the X11 session.\n'
 +        'Keep the original llvmpipe image and original firmware for kernel rollback.\n')
++    if args.platform == 'wayland':
++        (private / 'README.txt').write_text(
++            'AtlasA1 IMG Wayland DDK 24.2.6603887.\n'
++            'Load session.env for EGL/GLES programs running on GNOME Wayland.\n'
++            'The runtime uses the distribution Wayland libraries and Vulkan loader.\n'
++            'Firmware and pvrsrvkm must match DDK 24.2.6603887.\n'
++            'GNOME requires the sunxi-drm preferred-primary udev rule.\n'
++            'firefox-gles is a Firefox Wayland-only GLES symbol lookup, not a GLX library.\n'
++            'Validate presentation timestamps and physical display behavior after installation.\n')
 +    files = []
 +    external = set()
 +    provided = {p.name for p in (private / 'lib').glob('*') if not p.is_dir()}
 +    for path in sorted(stage.rglob('*')):
 +        rel = str(path.relative_to(stage))
 +        if path.is_symlink():
-+            if rel.startswith(str(PREFIX)):
++            if rel.startswith(str(prefix)):
 +                assert not path.readlink().is_absolute(), path
 +                assert path.resolve().is_relative_to(private.resolve()) and path.resolve().is_file(), path
 +            files.append({'path': rel, 'symlink': str(path.readlink()), 'source': provenance.get(rel)})
@@ -44231,9 +44687,9 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +                external.update(set(item['needed']) - provided)
 +            files.append(item)
 +    project_inputs = ['tools/build_gpu_userspace.py', 'tools/validation/gpu_userspace_probe.c',
-+                      'config/gpu-userspace-x11.env', 'config/gpu-userspace-run.sh',
++                      environment_file, runner_file,
 +                      'config/gpu-userspace-gnome.desktop', 'tools/validation/gpu_runtime_view.py']
-+    manifest = {'version': VERSION, 'source_root': str(SOURCE_SUBDIR), 'prefix': '/' + str(PREFIX),
++    manifest = {'version': version, 'source_root': str(source_subdir), 'prefix': '/' + str(prefix),
 +                'project_inputs_sha256': {name: digest(ROOT / name) for name in project_inputs},
 +                'probe_compiler': run('aarch64-linux-gnu-gcc', '--version').splitlines()[0],
 +                'firmware_sha256': FIRMWARE, 'external_sonames': sorted(external),
@@ -44248,8 +44704,10 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +        item['sha256'] + '  /' + item['path'] + '\n' for item in files if 'sha256' in item))
 +    # The view record binds this completed payload manifest. Keep it out of the
 +    # main manifest's file list to avoid a circular content hash dependency.
-+    print(run('python3', str(private / 'bin/gpu-runtime-view'), '--root', str(stage)), end='')
-+    print(run('python3', str(private / 'bin/gpu-runtime-view'), '--root', str(stage), '--verify'), end='')
++    print(run('python3', str(private / 'bin/gpu-runtime-view'), '--root', str(stage),
++              '--prefix', '/' + str(prefix)), end='')
++    print(run('python3', str(private / 'bin/gpu-runtime-view'), '--root', str(stage),
++              '--prefix', '/' + str(prefix), '--verify'), end='')
 +    shutil.copy2(private / 'runtime-gles.json', build / 'runtime-gles.json')
 +    control = stage / 'DEBIAN'
 +    control.mkdir()
@@ -44258,11 +44716,13 @@ index 0000000000000000000000000000000000000000..203274415f5035f16f1899e97d0e41c7
 +                    'libxcb-present0, libxcb-randr0, libxcb-shm0, libxcb-sync1, libxcb-xfixes0, '
 +                    'libxcb1, libxext6, libxfixes3, libxshmfence1, libxxf86vm1, zlib1g, '
 +                    'libvulkan1, python3')
++    if args.platform == 'wayland':
++        dependencies += ', libwayland-client0, libwayland-server0, libwayland-egl1'
 +    (control / 'control').write_text(
-+        'Package: t736-img-userspace-candidate\nVersion: ' + VERSION + '\nArchitecture: arm64\n'
++        'Package: ' + package_name + '\nVersion: ' + version + '\nArchitecture: arm64\n'
 +        'Maintainer: T736 local integration\nDepends: ' + dependencies + '\n'
-+        'Description: Isolated T736 IMG X11 EGL GLES candidate and explicit validation tools\n')
-+    package = build / ('t736-img-userspace-candidate_' + VERSION + '_arm64.deb')
++        'Description: Isolated T736 IMG ' + args.platform + ' EGL GLES and validation tools\n')
++    package = build / (package_name + '_' + version + '_arm64.deb')
 +    assert not package.exists()
 +    print(run('dpkg-deb', '--build', '--root-owner-group', str(stage), str(package)), end='')
 +    (build / 'SHA256SUMS').write_text(digest(package) + '  ' + package.name + '\n' +
@@ -45952,6 +46412,28 @@ index 0000000000000000000000000000000000000000..3abf008990637e8eb4ec48f51ab13f68
 +done
 +rm -f -- "$root/usr/sbin/policy-rc.d"
 +run start-stop-daemon --version
+diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..fdbc96cc4a3375d69336b3acdcac389a3e90c77e
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh
+@@ -0,0 +1,16 @@
++#!/usr/bin/env bash
++# Install the GNOME profile into an installed or offline Ubuntu root filesystem.
++set -euo pipefail
++if [[ $# != 1 ]]; then
++    echo "Usage: $0 ROOTFS" >&2
++    exit 2
++fi
++root=$(realpath -e "$1")
++project=$(cd "$(dirname "$0")/.." && pwd)
++profile="$project/config/gnome-wayland"
++test -x "$root/usr/bin/gnome-shell"
++test -r "$root/opt/atlasa1-img-wayland/runtime-gles/libEGL.so.1"
++install -Dm644 "$profile/61-atlasa1-gnome.rules" "$root/etc/udev/rules.d/61-atlasa1-gnome.rules"
++install -Dm644 "$profile/50-atlasa1-wayland.conf" "$root/etc/systemd/user/org.gnome.Shell@.service.d/50-atlasa1-wayland.conf"
++install -Dm755 "$profile/atlasa1-gnome-session" "$root/usr/local/bin/atlasa1-gnome-session"
++install -Dm644 "$profile/atlasa1-gnome.desktop" "$root/usr/share/wayland-sessions/atlasa1-gnome.desktop"
 diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh
 new file mode 100755
 index 0000000000000000000000000000000000000000..e3991efc25fa2d10d0f6e1bfd3a373ce3ebdf68a
@@ -46789,12 +47271,476 @@ index 0000000000000000000000000000000000000000..c929affc85966bc871fc0c62a78ff1c4
 +    if sys.argv[1:2] == ['_xvfb']:
 +        raise SystemExit(run_virtual_display(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), sys.argv[5:]))
 +    raise SystemExit(main())
+diff --git a/userpatches/atlasa1-release/tools/validation/firefox_renderer_probe.py b/userpatches/atlasa1-release/tools/validation/firefox_renderer_probe.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..9a6a31f21d6c4b6053a6c4c3e3d76cecbc81a066
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/validation/firefox_renderer_probe.py
+@@ -0,0 +1,338 @@
++#!/usr/bin/env python3
++"""Inspect fresh visible Firefox instances via loopback-only Marionette.
++
++Run as the desktop user. Existing Firefox processes/profiles are never changed.
++No sandbox or graphics-blocklist override is applied. Each test owns and closes
++its separate process group, profile and loopback listener.
++System access is explicitly enabled only for these diagnostic instances so
++current Firefox permits the read-only about:support page through Marionette.
++"""
++import argparse
++import json
++import os
++from pathlib import Path
++import signal
++import socket
++import stat
++import subprocess
++import tempfile
++import time
++
++
++class Marionette:
++    def __init__(self, connection, timeout):
++        self.connection = connection
++        self.connection.settimeout(timeout)
++        self.sequence = 0
++        self.hello = self.receive()
++        if self.hello.get("marionetteProtocol") != 3:
++            raise RuntimeError(f"Unsupported protocol: {self.hello}")
++
++    def exact(self, count):
++        result = b""
++        while len(result) < count:
++            block = self.connection.recv(count - len(result))
++            if not block:
++                raise EOFError("Marionette connection closed")
++            result += block
++        return result
++
++    def receive(self):
++        prefix = b""
++        while True:
++            byte = self.exact(1)
++            if byte == b":":
++                break
++            prefix += byte
++            if len(prefix) > 10 or not prefix.isdigit():
++                raise ValueError("Bad Marionette frame length")
++        length = int(prefix)
++        if length > 2 * 1024 * 1024:
++            raise ValueError("Marionette response exceeds bound")
++        return json.loads(self.exact(length))
++
++    def command(self, name, parameters=None):
++        self.sequence += 1
++        body = json.dumps([0, self.sequence, name, parameters or {}]).encode()
++        self.connection.sendall(str(len(body)).encode() + b":" + body)
++        reply = self.receive()
++        if not isinstance(reply, list) or reply[:2] != [1, self.sequence]:
++            raise RuntimeError(f"Unexpected Marionette reply: {reply}")
++        if reply[2]:
++            raise RuntimeError(f"{name}: {reply[2]}")
++        return reply[3]
++
++
++EXTRACT = """
++const ids = ['graphics-features-tbody', 'graphics-gpu-1-tbody',
++ 'graphics-gpu-2-tbody', 'graphics-diagnostics-tbody',
++ 'graphics-decisions-tbody', 'graphics-crashguards-tbody',
++ 'graphics-workarounds-tbody', 'graphics-failures-tbody', 'media-info-tbody'];
++const sections = {};
++for (const id of ids) {
++ const element = document.getElementById(id);
++ sections[id] = element ? element.innerText : null;
++}
++return {url: location.href, title: document.title, sections,
++ codecTables: Array.from(document.querySelectorAll('[id]'))
++  .filter(e => /codec.*support|support.*codec/i.test(e.id))
++  .map(e => ({id: e.id, text: e.innerText || e.textContent})).slice(0, 12)};
++"""
++
++
++def process_snapshot(group, reference_pid):
++    """Capture only the probe's group and reference, tolerating /proc races."""
++    snapshot = {"processes": [], "mmc_diskstats": []}
++    for directory in Path("/proc").iterdir():
++        if not directory.name.isdigit():
++            continue
++        try:
++            if directory.stat().st_uid != os.getuid():
++                continue
++            fields = (directory / "stat").read_text().rsplit(")", 1)[1].split()
++            pid = int(directory.name)
++            if int(fields[2]) != group and pid != reference_pid:
++                continue
++            entry = {"pid": pid, "state": fields[0], "ppid": int(fields[1]),
++                "pgrp": int(fields[2]), "minor_faults": int(fields[7]),
++                "major_faults": int(fields[9]), "user_ticks": int(fields[11]),
++                "system_ticks": int(fields[12])}
++            for name in ("comm", "wchan", "io"):
++                try:
++                    entry[name] = (directory / name).read_text().strip()
++                except OSError as exc:
++                    entry[name + "_error"] = str(exc)
++            snapshot["processes"].append(entry)
++        except (OSError, ValueError, IndexError):
++            continue
++    try:
++        snapshot["mmc_diskstats"] = [line.strip()
++            for line in Path("/proc/diskstats").read_text().splitlines()
++            if line.split()[2].startswith("mmcblk")]
++    except OSError as exc:
++        snapshot["diskstats_error"] = str(exc)
++    snapshot["processes"].sort(key=lambda item: item["pid"])
++    return snapshot
++
++
++def drm_device_snapshot():
++    def target(path):
++        return str(path.resolve()) if path.exists() else None
++
++    devices = []
++    for path in sorted(Path("/dev/dri").glob("*")):
++        try:
++            info = path.stat()
++            if not stat.S_ISCHR(info.st_mode):
++                continue
++            sysfs = Path("/sys/dev/char") / f"{os.major(info.st_rdev)}:{os.minor(info.st_rdev)}"
++            devices.append({"path": str(path), "major": os.major(info.st_rdev),
++                "minor": os.minor(info.st_rdev),
++                "user_can_read_write": os.access(path, os.R_OK | os.W_OK),
++                "device": target(sysfs / "device"),
++                "driver": target(sysfs / "device/driver"),
++                "module": target(sysfs / "device/driver/module")})
++        except OSError:
++            continue
++    return devices
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--reference-pid", type=int, required=True)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--mode", choices=["baseline", "egl-gles", "egl-gles-drm", "both", "all"], default="both")
++    parser.add_argument("--startup-timeout", type=float, default=120,
++        help="seconds to allow cold disk-backed Firefox startup (default: 120)")
++    parser.add_argument("--protocol-timeout", type=float, default=60,
++        help="seconds for Marionette greeting/each command (default: 60)")
++    parser.add_argument("--drm-device", type=Path,
++        help="verified render node for the separate egl-gles-drm candidate")
++    args = parser.parse_args()
++    if os.geteuid() == 0:
++        parser.error("run as the desktop user, not root")
++    if not 10 <= args.startup_timeout <= 600:
++        parser.error("startup timeout must be between 10 and 600 seconds")
++    if not 5 <= args.protocol_timeout <= 180:
++        parser.error("protocol timeout must be between 5 and 180 seconds")
++    if args.mode in {"egl-gles-drm", "all"}:
++        if args.drm_device is None:
++            parser.error("egl-gles-drm/all requires --drm-device")
++        args.drm_device = args.drm_device.resolve()
++        if (args.drm_device.parent != Path("/dev/dri")
++                or not args.drm_device.name.startswith("renderD")
++                or not stat.S_ISCHR(args.drm_device.stat().st_mode)
++                or not os.access(args.drm_device, os.R_OK | os.W_OK)):
++            parser.error("DRM device must be an accessible /dev/dri/renderD* character node")
++        module = Path("/sys/class/drm") / args.drm_device.name / "device/driver/module"
++        if not module.exists() or module.resolve().name != "pvrsrvkm":
++            parser.error("selected render node is not owned by the validated pvrsrvkm module")
++    elif args.drm_device is not None:
++        parser.error("--drm-device applies only to egl-gles-drm/all; other modes use automatic selection")
++    if args.output.exists():
++        parser.error("output exists; preserve previous evidence")
++    reference = Path("/proc") / str(args.reference_pid)
++    if reference.stat().st_uid != os.getuid():
++        parser.error("reference Firefox must belong to this desktop user")
++    command = reference.joinpath("cmdline").read_bytes().split(b"\0")
++    if b"-contentproc" in command or b"firefox" not in command[0]:
++        parser.error("reference PID must be the existing parent Firefox process")
++    binary = str(reference.joinpath("exe").resolve())
++    previous_environment = dict(part.decode(errors="replace").split("=", 1)
++        for part in reference.joinpath("environ").read_bytes().split(b"\0") if b"=" in part)
++    keys = {"DISPLAY", "XAUTHORITY", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS",
++            "XDG_SESSION_TYPE", "LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "GDK_BACKEND",
++            "GDK_DISABLE", "GSK_RENDERER", "LIBGL_ALWAYS_SOFTWARE", "GALLIUM_DRIVER",
++            "MESA_LOADER_DRIVER_OVERRIDE", "__EGL_VENDOR_LIBRARY_FILENAMES"}
++    environment = os.environ.copy()
++    for key in keys:
++        if key in previous_environment:
++            environment[key] = previous_environment[key]
++        elif key not in {"DISPLAY", "XAUTHORITY", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS"}:
++            environment.pop(key, None)
++    for key in list(environment):
++        if key.startswith("MOZ_"):
++            environment.pop(key)
++    if not environment.get("DISPLAY") or not environment.get("XAUTHORITY"):
++        parser.error("reference must supply DISPLAY and XAUTHORITY")
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    artifact_directory = args.output.with_suffix(".files")
++    artifact_directory.mkdir(exist_ok=False)
++    record = {"schema": 4, "reference_pid": args.reference_pid,
++              "startup_timeout_seconds": args.startup_timeout,
++              "protocol_timeout_seconds": args.protocol_timeout,
++              "drm_devices": drm_device_snapshot(),
++              "reference_profile_modified": False, "binary": binary,
++              "environment": {key: environment[key] for key in sorted(keys) if key in environment},
++              "sandbox_disabled": False, "blocklist_overridden": False,
++              "diagnostic_remote_system_access": True, "tests": []}
++    modes = ["baseline", "egl-gles"] if args.mode in {"both", "all"} else [args.mode]
++    if args.mode == "all":
++        modes.append("egl-gles-drm")
++    for mode in modes:
++        result = {"mode": mode, "complete": False, "startup_samples": []}
++        process = None
++        connection = None
++        started = None
++        profile = tempfile.TemporaryDirectory(prefix="t736-firefox-" + mode + "-")
++        log_path = artifact_directory / (mode + ".log")
++        log = log_path.open("w", encoding="utf-8")
++        try:
++            # Select a free loopback port. Firefox itself uses loopbackOnly=true
++            # in this installed release's Marionette server.sys.mjs.
++            with socket.socket() as reserve:
++                reserve.bind(("127.0.0.1", 0))
++                port = reserve.getsockname()[1]
++            preferences = {"marionette.port": port, "browser.shell.checkDefaultBrowser": False,
++                "browser.startup.homepage": "about:blank", "browser.startup.page": 0,
++                "browser.startup.firstrunSkipsHomepage": True,
++                "browser.aboutwelcome.enabled": False}
++            run_environment = environment.copy()
++            # Firefox 160 replaced the command-line flag with this opt-in.
++            # Scope it to this disposable, loopback-only diagnostic instance.
++            run_environment["MOZ_REMOTE_ALLOW_SYSTEM_ACCESS"] = "1"
++            if mode in {"egl-gles", "egl-gles-drm"}:
++                run_environment["MOZ_X11_EGL"] = "1"
++                preferences["gfx.egl.prefer-gles.enabled"] = True
++            if mode == "egl-gles-drm":
++                run_environment["MOZ_DRM_DEVICE"] = str(args.drm_device)
++            Path(profile.name, "user.js").write_text("\n".join(
++                f"user_pref({json.dumps(key)}, {json.dumps(value)});" for key, value in preferences.items())
++                + "\n", encoding="utf-8")
++            result["preferences"] = preferences
++            result["MOZ_X11_EGL"] = run_environment.get("MOZ_X11_EGL")
++            result["MOZ_DRM_DEVICE"] = run_environment.get("MOZ_DRM_DEVICE")
++            result["phase"] = "launch"
++            process = subprocess.Popen([binary, "--no-remote", "--profile", profile.name,
++                "--marionette", "--remote-allow-system-access", "about:blank"], env=run_environment,
++                stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
++                start_new_session=True)
++            result["pid"] = process.pid
++            started = time.monotonic()
++            deadline = started + args.startup_timeout
++            next_sample = started
++            result["phase"] = "wait_for_tcp_listener"
++            while time.monotonic() < deadline:
++                if process.poll() is not None:
++                    raise RuntimeError(f"Diagnostic Firefox exited {process.returncode}")
++                if time.monotonic() >= next_sample:
++                    sample = process_snapshot(process.pid, args.reference_pid)
++                    sample["elapsed_seconds"] = round(time.monotonic() - started, 3)
++                    result["startup_samples"].append(sample)
++                    print(json.dumps({"mode": mode, "startup_sample": sample}), flush=True)
++                    next_sample = time.monotonic() + 5
++                try:
++                    connection = socket.create_connection(("127.0.0.1", port), timeout=1)
++                    break
++                except OSError:
++                    time.sleep(0.25)
++            if connection is None:
++                result["startup_timeout_snapshot"] = process_snapshot(process.pid, args.reference_pid)
++                raise TimeoutError(f"Diagnostic Firefox did not start Marionette within {args.startup_timeout:g}s; this is not a renderer result")
++            result["marionette_tcp_connected_seconds"] = round(time.monotonic() - started, 3)
++            result["phase"] = "wait_for_protocol_greeting"
++            client = Marionette(connection, args.protocol_timeout)
++            result["marionette_hello"] = client.hello
++            result["marionette_hello_received_seconds"] = round(time.monotonic() - started, 3)
++            result["phase"] = "new_session"
++            # Direct Marionette takes the negotiated, flat capabilities map;
++            # the HTTP WebDriver capabilities/alwaysMatch wrapper is geckodriver's.
++            result["session"] = client.command("WebDriver:NewSession", {
++                "acceptInsecureCerts": False})
++            client.command("WebDriver:SetTimeouts", {"pageLoad": 20000, "script": 15000})
++            result["phase"] = "navigate_about_support"
++            client.command("WebDriver:Navigate", {"url": "about:support"})
++            result["phase"] = "extract_about_support"
++            deadline = time.monotonic() + 15
++            while True:
++                response = client.command("WebDriver:ExecuteScript", {"script": EXTRACT, "args": [],
++                    "newSandbox": True, "sandbox": "default"})
++                support = response.get("value", response) if isinstance(response, dict) else response
++                if not isinstance(support, dict):
++                    raise RuntimeError(f"Unexpected DOM extraction: {support}")
++                result["support"] = support
++                section = support.get("sections", {}).get("graphics-features-tbody") or ""
++                if "WebRender" in section or time.monotonic() >= deadline:
++                    break
++                time.sleep(0.5)
++            result["loaded_graphics_libraries"] = sorted({line.split()[-1]
++                for line in Path(f"/proc/{process.pid}/maps").read_text().splitlines()
++                if any(word in line for word in ("libEGL", "libGLES", "libGL.so", "libGLX", "pvr", "swrast", "gallium"))})
++            result["complete"] = True
++            result["phase"] = "complete"
++            try:
++                client.command("Marionette:Quit", {"flags": ["eAttemptQuit"]})
++            except (EOFError, OSError):
++                pass
++        except Exception as exc:
++            result["error"] = f"{type(exc).__name__}: {exc}"
++            if process is not None:
++                result["failure_snapshot"] = process_snapshot(process.pid, args.reference_pid)
++            if started is not None:
++                result["failure_elapsed_seconds"] = round(time.monotonic() - started, 3)
++        finally:
++            if connection:
++                connection.close()
++            if process:
++                try:
++                    process.wait(timeout=3)
++                except subprocess.TimeoutExpired:
++                    os.killpg(process.pid, signal.SIGTERM)
++                    try:
++                        process.wait(timeout=3)
++                    except subprocess.TimeoutExpired:
++                        os.killpg(process.pid, signal.SIGKILL)
++                        process.wait(timeout=3)
++                result["exit_code"] = process.returncode
++            log.close()
++            profile.cleanup()
++            result["profile_removed"] = True
++            result["log"] = str(log_path)
++            record["tests"].append(result)
++            args.output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
++            print(json.dumps(result), flush=True)
++    return 0 if all(item["complete"] for item in record["tests"]) else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/userpatches/atlasa1-release/tools/validation/gnome_wayland_browser.py b/userpatches/atlasa1-release/tools/validation/gnome_wayland_browser.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..8401b73be989be4edc772ef2cbd3aa1f09947d46
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/validation/gnome_wayland_browser.py
+@@ -0,0 +1,114 @@
++#!/usr/bin/env python3
++"""Check the installed AtlasA1 launcher in a disposable native Wayland profile.
++
++Run as the desktop user. The compositor check is read-only, and Marionette's
++system access is enabled only for this short-lived loopback test instance.
++Animation callbacks measure browser scheduling, not physical HDMI scanout.
++"""
++import argparse
++import json
++import os
++from pathlib import Path
++import signal
++import socket
++import subprocess
++import tempfile
++import time
++from urllib.parse import quote
++from firefox_renderer_probe import Marionette
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__)
++    ap.add_argument('--output', required=True, type=Path)
++    ap.add_argument('--launcher', type=Path, default=Path('/usr/bin/atlasa1-firefox'))
++    args = ap.parse_args()
++    if args.output.exists() or args.output.with_suffix('.log').exists():
++        ap.error('Output exists; preserve previous evidence')
++    pid = subprocess.check_output(['pgrep', '-u', str(os.getuid()), '-x', 'gnome-shell'], text=True).split()[-1]
++    source = dict(item.decode().split('=', 1) for item in Path('/proc', pid, 'environ').read_bytes().split(b'\0') if b'=' in item)
++    env = os.environ.copy()
++    for key in ('DISPLAY', 'XAUTHORITY', 'XDG_RUNTIME_DIR', 'DBUS_SESSION_BUS_ADDRESS', 'XDG_SESSION_TYPE'):
++        if key in source:
++            env[key] = source[key]
++    if env.get('XDG_SESSION_TYPE') != 'wayland':
++        ap.error('The active GNOME session must use Wayland')
++    env['WAYLAND_DISPLAY'] = 'wayland-0'
++    env['GDK_BACKEND'] = 'wayland'
++    env['MOZ_REMOTE_ALLOW_SYSTEM_ACCESS'] = '1'
++    record = {'session_type': 'wayland', 'complete': False,
++              'graphics_pass': False, 'animation_metric': 'requestAnimationFrame callbacks, not HDMI frames'}
++    with tempfile.TemporaryDirectory(prefix='atlas-wayland-firefox-') as directory:
++        env['T736_CEDAR_PROFILE'] = directory
++        with socket.socket() as reserve:
++            reserve.bind(('127.0.0.1', 0))
++            port = reserve.getsockname()[1]
++        preferences = {'marionette.port': port, 'browser.shell.checkDefaultBrowser': False,
++                       'browser.aboutwelcome.enabled': False, 'browser.startup.firstrunSkipsHomepage': True}
++        Path(directory, 'user.js').write_text(''.join(f'user_pref({json.dumps(k)}, {json.dumps(v)});\n' for k, v in preferences.items()))
++        log = args.output.with_suffix('.log').open('w')
++        process = subprocess.Popen([str(args.launcher), '--marionette', 'about:blank'],
++                                   env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
++        started = time.monotonic()
++        connection = None
++        try:
++            while time.monotonic() - started < 60:
++                if process.poll() is not None:
++                    raise RuntimeError(f'Firefox exited: {process.returncode}')
++                try:
++                    connection = socket.create_connection(('127.0.0.1', port), timeout=1)
++                    break
++                except OSError:
++                    time.sleep(.25)
++            if connection is None:
++                raise RuntimeError('Marionette startup timed out')
++            client = Marionette(connection, 30)
++            record['startup_seconds'] = time.monotonic() - started
++            record['session'] = client.command('WebDriver:NewSession', {'acceptInsecureCerts': False})
++            client.command('WebDriver:SetTimeouts', {'pageLoad': 20000, 'script': 15000})
++            client.command('Marionette:SetContext', {'value': 'chrome'})
++            result = client.command('WebDriver:ExecuteScript', {'args': [], 'script': '''
++                const gfx = Cc["@mozilla.org/gfx/info;1"].getService(Ci.nsIGfxInfo);
++                return {features: gfx.getFeatures(), renderer: gfx.adapterDescription};
++            '''})
++            record['graphics'] = result.get('value', result)
++            record['graphics_pass'] = (record['graphics']['features']['compositor'] == 'webrender'
++                                       and 'PowerVR' in record['graphics']['renderer'])
++            client.command('Marionette:SetContext', {'value': 'content'})
++            page = '''<!doctype html><style>body{background:#223;color:white}div{width:100px;height:200px;background:#28a}</style>
++                <p>AtlasA1 browser animation test</p><div></div><script>
++                window.samples=[];const box=document.querySelector('div');
++                function step(t){samples.push(t);box.style.transform=`translateX(${(t/4)%600}px)`;
++                    if(samples.length<2000)requestAnimationFrame(step)}requestAnimationFrame(step);
++                </script>'''
++            client.command('WebDriver:Navigate', {'url': 'data:text/html,' + quote(page)})
++            time.sleep(10)
++            result = client.command('WebDriver:ExecuteScript', {'args': [], 'script': '''
++                const a=window.samples||[],g=a.slice(1).map((v,i)=>v-a[i]);
++                return {callbacks:a.length,visible:document.visibilityState,
++                    fps:a.length>1?1000*(a.length-1)/(a.at(-1)-a[0]):0,
++                    maxGapMs:g.length?Math.max(...g):null,gapsOver25ms:g.filter(v=>v>25).length};
++            '''})
++            record['animation'] = result.get('value', result)
++            record['complete'] = True
++            client.command('WebDriver:DeleteSession')
++        except Exception as error:
++            record['error'] = str(error)
++        finally:
++            if connection:
++                connection.close()
++            if process.poll() is None:
++                os.killpg(process.pid, signal.SIGTERM)
++                try:
++                    process.wait(5)
++                except subprocess.TimeoutExpired:
++                    os.killpg(process.pid, signal.SIGKILL)
++                    process.wait()
++            log.close()
++    args.output.write_text(json.dumps(record, indent=2) + '\n')
++    print(json.dumps(record, indent=2))
++    return 0 if record['complete'] and record['graphics_pass'] else 1
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
 diff --git a/userpatches/atlasa1-release/tools/validation/gpu_runtime_view.py b/userpatches/atlasa1-release/tools/validation/gpu_runtime_view.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea37a63840
+index 0000000000000000000000000000000000000000..244fc9d6741e1a6f27c4980cab1710d302ec6492
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/validation/gpu_runtime_view.py
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,112 @@
 +#!/usr/bin/env python3
 +"""Create/verify a loader view without changing the private IMG payload."""
 +import argparse
@@ -46818,7 +47764,7 @@ index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea
 +    return hashlib.sha256(path.read_bytes()).hexdigest()
 +
 +
-+def expected_view(private):
++def expected_view(private, prefix=PREFIX):
 +    lib = private / 'lib'
 +    require(lib.is_dir() and not lib.is_symlink(), 'Expected an original lib directory')
 +    require((private / 'manifest.json').is_file(), 'Missing original payload manifest')
@@ -46835,7 +47781,7 @@ index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea
 +    require(excluded, 'No vendor Vulkan loader found; payload needs a fresh review')
 +    return {
 +        'schema': 1,
-+        'prefix': PREFIX,
++        'prefix': prefix,
 +        'view': VIEW,
 +        'payload_manifest_sha256': digest(private / 'manifest.json'),
 +        'links': links,
@@ -46855,11 +47801,11 @@ index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea
 +        require(link.exists(), 'Broken runtime view link: ' + str(link))
 +
 +
-+def prepare(root, verify=False):
++def prepare(root, verify=False, prefix=PREFIX):
 +    root = Path(root).resolve(strict=True)
-+    private = root / PREFIX.lstrip('/')
++    private = root / prefix.lstrip('/')
 +    require(private.is_dir() and not private.is_symlink(), 'Missing original private payload')
-+    expected = expected_view(private)
++    expected = expected_view(private, prefix)
 +    view = private / VIEW
 +    record = private / (VIEW + '.json')
 +    data = (json.dumps(expected, sort_keys=True, indent=2) + '\n').encode()
@@ -46889,8 +47835,8 @@ index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea
 +                stream.write(data)
 +        os.chmod(view, 0o755)
 +        os.chmod(record, 0o644)
-+    return {'runtime_path': PREFIX + '/' + VIEW,
-+            'manifest_path': PREFIX + '/' + VIEW + '.json',
++    return {'runtime_path': prefix + '/' + VIEW,
++            'manifest_path': prefix + '/' + VIEW + '.json',
 +            'manifest_sha256': hashlib.sha256(data).hexdigest(),
 +            'links': len(expected['links']), 'excluded': expected['excluded']}
 +
@@ -46899,8 +47845,10 @@ index 0000000000000000000000000000000000000000..46a4f72f2719bcf3d22081b7fe7698ea
 +    parser = argparse.ArgumentParser(description=__doc__)
 +    parser.add_argument('--root', default='/', help='Installed or offline rootfs')
 +    parser.add_argument('--verify', action='store_true', help='Check existing view without changes')
++    parser.add_argument('--prefix', default=PREFIX,
++                        choices=[PREFIX, '/opt/atlasa1-img-wayland'])
 +    args = parser.parse_args()
-+    print(json.dumps(prepare(args.root, args.verify), indent=2))
++    print(json.dumps(prepare(args.root, args.verify, args.prefix), indent=2))
 +
 +
 +if __name__ == '__main__':
@@ -47054,6 +48002,197 @@ index 0000000000000000000000000000000000000000..06d43425209518b112edcd83e03c00f9
 +    if(native && window)XDestroyWindow(native,window);
 +    if(native)XCloseDisplay(native);
 +    return failed?1:0;
++}
+diff --git a/userpatches/atlasa1-release/tools/validation/wayland_present.c b/userpatches/atlasa1-release/tools/validation/wayland_present.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a60768990a627009b47465c1f1d2a40478125ee
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/validation/wayland_present.c
+@@ -0,0 +1,185 @@
++#define _POSIX_C_SOURCE 200809L
++#include <EGL/egl.h>
++#include <GLES2/gl2.h>
++#include <wayland-client.h>
++#include <wayland-egl.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <time.h>
++#include "xdg-shell-client-protocol.h"
++#include "presentation-time-client-protocol.h"
++
++static struct wl_compositor *compositor;
++static struct xdg_wm_base *shell;
++static struct wp_presentation *presentation;
++static struct wl_surface *surface;
++static EGLDisplay egl_display;
++static EGLSurface egl_surface;
++static int configured, running = 1;
++static unsigned submitted, shown, discarded, over25, over40;
++static uint32_t presentation_flags;
++static uint64_t first_present, last_present, max_gap;
++static double started;
++
++static double now(void)
++{
++    struct timespec stamp;
++    clock_gettime(CLOCK_MONOTONIC, &stamp);
++    return stamp.tv_sec + stamp.tv_nsec / 1e9;
++}
++
++static void ping(void *data, struct xdg_wm_base *base, uint32_t serial)
++{
++    (void)data;
++    xdg_wm_base_pong(base, serial);
++}
++static const struct xdg_wm_base_listener shell_listener = {ping};
++
++static void global(void *data, struct wl_registry *registry, uint32_t name,
++                   const char *interface, uint32_t version)
++{
++    (void)data;
++    (void)version;
++    if (!strcmp(interface, "wl_compositor"))
++        compositor = wl_registry_bind(registry, name, &wl_compositor_interface, 3);
++    else if (!strcmp(interface, "xdg_wm_base")) {
++        shell = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
++        xdg_wm_base_add_listener(shell, &shell_listener, NULL);
++    } else if (!strcmp(interface, "wp_presentation"))
++        presentation = wl_registry_bind(registry, name, &wp_presentation_interface, 1);
++}
++static void removed(void *data, struct wl_registry *registry, uint32_t name)
++{
++    (void)data; (void)registry; (void)name;
++}
++static const struct wl_registry_listener registry_listener = {global, removed};
++
++static void configure(void *data, struct xdg_surface *xdg, uint32_t serial)
++{
++    (void)data;
++    xdg_surface_ack_configure(xdg, serial);
++    configured = 1;
++}
++static const struct xdg_surface_listener surface_listener = {configure};
++static void top_configure(void *data, struct xdg_toplevel *top, int32_t width,
++                          int32_t height, struct wl_array *states)
++{
++    (void)data; (void)top; (void)width; (void)height; (void)states;
++}
++static void top_close(void *data, struct xdg_toplevel *top)
++{
++    (void)data; (void)top;
++    running = 0;
++}
++static const struct xdg_toplevel_listener top_listener = {
++    .configure = top_configure, .close = top_close
++};
++static void sync_output(void *data, struct wp_presentation_feedback *feedback,
++                        struct wl_output *output)
++{
++    (void)data; (void)feedback; (void)output;
++}
++static void presented(void *data, struct wp_presentation_feedback *feedback,
++                      uint32_t sec_hi, uint32_t sec_lo, uint32_t nsec,
++                      uint32_t refresh, uint32_t seq_hi, uint32_t seq_lo,
++                      uint32_t flags)
++{
++    (void)data; (void)refresh; (void)seq_hi; (void)seq_lo;
++    uint64_t stamp = (((uint64_t)sec_hi << 32) | sec_lo) * 1000000000ULL + nsec;
++    if (!shown) first_present = stamp;
++    else {
++        uint64_t gap = stamp - last_present;
++        if (gap > max_gap) max_gap = gap;
++        if (gap > 25000000) over25++;
++        if (gap > 40000000) over40++;
++    }
++    last_present = stamp;
++    shown++;
++    presentation_flags |= flags;
++    wp_presentation_feedback_destroy(feedback);
++}
++static void discard(void *data, struct wp_presentation_feedback *feedback)
++{
++    (void)data;
++    discarded++;
++    wp_presentation_feedback_destroy(feedback);
++}
++static const struct wp_presentation_feedback_listener feedback_listener = {
++    sync_output, presented, discard
++};
++
++static void draw(void);
++static void frame(void *data, struct wl_callback *callback, uint32_t stamp)
++{
++    (void)data; (void)stamp;
++    wl_callback_destroy(callback);
++    if (now() - started >= 12) running = 0;
++    else draw();
++}
++static const struct wl_callback_listener frame_listener = {frame};
++static void draw(void)
++{
++    struct wl_callback *callback = wl_surface_frame(surface);
++    wl_callback_add_listener(callback, &frame_listener, NULL);
++    struct wp_presentation_feedback *feedback = wp_presentation_feedback(presentation, surface);
++    wp_presentation_feedback_add_listener(feedback, &feedback_listener, NULL);
++    glDisable(GL_SCISSOR_TEST);
++    glClearColor(0.08f, 0.10f, 0.13f, 1);
++    glClear(GL_COLOR_BUFFER_BIT);
++    glEnable(GL_SCISSOR_TEST);
++    glScissor((submitted * 5) % 1160, 200, 120, 320);
++    glClearColor(0.1f, 0.5f, 0.8f, 1);
++    glClear(GL_COLOR_BUFFER_BIT);
++    if (!eglSwapBuffers(egl_display, egl_surface)) {
++        fprintf(stderr, "eglSwapBuffers failed: 0x%x\n", eglGetError());
++        running = 0;
++    }
++    submitted++;
++}
++
++int main(void)
++{
++    struct wl_display *display = wl_display_connect(NULL);
++    if (!display) return 2;
++    struct wl_registry *registry = wl_display_get_registry(display);
++    wl_registry_add_listener(registry, &registry_listener, NULL);
++    wl_display_roundtrip(display);
++    if (!compositor || !shell || !presentation) return 3;
++    surface = wl_compositor_create_surface(compositor);
++    struct xdg_surface *xdg = xdg_wm_base_get_xdg_surface(shell, surface);
++    xdg_surface_add_listener(xdg, &surface_listener, NULL);
++    struct xdg_toplevel *top = xdg_surface_get_toplevel(xdg);
++    xdg_toplevel_add_listener(top, &top_listener, NULL);
++    xdg_toplevel_set_title(top, "AtlasA1 presentation timing");
++    wl_surface_commit(surface);
++    while (!configured && wl_display_dispatch(display) >= 0) {}
++    egl_display = eglGetDisplay((EGLNativeDisplayType)display);
++    EGLint major, minor, count;
++    if (!eglInitialize(egl_display, &major, &minor)) return 4;
++    EGLint attributes[] = {EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RENDERABLE_TYPE,
++        EGL_OPENGL_ES2_BIT, EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_NONE};
++    EGLConfig config;
++    if (!eglChooseConfig(egl_display, attributes, &config, 1, &count) || count != 1) return 5;
++    eglBindAPI(EGL_OPENGL_ES_API);
++    EGLint context_attributes[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
++    EGLContext context = eglCreateContext(egl_display, config, EGL_NO_CONTEXT, context_attributes);
++    struct wl_egl_window *window = wl_egl_window_create(surface, 1280, 720);
++    egl_surface = eglCreateWindowSurface(egl_display, config, (EGLNativeWindowType)window, NULL);
++    if (!eglMakeCurrent(egl_display, egl_surface, egl_surface, context)) return 6;
++    printf("renderer=%s\n", glGetString(GL_RENDERER));
++    fflush(stdout);
++    /* The wl_surface frame callback already paces each draw. */
++    eglSwapInterval(egl_display, 0);
++    started = now();
++    draw();
++    while (running && wl_display_dispatch(display) >= 0) {}
++    wl_display_roundtrip(display);
++    printf("submitted=%u presented=%u discarded=%u elapsed=%.3f presented_fps=%.3f "
++           "max_gap_ms=%.3f gaps_over_25ms=%u gaps_over_40ms=%u flags=0x%x\n",
++           submitted, shown, discarded, now() - started,
++           shown > 1 ? (shown - 1) * 1e9 / (last_present - first_present) : 0,
++           max_gap / 1e6, over25, over40, presentation_flags);
++    return shown > 1 ? 0 : 7;
 +}
 diff --git a/userpatches/atlasa1-release/tools/verify_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/verify_atlasa1_resolute.sh
 new file mode 100755

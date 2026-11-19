@@ -116,7 +116,10 @@ def _file(source_base: Path, destination_root: Path, source_rel: str, destinatio
 
 def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, str]]) -> None:
     target = destination / "README.md"
-    target.write_text(GENERATED[repo], encoding="utf-8", newline="\n")
+    readme = GENERATED[repo]
+    if repo in {'AtlasA1-build', 'AtlasA1-media'}:
+        readme += '\nGNOME 50 / Wayland 候选已接通 PowerVR 和 Firefox 硬件 WebRender，恢复八核调度后用户确认桌面可以正常使用。稳定 60fps 和 GNOME 冷启动镜像仍未验收，现有 Release 默认 Xfce。[候选构建、实测与限制](docs/GNOME_WAYLAND.md)\n'
+    target.write_text(readme, encoding="utf-8", newline="\n")
     records["README.md"] = (Path(f"generated:{repo}/README.md"), "generated")
     (destination / ".gitignore").write_text(
         "# Generated build products and private inputs\n"
@@ -132,8 +135,20 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
     records[".gitignore"] = (Path(f"generated:{repo}/.gitignore"), "generated")
 
 
+def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]]) -> None:
+    for rel in ('config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
+                'tools/stage_atlasa1_gnome_wayland.sh', 'docs/GNOME_WAYLAND.md',
+                'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
+                'tools/validation/firefox_renderer_probe.py',
+                'evidence/atlasa1-gnome-wayland-20261119.json'):
+        _file(ROOT, destination, rel, rel, records)
+    _tree(ROOT, destination, 'config/gnome-wayland', 'config/gnome-wayland', records)
+    _tree(ROOT, destination, 'evidence/gnome-wayland-20261119', 'evidence/gnome-wayland-20261119', records)
+
+
 def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
+    _export_gnome_wayland(destination, records)
     for rel in (
         "config/board-facts.json", "config/boot-policy.json", "config/independent-boot-plan.json",
         "config/patch-ledger.json", "config/reference-components.json", "config/source-v10-inputs.json",
@@ -302,6 +317,7 @@ def _export_uboot(destination: Path) -> dict[str, tuple[Path, str]]:
 
 def _export_media(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
+    _export_gnome_wayland(destination, records)
     _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
     _tree(ROOT, destination, "tools/browser", "tools/browser", records)
     _tree(ROOT, destination, "tools/player", "tools/player", records)
