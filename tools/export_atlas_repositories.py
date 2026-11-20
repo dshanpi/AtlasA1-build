@@ -37,7 +37,7 @@ Armbian integration and pinned upstream revisions are available in [AtlasA1-buil
 
 The release replay recipe starts from the pinned upstream Git tree. It imports the board's Tina display sources by SHA-256, applies the complete board delta and checks the resulting 317 board files. [Clean-source build instructions](patches/linux/media-v30-replay/README.md)
 
-The kernel-only build option `--pcie-v34` includes the J58 PCIe host, the four-bit COMBO1 PIPE route and the SDIO/UART transports. After a cold boot the built-in driver registered the root port at `0000:00:00.0`, and an empty-slot rescan completed. PCIe endpoint I/O requires a card in J58. [Build and test](boards/pcie-v32/README.md) · [Clean build](evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [Board measurement](evidence/atlasa1-pcie-v34-coldboot-20261118.json)
+The kernel-only build option `--pcie-v34` includes the J58 PCIe host, the four-bit COMBO1 PIPE route and the SDIO/UART transports. After a cold boot the built-in driver registered the root port at `0000:00:00.0`, and an empty-slot rescan completed. The later GNOME v45 candidate adds the DMA window and disables unsupported ASPM on COMBO1. An Intel SSD now cold-enumerates and passes independent read-only comparisons; Gen1 x1 remains the validated link rate. See the board README for the uutils direct-I/O caveat and evidence. [Build and test](boards/pcie-v32/README.md) · [Clean build](evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [Board measurement](evidence/atlasa1-pcie-v34-coldboot-20261118.json)
 """,
     "AtlasA1-uboot": """# AtlasA1-uboot\n\nU-Boot, TF-A, SPL and fixed LPDDR4x boot sources for the AtlasA1 board. The release boot packer takes the board's DDR training library as a separate input.\n\n[Reconstruct the tested CPU-D U-Boot tree](patches/u-boot/media-v28-replay/README.md) · [Build the Ubuntu release boot chain](tools/build_atlasa1_release_boot.py)\n""",
     "AtlasA1-media": """# AtlasA1-media\n\nCedar/OMX/PVR media integration for AtlasA1 / T736. The Ubuntu 26.04 native player builds its FFmpeg 7.1.5 libraries in a private prefix and uses the system SDL2 ABI. The media overlay installs the matching Cedar service and PowerVR firmware. [Player builder](tools/build_atlasa1_resolute_player.sh) · [Overlay builder](tools/prepare_atlasa1_resolute_media.py) · [Ubuntu 26.04 build instructions](https://github.com/dshanpi/AtlasA1-build/blob/main/docs/UBUNTU_26_04.md)\n\nEarlier board measurements cover Cedar hardware decoding and the PowerVR GLES2 renderer. [Native player](tools/player/README.md) · [Playback measurements and display status](docs/PLAYBACK.md)\n""",
@@ -118,7 +118,7 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
     target = destination / "README.md"
     readme = GENERATED[repo]
     if repo in {'AtlasA1-build', 'AtlasA1-media'}:
-        readme += '\nGNOME 50 / Wayland 候选已接通 PowerVR 和 Firefox 硬件 WebRender，恢复八核调度后用户确认桌面可以正常使用。稳定 60fps 和 GNOME 冷启动镜像仍未验收，现有 Release 默认 Xfce。[候选构建、实测与限制](docs/GNOME_WAYLAND.md)\n'
+        readme += '\nGNOME 50 / Wayland 候选已接通 PowerVR 和 Firefox 硬件 WebRender，恢复八核调度后用户确认桌面可以正常使用。实板已设置并验证 GNOME 冷启动；HEVC 4K30 片源在 1080p 屏上硬件缩放播放通过，1080p60 仍有少量丢帧。GNOME 新整盘镜像尚未发布，现有 Release 默认 Xfce。[候选构建、实测与限制](docs/GNOME_WAYLAND.md)\n'
     target.write_text(readme, encoding="utf-8", newline="\n")
     records["README.md"] = (Path(f"generated:{repo}/README.md"), "generated")
     (destination / ".gitignore").write_text(
@@ -249,6 +249,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "patches/linux/atlasa1-wireless-reset-v33.patch",
                 "patches/linux/atlasa1-pcie-combo1-v33.patch",
                 "patches/linux/atlasa1-pcie-pipe-map-v34.patch",
+                "patches/linux/atlasa1-pcie-dma-v43.patch",
+                "patches/linux/atlasa1-pcie-aspm-v45.patch",
                 "evidence/atlasa1-pcie-v32-empty-slot-20261118.json",
                 "evidence/atlasa1-pcie-v33-pipe-route-20261118.json",
                 "evidence/atlasa1-hw-v34-kernel-replay-20261118.json",
