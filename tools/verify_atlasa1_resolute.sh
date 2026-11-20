@@ -52,9 +52,17 @@ target systemctl is-enabled t736-cedar.socket
 target systemctl is-enabled serial-getty@ttyS0.service
 target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
 [[ -s "$root/boot/initrd.img-6.18.63-t736-armbian" ]]
-for name in vmlinuz initrd.img; do
-    [[ $(target readlink -f "/boot/$name-6.18.63-t736-armbian") == "/boot/$name-$release" ]]
-done
+[[ $(target readlink -f /boot/vmlinuz-6.18.63-t736-armbian) == "/boot/vmlinuz-$release.atlasa1.gz" ]]
+[[ $(target readlink -f /boot/initrd.img-6.18.63-t736-armbian) == "/boot/initrd.img-$release" ]]
+python3 - "$root/boot/vmlinuz-$release" "$root/boot/vmlinuz-$release.atlasa1.gz" <<'PY'
+import gzip, sys
+from pathlib import Path
+source = Path(sys.argv[1]).read_bytes()
+if source[:2] == b'\x1f\x8b':
+    source = gzip.decompress(source)
+assert source[56:60] == b'ARM\x64'
+assert gzip.decompress(Path(sys.argv[2]).read_bytes()) == source
+PY
 lsinitramfs "$root/boot/initrd.img-6.18.63-t736-armbian" | grep -x init
 relocations=$(target env LD_LIBRARY_PATH="$libs" ldd -r "$player" 2>&1)
 if grep -Ei 'not found|undefined symbol' <<<"$relocations"; then exit 1; fi

@@ -718,6 +718,13 @@
       "sha256": "ae9edde723066d519795c8309be331a2874043dcb4d559d7d248ca9467c5953d"
     },
     {
+      "path": "config/initramfs/50-atlasa1-boot-status.conf",
+      "kind": "source",
+      "source": "mainline/config/initramfs/50-atlasa1-boot-status.conf",
+      "size": 102,
+      "sha256": "7c2da1708c995cbe26f4b87e8b0b3f5e5c4256d45ad5e06733705c118b5fb966"
+    },
+    {
       "path": "config/initramfs/atlasa1-root-wait",
       "kind": "source",
       "source": "mainline/config/initramfs/atlasa1-root-wait",
@@ -854,8 +861,8 @@
       "path": "docs/BOOT_SPLASH.md",
       "kind": "source",
       "source": "mainline/docs/BOOT_SPLASH.md",
-      "size": 3932,
-      "sha256": "464a4d6bc9ea0c5b1556d28c07199ef3f22de59d2385afda4de97cfdcc4bb560"
+      "size": 6284,
+      "sha256": "b313bc385c9c1fa8533b95bbdf12090609067ed7c77045890b347973172648d4"
     },
     {
       "path": "docs/BUILD.md",
@@ -1213,6 +1220,118 @@
       "source": "mainline/evidence/boot-and-cleanup-20261120/fixed-time.txt",
       "size": 122,
       "sha256": "a7f573a56dd824d85ab4c7c62e93790adc59f98fabdbc66858652dcf3119a992"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v46-quiet-trial.log",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v46-quiet-trial.log",
+      "size": 10459,
+      "sha256": "876129756e3e6b4eaed17628a653c7019bc52e0d9c290fa16fdca0078facf268"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v46-trial.log",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v46-trial.log",
+      "size": 37377,
+      "sha256": "c171d9571f805062a0e5ecd9c6870133901fa7ca09c3df56160555b01865bb6e"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v46-zstd-trial.log",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v46-zstd-trial.log",
+      "size": 10639,
+      "sha256": "5ae178cfe67fdf42dda241e99769aa90b6848300d466ed051a0983c16c63ddb2"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v47-default-config-trial.log",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v47-default-config-trial.log",
+      "size": 10179,
+      "sha256": "e8ba1de2a8ee96edc9b6309b0356fcbc653ca7466033e685ba066c205fbca092"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v47-default-final.log",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v47-default-final.log",
+      "size": 9271,
+      "sha256": "fb92428b64af096b096247cff1808179c9070a942d6120818e043b28e7f6532e"
+    },
+    {
+      "path": "evidence/bootfast-20261120/boot-v47-default-final.timing.json",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/boot-v47-default-final.timing.json",
+      "size": 893,
+      "sha256": "5c3f1d1161690136707cffdfc5ea3183b537604a3be034f5e28e3464407c6800"
+    },
+    {
+      "path": "evidence/bootfast-20261120/compressed-v45-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/compressed-v45-time.txt",
+      "size": 122,
+      "sha256": "c29b8ffdd988ac2ea7f676496c465db76e08b6ff35309081c9b197c4748d0e8d"
+    },
+    {
+      "path": "evidence/bootfast-20261120/emmc-direct-read-v46.json",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/emmc-direct-read-v46.json",
+      "size": 449,
+      "sha256": "e982251d6e38dd6df499f846221b4c571e07dc4be4250b648ba161952f5de9f6"
+    },
+    {
+      "path": "evidence/bootfast-20261120/measurements.json",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/measurements.json",
+      "size": 2912,
+      "sha256": "f558231599734b145fcacc2baeb604c1ce850ce0eddd97f7d5b1d34d5b501725"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v46-quiet-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v46-quiet-time.txt",
+      "size": 122,
+      "sha256": "06c06dcc7df741208a4c944090578a2c6286b32c7daddd105454553092ba0b29"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v46-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v46-time.txt",
+      "size": 122,
+      "sha256": "b3bd74d2b58995befbc290a75afd1ed496396a84ceb854588c516f83837dd107"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v46-zstd-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v46-zstd-time.txt",
+      "size": 122,
+      "sha256": "5204186731b6acdd4bc025576ba266cb59b7b9511056f1af2d77cb0917386ae5"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v47-default-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v47-default-time.txt",
+      "size": 122,
+      "sha256": "64d49a67876e1313e1ea411f604f6f078d4af35a4a5a22ddd426f5f7493d1ebb"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v47-final-gnome.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v47-final-gnome.txt",
+      "size": 275,
+      "sha256": "da6ee889457db39fb8c7903eeab8cc7896d6520524d66c80c8e194bd9e245371"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v47-final-kernel.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v47-final-kernel.txt",
+      "size": 833,
+      "sha256": "c629a2a3712e9124b21a07c2c523e5ca4ee8ae1b89e242b821f0a274a7d05314"
+    },
+    {
+      "path": "evidence/bootfast-20261120/v47-trial-time.txt",
+      "kind": "source",
+      "source": "mainline/evidence/bootfast-20261120/v47-trial-time.txt",
+      "size": 122,
+      "sha256": "bff940b90a452f59683d93d730281fefb63f5e58e3833c61ce7d7d9a6afc128b"
     },
     {
       "path": "evidence/ffplay-first-picture-sync-qemu-20261118.json",
@@ -2527,8 +2646,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 7916468,
-      "sha256": "f5da7e68387a7df8543a4a84c218c699f5bfd79e6ae324b41ced7c03632129cd"
+      "size": 8018096,
+      "sha256": "918d3d9378a0ad58802323a2d07bbe57d3d41a9b5b029ddf0d28afbd71100c27"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -2653,8 +2772,8 @@
       "path": "patches/linux/gnome-media-20261119/README.md",
       "kind": "source",
       "source": "mainline/patches/linux/gnome-media-20261119/README.md",
-      "size": 3889,
-      "sha256": "39ea6a4d1e5ceb95d947f46e4561794c6db2cc4d177dcc5f9957a7ff9758c064"
+      "size": 5061,
+      "sha256": "ad3cf2eadc0bd705f6739c3a8eb3e63c2fc49e7bdea526d630efd3d6ae22b750"
     },
     {
       "path": "patches/linux/gnome-media-20261119/v36-vblank.patch",
@@ -2711,6 +2830,13 @@
       "source": "mainline/patches/linux/gnome-media-20261119/v42-trace-api.patch",
       "size": 653,
       "sha256": "6bfb42d56ee8c3c719e1236acf491f5d87dc4f503977a922c4f01066eade6e21"
+    },
+    {
+      "path": "patches/linux/gnome-media-20261119/v46-mmc-tuning-log.patch",
+      "kind": "source",
+      "source": "mainline/patches/linux/gnome-media-20261119/v46-mmc-tuning-log.patch",
+      "size": 558,
+      "sha256": "9bbc3907dceccb7276c7b065a5ee1149383b01936feceb697e20b9806d9a4213"
     },
     {
       "path": "patches/linux/media-v30-cedar-heap-quota.patch",
@@ -5271,8 +5397,8 @@
       "path": "tools/build_gnome_media_candidate.sh",
       "kind": "source",
       "source": "mainline/tools/build_gnome_media_candidate.sh",
-      "size": 6245,
-      "sha256": "c0ea62a83c19a4a8d899d78d082e3dd43a074d357b7e9bd910287e7a58910f66"
+      "size": 6613,
+      "sha256": "2eb8cac1ee3b4913c21a4b89b55210458d4483fa31a49df3ecd0105e1de9f9c4"
     },
     {
       "path": "tools/build_gnome_media_probes.sh",
@@ -5866,22 +5992,22 @@
       "path": "tools/configure_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_resolute.sh",
-      "size": 7363,
-      "sha256": "2ca46edcf48d579db5def6f40b49bd47b564afc9dd6e41fce8ce1464c84ae6ee"
+      "size": 7687,
+      "sha256": "4332626c048194c8b39b7bd4e2792ce2151f28b8a667e96ea803d607ebc46e51"
     },
     {
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 32627,
-      "sha256": "9c2f245906ab74360d702cdb80ff8fa195b40253b96867d9ac827ac30cce03b9"
+      "size": 32879,
+      "sha256": "61edb21082b44aea523a600ed10968ba23ba2aad9a0e80b89b19d8a5b43edf3c"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 8569,
-      "sha256": "60135660178aa387c7e004d17e108e760274360bf0ad4ce12f3bee4b5eb3ff6b"
+      "size": 8649,
+      "sha256": "b75b066cd650b5ff98a2ea22dbc23176266cf6de48f44c7aa6532be08a7623d4"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -6099,6 +6225,13 @@
       "source": "mainline/tools/prepare_atlas_release_sources.py",
       "size": 4814,
       "sha256": "36ef9581527839895fe0eca642f9027380024bf1b020e8e957828243b0b57c97"
+    },
+    {
+      "path": "tools/prepare_atlasa1_boot_kernel.py",
+      "kind": "source",
+      "source": "mainline/tools/prepare_atlasa1_boot_kernel.py",
+      "size": 1964,
+      "sha256": "496448aa13263cc7c232dce739626f4981cbdd22b3b10941df365a680b911a9c"
     },
     {
       "path": "tools/prepare_atlasa1_resolute_media.py",
@@ -6426,8 +6559,8 @@
       "path": "tools/verify_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/verify_atlasa1_resolute.sh",
-      "size": 3604,
-      "sha256": "15c16e310bae93f051b4f857bd8a657e65dc9fa212214f7a64fe1a48133cfa45"
+      "size": 4010,
+      "sha256": "1458cf98ce8d1b37c8239629712fb831a5e8e18d9fd2fe1480f959392673bd1f"
     },
     {
       "path": "tools/verify_atlasa1_resolute_media.sh",

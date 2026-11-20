@@ -104,6 +104,7 @@ target depmod -a "$release"
 target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
 install -Dm755 "$(dirname "$0")/../config/initramfs/wait-for-root" "$root/usr/lib/atlasa1/wait-for-root"
 install -Dm755 "$(dirname "$0")/../config/initramfs/atlasa1-root-wait" "$root/etc/initramfs-tools/hooks/atlasa1-root-wait"
+install -Dm644 "$(dirname "$0")/../config/initramfs/50-atlasa1-boot-status.conf" "$root/etc/systemd/system.conf.d/50-atlasa1-boot-status.conf"
 bash "$(dirname "$0")/stage_atlasa1_plymouth.sh" "$root"
 install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/$board_dtb" \
     "$root/boot/dtb/allwinner/t736-mainline-bringup.dtb"
@@ -112,10 +113,11 @@ if [[ -s "$root/boot/initrd.img-$release" ]]; then
 else
     target update-initramfs -c -k "$release"
 fi
-for name in vmlinuz initrd.img; do
-    [[ -s "$root/boot/$name-$release" ]]
-    ln -sfn "$name-$release" "$root/boot/$name-6.18.63-t736-armbian"
-done
+python3 "$(dirname "$0")/prepare_atlasa1_boot_kernel.py" \
+    "$root/boot/vmlinuz-$release" "$root/boot/vmlinuz-$release.atlasa1.gz"
+ln -sfn "vmlinuz-$release.atlasa1.gz" "$root/boot/vmlinuz-6.18.63-t736-armbian"
+[[ -s "$root/boot/initrd.img-$release" ]]
+ln -sfn "initrd.img-$release" "$root/boot/initrd.img-6.18.63-t736-armbian"
 systemctl --root="$root" enable t736-cedar.socket serial-getty@ttyS0.service
 systemctl --root="$root" is-enabled t736-cedar.socket
 # eMMC does not expose SMART. Keep the daemon available for add-on drives.

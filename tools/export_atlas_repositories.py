@@ -141,6 +141,7 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
                 'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
                 'docs/CHROMIUM.md', 'tools/validation/chromium_playback.py',
                 'docs/BOOT_SPLASH.md', 'tools/stage_atlasa1_plymouth.sh',
+                'tools/prepare_atlasa1_boot_kernel.py',
                 'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
                 'tools/validation/firefox_renderer_probe.py',
                 'tools/validation/ffplay_wayland_present.c',
@@ -157,6 +158,7 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
     _tree(ROOT, destination, 'config/plymouth', 'config/plymouth', records)
     _tree(ROOT, destination, 'config/initramfs', 'config/initramfs', records)
     _tree(ROOT, destination, 'evidence/boot-and-cleanup-20261120', 'evidence/boot-and-cleanup-20261120', records)
+    _tree(ROOT, destination, 'evidence/bootfast-20261120', 'evidence/bootfast-20261120', records)
     _tree(ROOT, destination, 'tools/browser/chromium156', 'tools/browser/chromium156', records)
     _tree(ROOT, destination, 'evidence/gnome-wayland-20261119', 'evidence/gnome-wayland-20261119', records)
     _tree(ROOT, destination, 'evidence/gnome-media-20261119', 'evidence/gnome-media-20261119', records)
@@ -285,6 +287,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
 
 def _export_linux(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
+    _tree(ROOT, destination, 'evidence/bootfast-20261120', 'evidence/bootfast-20261120', records)
     _file(ROOT, destination, "tools/build_gnome_media_candidate.sh", "tools/build_gnome_media_candidate.sh", records)
     _file(ROOT, destination, "docs/GNOME_MEDIA.md", "docs/GNOME_MEDIA.md", records)
     _tree(ROOT, destination, "evidence/gnome-media-20261119", "evidence/gnome-media-20261119", records)

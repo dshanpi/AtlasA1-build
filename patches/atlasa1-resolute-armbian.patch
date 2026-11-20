@@ -6698,6 +6698,15 @@ index 0000000000000000000000000000000000000000..5e0cca92a547d869f0e79b985d5ded65
 +    xrandr --output HDMI-1 --set dynamicrange 0 >/dev/null 2>&1 || true
 +fi
 +exit 0
+diff --git a/userpatches/atlasa1-release/config/initramfs/50-atlasa1-boot-status.conf b/userpatches/atlasa1-release/config/initramfs/50-atlasa1-boot-status.conf
+new file mode 100644
+index 0000000000000000000000000000000000000000..b6349553b3934a503520da72dc0e8153b14c67a8
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/initramfs/50-atlasa1-boot-status.conf
+@@ -0,0 +1,3 @@
++[Manager]
++# Keep job diagnostics in the journal and show failed jobs on the console.
++ShowStatus=error
 diff --git a/userpatches/atlasa1-release/config/initramfs/atlasa1-root-wait b/userpatches/atlasa1-release/config/initramfs/atlasa1-root-wait
 new file mode 100755
 index 0000000000000000000000000000000000000000..8934fa8fcdc5df36442c793f8a032a79bd4ca2d7
@@ -8227,10 +8236,10 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_TOOLS_FWUMDATA is not set
 diff --git a/userpatches/atlasa1-release/docs/BOOT_SPLASH.md b/userpatches/atlasa1-release/docs/BOOT_SPLASH.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..a8a221e17e300db6e93fdaf96de3d03502d788f0
+index 0000000000000000000000000000000000000000..6963a824ad5225ffb04f36b7b3d097124d8fc0eb
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/BOOT_SPLASH.md
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,107 @@
 +# Atlas A1 boot animation
 +
 +The Ubuntu rootfs configuration installs Plymouth, its script renderer and the
@@ -8300,6 +8309,44 @@ index 0000000000000000000000000000000000000000..a8a221e17e300db6e93fdaf96de3d035
 +`/etc/initramfs-tools/hooks/atlasa1-root-wait`, both mode 0755, then rebuild the
 +selected initramfs and its uInitrd. To undo this fix, remove the hook and rebuild
 +both artifacts, or restore the matching backed-up boot artifacts.
++
++## Further startup profiling
++
++The v45 source U-Boot read the 14,125,064-byte Image in 2,796 ms. A gzip Image
++containing identical bytes took 1,142 ms to read. The uncompressed Image remains
++available for rollback. The rootfs recipe now creates a checked `.atlasa1.gz`
++artifact and points the fixed U-Boot kernel alias to it. Its verifier compares
++decompressed bytes with the package's original kernel.
++
++v46 retains the first expected bad-tap snapshot per tuning pass. It still reports
++every error outside the existing recovery classifier. On hardware, full DMA
++snapshots fell from 46 to 2. HS200/HS400 full sweeps and final verification
++remained enabled. Three 13 MiB direct reads of the kernel matched the reference
++hash. The test uses page-aligned Python `O_DIRECT` buffers: the installed uutils
++`dd iflag=direct` returned EINVAL and did not constitute a passed read test.
++
++v46 with gzip kernel loading reached the graphical target in 22.735 seconds.
++A one-shot `loglevel=5 systemd.show_status=error` test reached it in 21.116 seconds.
++Kernel messages remain in the ring buffer/journal. Early boot shows warnings
++and errors on UART, and systemd displays failed jobs. v47 builds the console loglevel
++into its default configuration; `50-atlasa1-boot-status.conf` supplies systemd's
++setting. Neither setting disables the serial recovery console.
++
++v47 then cold-booted without temporary logging arguments in 21.055 seconds.
++After selecting its gzip Image and matching initramfs as the defaults, a normal
++cold boot reached the graphical target in **20.879 seconds** (kernel/initramfs
++5.264 + userspace 15.615). The Wayland greeter, PowerVR and Cedar socket were
++active. No systemd units failed, and `dpkg --audit` was clean. The previous v45
++artifacts and a board-local restore script remain available.
++
++A Zstd initramfs comparison reached 20.950 seconds with v46, versus 21.116 for
++gzip. Its extra 1.57 MB added about 0.31 seconds to U-Boot loading. This did not
++demonstrate a total-boot improvement, so the default initramfs stays gzip.
++
++See `evidence/bootfast-20261120/` for timings, checksums and selected kernel logs.
++Host serial timestamps include MCP buffering and are not precise measurements
++of the instant power reaches the board. This updates the installed board and
++source recipes; it does not replace the previously published Release image.
 diff --git a/userpatches/atlasa1-release/docs/CHROMIUM.md b/userpatches/atlasa1-release/docs/CHROMIUM.md
 new file mode 100644
 index 0000000000000000000000000000000000000000..a085cc553de48c0809a648e5905d8e423c258905
@@ -11449,6 +11496,2646 @@ index 0000000000000000000000000000000000000000..527fe313ed645740ee8abe0a8ac9bfef
 @@ -0,0 +1,2 @@
 +Startup finished in 7.671s (kernel) + 16.525s (userspace) = 24.196s 
 +graphical.target reached after 16.524s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-quiet-trial.log b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-quiet-trial.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..cdf2bd2ee21506a1d672f17a399c0bb43e29ed91
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-quiet-trial.log
+@@ -0,0 +1,316 @@
++
++
++
++Broadcast message from root@atlasa1 (Fri 2026-11-20 08:06:23 UTC):
++
++
++
++
++
++The system will power off now!
++
++
++
++
++
++
++
++
++
++
++
++
++]3008;end=c45c8eb57b7247b39a7819a1456526c7\]104\]3008;end=4cd7082e3e024f2baff7c938da0f9c27\reboot: Power down
++
++T736 source SRAM host + authorized libdram v1
++
++init_DRAM begin seed tpr3=110000 tpr13=6063
++
++DRAM BOOT DRIVE INFO: V0.6035
++
++DDR rail dcdc8 requested=1100 effective=1100 rc=0
++
++DDR rail eldo1 requested=660 effective=650 rc=0
++
++DRAM_VCC set to 1100 mv
++
++DRAM CLK =1800 MHZ
++
++DRAM Type =8 (8:LPDDR4,9:LPDDR5)
++
++Training result is = 7
++
++DRAM Pstate 0 training, frequency is 1800 Mhz
++
++DRAM SIZE =8192 MBytes, para1 = 311a, para2 = a0001001, dram_tpr13 = 6063
++
++DRAM simple test OK.
++
++init_DRAM returned 8192 MiB, ticks=78635009
++
++MEM PASS: 8 x 64KiB windows, 4 address/data patterns, 524288 words checked; upper physical RAM pending
++
++BOARD power rc=0 DCDC1 en=ff voltage=17 DC1SW1=17->1f DLDO2=d->d LDO_EN3=40->42
++
++CCU after DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++SPL eMMC open rc=0 sectors=122142720 irq=0 r1=900
++
++SPL load addr=47000000 bytes=5040 LBA=24577
++
++SPL load addr=48000000 bytes=53924 LBA=24587
++
++SPL load addr=52000000 bytes=265640 LBA=24693
++
++SPL payload CRCs passed; source AArch64 handoff
++
++H00c51838 81000000 47000000 00000001 00000000 
++AT736 A64 source handoff EL=000000000000000c
++
++A64 MEM PASS 262144 x 64-bit checks, including RAM above 4GiB and final 64KiB
++
++Entering source TF-A 0x48000000
++
++
++NOTICE:  BL31: v2.15.0(debug):t736-independent-candidate-7d322909
++
++NOTICE:  BL31: Built : 06:57:46, Nov 13 2026
++
++INFO:    GICv3 without legacy support detected.
++
++INFO:    ARM GICv3 driver initialized in EL3
++
++INFO:    Maximum SPI INTID supported: 287
++
++NOTICE:  BL31: Detected Allwinner A733 SoC (1903)
++
++NOTICE:  BL31: Found U-Boot DTB at 0x5203fab0, model: T736 custom board RAM bring-up
++
++INFO:    Configuring SPC Controller
++
++INFO:    BL31: Platform setup done
++
++INFO:    BL31: Initializing runtime services
++
++INFO:    BL31: cortex_a55: CPU workaround for erratum 1530923 was applied
++
++INFO:    PSCI: Suspend is unavailable
++
++INFO:    BL31: Preparing for EL3 exit to normal world
++
++INFO:    Entry point address = 0x52000000
++
++INFO:    SPSR = 0x3c9
++
++INFO:    Changed devicetree.
++
++
++
++<debug_uart>
++
++
++
++
++
++U-Boot 2026.10-t736-bringup (Nov 18 2026 - 00:00:00 +0000)
++
++
++
++Model: T736 custom board RAM bring-up
++
++Board: T736 source boot candidate; authorized vendor DDR library
++
++DRAM:  8 GiB
++
++Core:  4 devices, 4 uclasses, devicetree: separate
++
++CPU-D A76 step=1 reg=201c before=00000000 desired=00010000 actual=00010000 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=2 reg=2000 before=40801400 desired=40801400 actual=40801400 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=3 reg=2000 before=40801400 desired=48801400 actual=48801400 CTRL=48801400 STAT=48801400 CLK=00010000 rc=0
++
++CPU-D A76 step=4 reg=2000 before=48801400 desired=48802000 actual=48801400 CTRL=48801400 STAT=48802000 CLK=00010000 rc=0
++
++CPU-D A76 step=5 reg=2000 before=48801400 desired=c8802000 actual=c8801400 CTRL=c8801400 STAT=c8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=6 reg=2000 before=c8802000 desired=e8802000 actual=e8802000 CTRL=e8802000 STAT=e8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=7 reg=2000 before=f8802000 desired=ec802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=8 reg=2000 before=f8802000 desired=f8802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=9 reg=201c before=00010000 desired=03010000 actual=03010000 CTRL=f8802000 STAT=f8802000 CLK=03010000 rc=0
++
++CPU-D A76 step=10 reg=201c before=03010000 desired=00000000 actual=00000000 CTRL=f8802000 STAT=f8802000 CLK=00000000 rc=0
++
++CPU-D A76 step=11 reg=2000 before=f8802000 desired=e0802000 actual=f0802000 CTRL=f0802000 STAT=f0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=12 reg=2000 before=f0802000 desired=c0802000 actual=c0802000 CTRL=c0802000 STAT=c0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=13 reg=2000 before=c0802000 desired=c0802700 actual=c0802000 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=14 reg=2000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=e0802700 STAT=e0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=15 reg=2000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=16 reg=2000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=17 reg=2000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=18 reg=2000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=19 reg=201c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A76 rc=0 stage=8 CTRL=f8802700 STAT=f8802700 CLK=03000000 mutation=1 rollback=0/0 slow=0 guard=0 trace=19
++
++CPU-D: A76 PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A76 cold416 then warm1014 PASS
++
++CPU-D A55 step=1 reg=101c before=03000000 desired=00000000 actual=00000000 CTRL=f8801300 STAT=f8801300 CLK=00000000 rc=0
++
++CPU-D A55 step=2 reg=1000 before=f8801300 desired=e0801300 actual=f0801300 CTRL=f0801300 STAT=f0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=3 reg=1000 before=f0801300 desired=c0801300 actual=c0801300 CTRL=c0801300 STAT=c0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=4 reg=1000 before=c0801300 desired=c0802700 actual=c0802700 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=5 reg=1000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=6 reg=1000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=7 reg=1000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=8 reg=1000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=9 reg=1000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=10 reg=101c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D A55 step=11 reg=101c before=03000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A55 rc=0 stage=8 core=412fd050/81000000 CNT=24000000 DAIF=2c0/2c0
++
++CPU-D: A55 f8801300/f8801300/03000000 -> f8802700/f8802700/03000000 mutation=1 rollback=0 slow=0 guard=0
++
++CPU-D: PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A55/A76 configured N39/1=1014MHz; DSU and PMIC unchanged
++
++MMC:   T736 SMHC3 read-only PIO: 0
++
++Loading Environment from nowhere...
++Loading Environment from nowhere... OK
++
++In:    serial@2500000
++
++Out:   serial@2500000
++
++Err:   serial@2500000
++
++
++Hit any key to stop autoboot: 3
++Hit any key to stop autoboot: 0
++
++T736-mainline=> setenv kernel_comp_addr_r 0x68000000
++
++T736-mainline=> setenv bootargs earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256 loglevel=5 systemd.show_status=error
++
++T736-mainline=> mmc dev 0
++
++switch to partitions #0, OK
++
++mmc0(part 0) is current device
++
++T736-mainline=> ext4load mmc 0:4 0x60000000 /boot/atlasa1-bootfast-20261120/Image-v46.gz
++
++5783631 bytes read in 1144 ms (4.8 MiB/s)
++
++T736-mainline=> setenv kernel_comp_size ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x64000000 /boot/initrd.img-6.18.63-t736-gnome-v46
++
++18459938 bytes read in 3636 ms (4.8 MiB/s)
++
++T736-mainline=> setenv rdsize ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x63000000 /boot/t736-gnome-v46.dtb
++
++16696 bytes read in 6 ms (2.7 MiB/s)
++
++T736-mainline=> booti 0x60000000 0x64000000:${rdsize} 0x63000000
++
++   Uncompressing Kernel Image to 0
++
++## Flattened Device Tree blob at 63000000
++
++   Booting using the fdt blob at 0x63000000
++
++Working FDT set to 63000000
++
++   Loading Ramdisk to ad5f5000, end ae78fd22 ... OK
++
++   Loading Device Tree to 00000000ad5ed000, end 00000000ad5f4137 ... OK
++
++Working FDT set to ad5ed000
++
++
++
++Starting kernel ...
++
++
++
++Booting Linux on physical CPU 0x0000000000 [0x412fd050]
++
++Linux version 6.18.63-t736-gnome-v46 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #46 SMP 2026-11-19 00:00:00 UTC
++
++Machine model: T736 custom board mainline bring-up
++
++earlycon: uart8250 at MMIO32 0x0000000002500000 (options '')
++
++printk: legacy bootconsole [uart8250] enabled
++
++ITS: No ITS available, not enabling LPIs
++
++[drm:commit_init_connecting.isra.0] *ERROR* offline mode: init connecting not found sunxi_drm_offline_mode_pre_init
++
++gpio gpiochip0: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++gpio gpiochip1: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-r-pinctrl 7025000.pinctrl: supply vcc-pl not found, using dummy regulator
++
++clk: Not disabling unused clocks
++
++[drm] suxni tcon hdmi set rate: 241500000Hz and get diff: 241500000Hz
++
++Loading, please wait...
++
++Starting systemd-udevd version 259.9-0ubuntu0.1
++
++
++Begin: Loading essential drivers ... done.
++
++Begin: Running /scripts/init-premount ... t736-smhc3-pio 4023000.mmc: DMA snapshot CMD21 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000000ac STATUS=0000a906 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=128 host=128 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000080 36f10000 00000000
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD8 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000080ac STATUS=00004106 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=512 host=512 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000200 36f10000 00000000
++
++pvrsrvkm: loading out-of-tree module taints kernel.
++
++]104\]104\]3008;start=fdbe4fc136a14a62927f37e1dcf7be68;user=root;hostname=atlasa1;machineid=8a50f23fcdf249f083516259a0626cf9;bootid=2f1e5fb3ddca43e4aefceb43aa639e3a;pid=2277;pidfdid=2278;comm=(agetty);servicename=serial-getty@ttyS0.service;invocationid=1b39d8c778c945748214c6c7a976
++
++
++Armbian-unofficial 26.11.0-trunk resolute ttyS0 
++
++
++
++atlasa1 login: 
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-trial.log b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-trial.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..dbf4b247af2c520ac0e4ee4abc0a47b8e52d3bae
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-trial.log
+@@ -0,0 +1,1142 @@
++
++
++
++Broadcast message from root@atlasa1 (Fri 2026-11-20 08:03:38 UTC):
++
++
++
++
++
++The system will power off now!
++
++
++
++
++
++
++
++
++
++
++
++
++]3008;end=908f6da4e6b54349bacadd7f2b023e74\]104\]3008;end=334c270bbca840dcaf177ac52a60e448\reboot: Power down
++
++T736 source eMMC SPL v4; fixed LPDDR4x and peripheral power; Ctrl-C within 3 seconds for recovery
++
++CCU before DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++T736 source SRAM host + authorized libdram v1
++
++init_DRAM begin seed tpr3=110000 tpr13=6063
++
++DRAM BOOT DRIVE INFO: V0.6035
++
++DDR rail dcdc8 requested=1100 effective=1100 rc=0
++
++DDR rail eldo1 requested=660 effective=650 rc=0
++
++DRAM_VCC set to 1100 mv
++
++DRAM CLK =1800 MHZ
++
++DRAM Type =8 (8:LPDDR4,9:LPDDR5)
++
++Training result is = 7
++
++DRAM Pstate 0 training, frequency is 1800 Mhz
++
++DRAM SIZE =8192 MBytes, para1 = 311a, para2 = a0001001, dram_tpr13 = 6063
++
++DRAM simple test OK.
++
++init_DRAM returned 8192 MiB, ticks=78710271
++
++MEM PASS: 8 x 64KiB windows, 4 address/data patterns, 524288 words checked; upper physical RAM pending
++
++BOARD power rc=0 DCDC1 en=ff voltage=17 DC1SW1=17->1f DLDO2=d->d LDO_EN3=40->42
++
++CCU after DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++SPL eMMC open rc=0 sectors=122142720 irq=0 r1=900
++
++SPL load addr=47000000 bytes=5040 LBA=24577
++
++SPL load addr=48000000 bytes=53924 LBA=24587
++
++SPL load addr=52000000 bytes=265640 LBA=24693
++
++SPL payload CRCs passed; source AArch64 handoff
++
++H00c51838 81000000 47000000 00000001 00000000 
++AT736 A64 source handoff EL=000000000000000c
++
++A64 MEM PASS 262144 x 64-bit checks, including RAM above 4GiB and final 64KiB
++
++Entering source TF-A 0x48000000
++
++
++NOTICE:  BL31: v2.15.0(debug):t736-independent-candidate-7d322909
++
++NOTICE:  BL31: Built : 06:57:46, Nov 13 2026
++
++INFO:    GICv3 without legacy support detected.
++
++INFO:    ARM GICv3 driver initialized in EL3
++
++INFO:    Maximum SPI INTID supported: 287
++
++NOTICE:  BL31: Detected Allwinner A733 SoC (1903)
++
++NOTICE:  BL31: Found U-Boot DTB at 0x5203fab0, model: T736 custom board RAM bring-up
++
++INFO:    Configuring SPC Controller
++
++INFO:    BL31: Platform setup done
++
++INFO:    BL31: Initializing runtime services
++
++INFO:    BL31: cortex_a55: CPU workaround for erratum 1530923 was applied
++
++INFO:    PSCI: Suspend is unavailable
++
++INFO:    BL31: Preparing for EL3 exit to normal world
++
++INFO:    Entry point address = 0x52000000
++
++INFO:    SPSR = 0x3c9
++
++INFO:    Changed devicetree.
++
++
++
++<debug_uart>
++
++
++
++
++
++U-Boot 2026.10-t736-bringup (Nov 18 2026 - 00:00:00 +0000)
++
++
++
++Model: T736 custom board RAM bring-up
++
++Board: T736 source boot candidate; authorized vendor DDR library
++
++DRAM:  8 GiB
++
++Core:  4 devices, 4 uclasses, devicetree: separate
++
++CPU-D A76 step=1 reg=201c before=00000000 desired=00010000 actual=00010000 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=2 reg=2000 before=40801400 desired=40801400 actual=40801400 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=3 reg=2000 before=40801400 desired=48801400 actual=48801400 CTRL=48801400 STAT=48801400 CLK=00010000 rc=0
++
++CPU-D A76 step=4 reg=2000 before=48801400 desired=48802000 actual=48801400 CTRL=48801400 STAT=48802000 CLK=00010000 rc=0
++
++CPU-D A76 step=5 reg=2000 before=48801400 desired=c8802000 actual=c8801400 CTRL=c8801400 STAT=c8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=6 reg=2000 before=c8802000 desired=e8802000 actual=e8802000 CTRL=e8802000 STAT=e8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=7 reg=2000 before=f8802000 desired=ec802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=8 reg=2000 before=f8802000 desired=f8802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=9 reg=201c before=00010000 desired=03010000 actual=03010000 CTRL=f8802000 STAT=f8802000 CLK=03010000 rc=0
++
++CPU-D A76 step=10 reg=201c before=03010000 desired=00000000 actual=00000000 CTRL=f8802000 STAT=f8802000 CLK=00000000 rc=0
++
++CPU-D A76 step=11 reg=2000 before=f8802000 desired=e0802000 actual=f0802000 CTRL=f0802000 STAT=f0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=12 reg=2000 before=f0802000 desired=c0802000 actual=c0802000 CTRL=c0802000 STAT=c0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=13 reg=2000 before=c0802000 desired=c0802700 actual=c0802000 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=14 reg=2000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=e0802700 STAT=e0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=15 reg=2000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=16 reg=2000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=17 reg=2000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=18 reg=2000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=19 reg=201c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A76 rc=0 stage=8 CTRL=f8802700 STAT=f8802700 CLK=03000000 mutation=1 rollback=0/0 slow=0 guard=0 trace=19
++
++CPU-D: A76 PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A76 cold416 then warm1014 PASS
++
++CPU-D A55 step=1 reg=101c before=03000000 desired=00000000 actual=00000000 CTRL=f8801300 STAT=f8801300 CLK=00000000 rc=0
++
++CPU-D A55 step=2 reg=1000 before=f8801300 desired=e0801300 actual=f0801300 CTRL=f0801300 STAT=f0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=3 reg=1000 before=f0801300 desired=c0801300 actual=c0801300 CTRL=c0801300 STAT=c0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=4 reg=1000 before=c0801300 desired=c0802700 actual=c0802700 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=5 reg=1000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=6 reg=1000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=7 reg=1000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=8 reg=1000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=9 reg=1000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=10 reg=101c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D A55 step=11 reg=101c before=03000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A55 rc=0 stage=8 core=412fd050/81000000 CNT=24000000 DAIF=2c0/2c0
++
++CPU-D: A55 f8801300/f8801300/03000000 -> f8802700/f8802700/03000000 mutation=1 rollback=0 slow=0 guard=0
++
++CPU-D: PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A55/A76 configured N39/1=1014MHz; DSU and PMIC unchanged
++
++MMC:   T736 SMHC3 read-only PIO: 0
++
++Loading Environment from nowhere...
++Loading Environment from nowhere... OK
++
++In:    serial@2500000
++
++Out:   serial@2500000
++
++Err:   serial@2500000
++
++
++Hit any key to stop autoboot: 3
++Hit any key to stop autoboot: 0
++
++T736-mainline=> setenv kernel_comp_addr_r 0x68000000
++
++T736-mainline=> setenv bootargs earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256
++
++T736-mainline=> mmc dev 0
++
++switch to partitions #0, OK
++
++mmc0(part 0) is current device
++
++T736-mainline=> ext4load mmc 0:4 0x60000000 /boot/atlasa1-bootfast-20261120/Image-v46.gz
++
++5783631 bytes read in 1144 ms (4.8 MiB/s)
++
++T736-mainline=> setenv kernel_comp_size ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x64000000 /boot/initrd.img-6.18.63-t736-gnome-v46
++
++18459938 bytes read in 3633 ms (4.8 MiB/s)
++
++T736-mainline=> setenv rdsize ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x63000000 /boot/t736-gnome-v46.dtb
++
++16696 bytes read in 6 ms (2.7 MiB/s)
++
++T736-mainline=> booti 0x60000000 0x64000000:${rdsize} 0x63000000
++
++   Uncompressing Kernel Image to 0
++
++## Flattened Device Tree blob at 63000000
++
++   Booting using the fdt blob at 0x63000000
++
++Working FDT set to 63000000
++
++   Loading Ramdisk to ad5f5000, end ae78fd22 ... OK
++
++   Loading Device Tree to 00000000ad5ed000, end 00000000ad5f4137 ... OK
++
++Working FDT set to ad5ed000
++
++
++
++Starting kernel ...
++
++
++
++Booting Linux on physical CPU 0x0000000000 [0x412fd050]
++
++Linux version 6.18.63-t736-gnome-v46 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #46 SMP 2026-11-19 00:00:00 UTC
++
++Machine model: T736 custom board mainline bring-up
++
++earlycon: uart8250 at MMIO32 0x0000000002500000 (options '')
++
++printk: legacy bootconsole [uart8250] enabled
++
++OF: reserved mem: Reserved memory: No reserved-memory node in the DT
++
++Zone ranges:
++
++  DMA      [mem 0x0000000040000000-0x00000000ffffffff]
++
++  DMA32    empty
++
++  Normal   [mem 0x0000000100000000-0x000000023fffffff]
++
++Movable zone start for each node
++
++Early memory node ranges
++
++  node   0: [mem 0x0000000040000000-0x000000023fffffff]
++
++Initmem setup node 0 [mem 0x0000000040000000-0x000000023fffffff]
++
++cma: Reserved 512 MiB at 0x00000000db800000
++
++psci: probing for conduit method from DT.
++
++psci: PSCIv1.1 detected in firmware.
++
++psci: Using standard PSCI v0.2 function IDs
++
++psci: MIGRATE_INFO_TYPE not supported.
++
++psci: SMC Calling Convention v1.5
++
++percpu: Embedded 26 pages/cpu s67480 r8192 d30824 u106496
++
++Detected VIPT I-cache on CPU0
++
++CPU features: detected: GICv3 CPU interface
++
++CPU features: detected: Virtualization Host Extensions
++
++CPU features: kernel page table isolation disabled by kernel configuration
++
++alternatives: applying boot alternatives
++
++Kernel command line: earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256
++
++printk: log buffer data + meta data: 131072 + 458752 = 589824 bytes
++
++Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
++
++Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
++
++software IO TLB: area num 8.
++
++software IO TLB: mapped [mem 0x00000000d7800000-0x00000000db800000] (64MB)
++
++Built 1 zonelists, mobility grouping on.  Total pages: 2097152
++
++mem auto-init: stack:all(zero), heap alloc:off, heap free:off
++
++SLUB: HWalign=64, Order=0-1, MinObjects=0, CPUs=8, Nodes=1
++
++ftrace: allocating 35389 entries in 139 pages
++
++ftrace: allocated 139 pages with 4 groups
++
++rcu: Hierarchical RCU implementation.
++
++	Rude variant of Tasks RCU enabled.
++
++	Tracing variant of Tasks RCU enabled.
++
++rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
++
++RCU Tasks Rude: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
++
++RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=8.
++
++NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
++
++GICv3: GIC: Using split EOI/Deactivate mode
++
++GICv3: 256 SPIs implemented
++
++GICv3: 0 Extended SPIs implemented
++
++Root IRQ handler: gic_handle_irq
++
++GICv3: GICv3 features: 16 PPIs
++
++GICv3: GICD_CTLR.DS=0, SCR_EL3.FIQ=0
++
++GICv3: CPU0: found redistributor 0 region 0:0x0000000003460000
++
++ITS: No ITS available, not enabling LPIs
++
++rcu: srcu_init: Setting srcu_struct sizes based on contention.
++
++clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
++
++arch_timer: cp15 timer running at 24.00MHz (phys).
++
++clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
++
++sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
++
++Console: colour dummy device 80x25
++
++Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=96000)
++
++pid_max: default: 32768 minimum: 301
++
++LSM: initializing lsm=capability
++
++Mount-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
++
++Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
++
++rcu: Hierarchical SRCU implementation.
++
++rcu: 	Max phase no-delay instances is 1000.
++
++smp: Bringing up secondary CPUs ...
++
++Detected VIPT I-cache on CPU1
++
++GICv3: CPU1: found redistributor 100 region 0:0x0000000003480000
++
++CPU1: Booted secondary processor 0x0000000100 [0x412fd050]
++
++Detected VIPT I-cache on CPU2
++
++GICv3: CPU2: found redistributor 200 region 0:0x00000000034a0000
++
++CPU2: Booted secondary processor 0x0000000200 [0x412fd050]
++
++Detected VIPT I-cache on CPU3
++
++GICv3: CPU3: found redistributor 300 region 0:0x00000000034c0000
++
++CPU3: Booted secondary processor 0x0000000300 [0x412fd050]
++
++Detected VIPT I-cache on CPU4
++
++GICv3: CPU4: found redistributor 400 region 0:0x00000000034e0000
++
++CPU4: Booted secondary processor 0x0000000400 [0x412fd050]
++
++Detected VIPT I-cache on CPU5
++
++GICv3: CPU5: found redistributor 500 region 0:0x0000000003500000
++
++CPU5: Booted secondary processor 0x0000000500 [0x412fd050]
++
++CPU features: detected: Spectre-v4
++
++CPU features: detected: Spectre-BHB
++
++Detected PIPT I-cache on CPU6
++
++GICv3: CPU6: found redistributor 600 region 0:0x0000000003520000
++
++CPU6: Booted secondary processor 0x0000000600 [0x414fd0b1]
++
++Detected PIPT I-cache on CPU7
++
++GICv3: CPU7: found redistributor 700 region 0:0x0000000003540000
++
++CPU7: Booted secondary processor 0x0000000700 [0x414fd0b1]
++
++smp: Brought up 1 node, 8 CPUs
++
++SMP: Total of 8 processors activated.
++
++CPU: All CPU(s) started at EL2
++
++CPU features: detected: 32-bit EL0 Support
++
++CPU features: detected: Data cache clean to the PoU not required for I/D coherence
++
++CPU features: detected: CRC32 instructions
++
++CPU features: detected: RCpc load-acquire (LDAPR)
++
++CPU features: detected: Speculative Store Bypassing Safe (SSBS)
++
++alternatives: applying system-wide alternatives
++
++Memory: 7382840K/8388608K available (7552K kernel code, 2594K rwdata, 2800K rodata, 768K init, 308K bss, 476316K reserved, 524288K cma-reserved)
++
++devtmpfs: initialized
++
++posixtimers hash table entries: 4096 (order: 4, 65536 bytes, linear)
++
++futex hash table entries: 2048 (131072 bytes on 1 NUMA nodes, total 128 KiB, linear).
++
++29216 pages in range for non-PLT usage
++
++520736 pages in range for PLT usage
++
++pinctrl core: initialized pinctrl subsystem
++
++NET: Registered PF_NETLINK/PF_ROUTE protocol family
++
++DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
++
++DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
++
++DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
++
++ASID allocator initialised with 65536 entries
++
++/display-engine@5000000: Fixed dependency cycle(s) with /tcon@5730000
++
++/tcon@5730000: Fixed dependency cycle(s) with /display-engine@5000000
++
++/tcon@5730000: Fixed dependency cycle(s) with /hdmi@5520000
++
++/hdmi@5520000: Fixed dependency cycle(s) with /tcon@5730000
++
++/pcie@6000000: Fixed dependency cycle(s) with /pcie@6000000/legacy-interrupt-controller
++
++SCSI subsystem initialized
++
++usbcore: registered new interface driver usbfs
++
++usbcore: registered new interface driver hub
++
++usbcore: registered new device driver usb
++
++vgaarb: loaded
++
++clocksource: Switched to clocksource arch_sys_counter
++
++NET: Registered PF_INET protocol family
++
++IP idents hash table entries: 131072 (order: 8, 1048576 bytes, linear)
++
++tcp_listen_portaddr_hash hash table entries: 4096 (order: 4, 65536 bytes, linear)
++
++Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
++
++TCP established hash table entries: 65536 (order: 7, 524288 bytes, linear)
++
++TCP bind hash table entries: 65536 (order: 9, 2097152 bytes, linear)
++
++TCP: Hash tables configured (established 65536 bind 65536)
++
++UDP hash table entries: 4096 (order: 6, 262144 bytes, linear)
++
++UDP-Lite hash table entries: 4096 (order: 6, 262144 bytes, linear)
++
++NET: Registered PF_UNIX/PF_LOCAL protocol family
++
++PCI: CLS 0 bytes, default 64
++
++Trying to unpack rootfs image as initramfs...
++
++Initialise system trusted keyrings
++
++workingset: timestamp_bits=46 max_order=21 bucket_order=0
++
++fuse: init (API version 7.45)
++
++NET: Registered PF_ALG protocol family
++
++Key type asymmetric registered
++
++Asymmetric key parser 'x509' registered
++
++Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)
++
++io scheduler mq-deadline registered
++
++io scheduler kyber registered
++
++io scheduler bfq registered
++
++t736-display-ccu 2002a00.clock-controller: DE PLL locked at 600 MHz; HDMI PHY reference is board DCXO 26 MHz
++
++t736-gpu-ccu 2002b20.clock-controller: GPU fixed PERI400 clock with independent PLL_GPU0 power prerequisite
++
++t736-ve-power 7062000.power-controller: VE_DEC PPU=ON, 400MHz, DEC0/1 bypass verified; reset held
++
++t736-gpu-supply 7083000.regulator: AXP8191 DCDC5 verified at 900000 uV, fixed GPU supply policy
++
++t736-gpu-supply 7083000.regulator: DLDO5 1800000 uV: voltage 0d->0d enable 42->52
++
++Serial: 8250/16550 driver, 2 ports, IRQ sharing disabled
++
++printk: legacy console [ttyS0] disabled
++
++2500000.serial: ttyS0 at MMIO 0x2500000 (irq = 13, base_baud = 1500000) is a 16550A
++
++printk: legacy console [ttyS0] enabled
++
++printk: legacy console [ttyS0] enabled
++
++printk: legacy bootconsole [uart8250] disabled
++
++printk: legacy bootconsole [uart8250] disabled
++
++[drm] [TCON_TOP]sunxi_tcon_top_probe start
++
++[drm] [SUNXI-DE] offline_mode not found, used def val
++
++[drm] de use no display sys
++
++[drm] [TCON] sunxi_tcon_probe start
++
++[drm] [SUNXI-TCON] sunxi_tcon_of_get_id 4
++
++[drm] [TCON] sunxi_tcon_probe ret = 0
++
++[drm] sunxi_drm_platform_probe start
++
++[drm] sunxi_drm_match_add start
++
++[drm] sunxi_drm_match_add finish
++
++[drm] sunxi_drm_bind start
++
++[drm] [TCON_TOP]sunxi_tcon_top_bind start
++
++sunxi-drm sunxi-drm: bound 5510000.tcon-top (ops 0xffff8000807fe570)
++
++[drm] [SUNXI-DE] sunxi_de_bind start
++
++[drm] sunxi_de_bind crtc init for de 0 ok
++
++sunxi-drm sunxi-drm: bound 5000000.display-engine (ops 0xffff8000807fbae8)
++
++[drm] [SUNXI-TCON] sunxi_tcon_of_get_id 4
++
++[drm] sunxi-hdmi: hdmi drv init dts done
++
++[drm] sunxi-hdmi: [warn] not set hdmi notify node!
++
++[drm] sunxi-hdmi: hdmi drv enable resource done
++
++[drm] sunxi-hdmi: hdmi drv init resource done
++
++[drm] sunxi-hdmi: hdmi drv init i2c adapter finish
++
++[drm] sunxi-hdmi: drm hdmi connector create finish
++
++[drm] sunxi-hdmi: hdmi devices bind done <<<<<<<<<<
++
++
++
++sunxi-drm sunxi-drm: bound 5520000.hdmi (ops 0xffff8000807fec28)
++
++sunxi-drm sunxi-drm: bound 5730000.tcon (ops 0xffff8000807fe278)
++
++[drm] HDMI-A-1 Not connected, start hot-plug monitoring
++
++[drm] start HDMI-A-1 monitor monitoring, interval: 100ms
++
++[drm:commit_init_connecting.isra.0] *ERROR* offline mode: init connecting not found sunxi_drm_offline_mode_pre_init
++
++[drm] Initialized sunxi-drm 3.0.0 for sunxi-drm on minor 0
++
++[drm] sunxi_drm_bind ok
++
++[drm] sunxi-hdmi: hdmi drv detect hpd connect
++
++brd: module loaded
++
++loop: module loaded
++
++t736-cedar-wc 1c0e000.video-codec: Cedar decoder + private 32-bit WC heap; budget 256 MiB; root-only, fixed-frequency bring-up
++
++usbcore: registered new interface driver usb-storage
++
++usbcore: registered new interface driver usbhid
++
++usbhid: USB HID core driver
++
++NET: Registered PF_INET6 protocol family
++
++Segment Routing with IPv6
++
++In-situ OAM (IOAM) with IPv6
++
++sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
++
++NET: Registered PF_PACKET protocol family
++
++Loading compiled-in X.509 certificates
++
++gpio gpiochip0: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-r-pinctrl 7025000.pinctrl: initialized sunXi PIO driver
++
++gpio gpiochip1: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-pinctrl 2000000.pinctrl: initialized sunXi PIO driver
++
++t736-pcie 6000000.pcie: COMBO1 internal REFCLK locked
++
++t736-pcie 6000000.pcie: host bridge /pcie@6000000 ranges:
++
++t736-pcie 6000000.pcie:       IO 0x0021000000..0x0021ffffff -> 0x0021000000
++
++t736-pcie 6000000.pcie:      MEM 0x0022000000..0x0027ffffff -> 0x0022000000
++
++t736-pcie 6000000.pcie:      MEM 0x0440000000..0x053fffffff -> 0x0440000000
++
++t736-pcie 6000000.pcie:   IB MEM 0x0040000000..0x023fffffff -> 0x0040000000
++
++t736-pcie 6000000.pcie: ASPM disabled for fixed COMBO1 REFCLK path
++
++t736-pcie 6000000.pcie: iATU: unroll T, 16 ob, 16 ib, align 4K, limit 32G
++
++t736-pcie 6000000.pcie: eDMA: unroll T, 4 wr, 4 rd
++
++Freeing initrd memory: 18024K
++
++t736-pcie 6000000.pcie: PCIe Gen.1 x1 link up
++
++t736-pcie 6000000.pcie: PCI host bridge to bus 0000:00
++
++pci_bus 0000:00: root bus resource [bus 00-ff]
++
++pci_bus 0000:00: root bus resource [io  0x0000-0xffffff] (bus address [0x21000000-0x21ffffff])
++
++pci_bus 0000:00: root bus resource [mem 0x22000000-0x27ffffff]
++
++pci_bus 0000:00: root bus resource [mem 0x440000000-0x53fffffff pref]
++
++pci 0000:00:00.0: [1f6d:abcd] type 01 class 0x060400 PCIe Root Port
++
++pci 0000:00:00.0: BAR 0 [mem 0x00000000-0x000fffff]
++
++pci 0000:00:00.0: ROM [mem 0x00000000-0x0000ffff pref]
++
++pci 0000:00:00.0: PCI bridge to [bus 01-ff]
++
++pci 0000:00:00.0:   bridge window [io  0x0000-0x0fff]
++
++pci 0000:00:00.0:   bridge window [mem 0x00000000-0x000fffff]
++
++pci 0000:00:00.0:   bridge window [mem 0x00000000-0x000fffff 64bit pref]
++
++pci 0000:00:00.0: supports D1
++
++pci 0000:00:00.0: PME# supported from D0 D1 D3hot
++
++pci 0000:01:00.0: [8086:f1a6] type 00 class 0x010802 PCIe Endpoint
++
++pci 0000:01:00.0: BAR 0 [mem 0x00000000-0x00003fff 64bit]
++
++pci 0000:01:00.0: 2.000 Gb/s available PCIe bandwidth, limited by 2.5 GT/s PCIe x1 link at 0000:00:00.0 (capable of 31.504 Gb/s with 8.0 GT/s PCIe x4 link)
++
++pci 0000:00:00.0: BAR 0 [mem 0x22000000-0x220fffff]: assigned
++
++pci 0000:00:00.0: bridge window [mem 0x22100000-0x221fffff]: assigned
++
++pci 0000:00:00.0: ROM [mem 0x22200000-0x2220ffff pref]: assigned
++
++pci 0000:01:00.0: BAR 0 [mem 0x22100000-0x22103fff 64bit]: assigned
++
++pci 0000:00:00.0: PCI bridge to [bus 01-ff]
++
++pci 0000:00:00.0:   bridge window [mem 0x22100000-0x221fffff]
++
++pci_bus 0000:00: resource 4 [io  0x0000-0xffffff]
++
++pci_bus 0000:00: resource 5 [mem 0x22000000-0x27ffffff]
++
++pci_bus 0000:00: resource 6 [mem 0x440000000-0x53fffffff pref]
++
++pci_bus 0000:01: resource 1 [mem 0x22100000-0x221fffff]
++
++pcieport 0000:00:00.0: PME: Signaling with IRQ 426
++
++nvme nvme0: pci function 0000:01:00.0
++
++t736-gpu-power 7065000.power-controller: GPU_TOP/CORE ACK=8; PLL_GPU0 ready, GPU=400000000 Hz, DCDC5=900000 uV, reset verified
++
++nvme 0000:01:00.0: enabling device (0000 -> 0002)
++
++[drm] sunxi-hdmi: dw edid unsupport parser desc type: 255
++
++[drm] sunxi-hdmi: dw edid unsupport parser desc type: 253
++
++[drm] sunxi-hdmi: sunxi hdmi edid parse block0 finish
++
++[drm] sunxi-hdmi: [error] dw edid parse dtd timing pixel clock[0KHz] invalid!
++
++[drm] sunxi-hdmi: sunxi hdmi edid parse block1 finish
++
++2501000.serial: ttyS1 at MMIO 0x2501000 (irq = 427, base_baud = 1500000) is a 16550A
++
++t736-dwmac 4500000.ethernet: IRQ eth_wake_irq not found
++
++t736-dwmac 4500000.ethernet: IRQ sfty not found
++
++t736-dwmac 4500000.ethernet: PTP uses main clock
++
++t736-dwmac 4500000.ethernet: RGMII MAC delays TX=13 RX=10, PHY clock 25 MHz
++
++t736-dwmac 4500000.ethernet: User ID: 0x20, Synopsys ID: 0x53
++
++t736-dwmac 4500000.ethernet: 	DWMAC4/5
++
++t736-dwmac 4500000.ethernet: DMA HW capability register supported
++
++t736-dwmac 4500000.ethernet: RX Checksum Offload Engine supported
++
++t736-dwmac 4500000.ethernet: TX Checksum insertion supported
++
++t736-dwmac 4500000.ethernet: Wake-Up On Lan supported
++
++t736-dwmac 4500000.ethernet: Enable RX Mitigation via HW Watchdog Timer
++
++t736-dwmac 4500000.ethernet: device MAC address 82:37:09:19:3e:3a
++
++t736-dwmac 4500000.ethernet: Enabled RFS Flow TC (entries=10)
++
++t736-dwmac 4500000.ethernet: Using 32/40 bits DMA host/device width
++
++[drm] HDMI-A-1 connection detected
++
++[drm] sunxi-hdmi: drm get edid support modes: 42
++
++[drm] HDMI-A-1: Configuration mode 2560x1440@60Hz
++
++[drm] sunxi-hdmi: drm hdmi set mode change when disp info change
++
++[drm] sunxi-hdmi: drm hdmi check mode: change >>>>>>>>>>>>>>>>
++
++[drm] sunxi-hdmi: sunxi hdmi select vic 0 use hdmi14 vsif
++
++[drm] sunxi-hdmi: drm hdmi mode set: 2560*1440 >>>>>>>>>>>>>>>>
++
++[drm] [SUNXI-CRTC]sunxi_crtc_atomic_enable
++
++[drm] sunxi_de_enable index 0
++
++[drm] sunxi_de_enable finish sw en=0
++
++[drm] suxni tcon hdmi set rate: 241500000Hz and get diff: 241500000Hz
++
++[drm] sunxi-hdmi: dw audio get n = 6144
++
++[drm] sunxi-hdmi: top phy auto calculate done
++
++[drm] sunxi-hdmi: [top phy]
++
++[drm] sunxi-hdmi:  - pixel clock 241500KHz
++
++[drm] sunxi-hdmi:    - pll: 0xE8064000, 0x00035000, 0x00000000, 0x30000000
++
++[drm] sunxi-hdmi: top phy config done
++
++[drm] sunxi-hdmi: [warn] snps phy check clk: 241500Hz is match in [237600Hz-288000Hz] and change use: 237600Hz
++
++[drm] sunxi-hdmi: [snps phy]
++
++[drm] sunxi-hdmi:  - refer clock: 237600KHz, color bits: 8, repeat: 0
++
++[drm] sunxi-hdmi:     - mpll: 0x0000, 0x3040, 0x0605
++
++[drm] sunxi-hdmi:  - refer clock: 241500KHz. [185625KHz~340000KHz]
++
++[drm] sunxi-hdmi:     - drive: 0x0004, 0x8040, 0x8e85
++
++[drm] sunxi-hdmi: snps phy state: lock
++
++t736-dwmac 4500000.ethernet: RGMII configuration retained after MAC reset: 0x11545
++
++sunxi-mmc 4021000.mmc: allocated mmc-pwrseq
++
++[drm] sunxi-hdmi: dw audio check: triger cts re-calculate
++
++[drm] sunxi-hdmi: hdmi drv enable output done
++
++[drm] sunxi-hdmi: drm hdmi atomic enable >>>>>>>>>>>>>>>>
++
++t736-smhc3-pio 4023000.mmc: STORE_MBUS addr=0x00000000020025e0 value=f1055803 (read-only)
++
++t736-smhc3-pio 4023000.mmc: MSI_LITE1 addr=0x000000000200259c value=00030001 (read-only)
++
++t736-smhc3-pio 4023000.mmc: SMHC 050610: IDMA descriptors=0x000000004000a000 data=0x00000000dbbd0000 (shift2, mask32)
++
++Console: switching to colour frame buffer device 320x90
++
++nvme nvme0: 8/0/0 default/read/poll queues
++
++ nvme0n1: p1
++
++t736-smhc3-pio 4023000.mmc: timing=0 card=400000 parent=24000000 mux=0 M=30 N=1 module=8000001d sample=0 signal=1 (no rail writes)
++
++t736-smhc3-pio 4023000.mmc: HS400 draft: v23 IDMA, HS cap=25000000, HS200=1 cap=200000000, HS400=1 cap=200000000, fixed1.8V; no ES/CQE
++
++[drm] HDMI-A-1: Configuration complete
++
++rfkill_gpio bluetooth-power: atlasa1-bluetooth device registered.
++
++t736-r-pinctrl 7025000.pinctrl: supply vcc-pl not found, using dummy regulator
++
++clk: Not disabling unused clocks
++
++ehci-platform 4200000.usb: EHCI Host Controller
++
++ohci-platform 4200400.usb: Generic Platform OHCI controller
++
++ohci-platform 4200400.usb: new USB bus registered, assigned bus number 1
++
++ohci-platform 4200400.usb: irq 442, io mem 0x04200400
++
++PM: genpd: Disabling unused power domains
++
++ehci-platform 4200000.usb: new USB bus registered, assigned bus number 2
++
++ehci-platform 4200000.usb: irq 441, io mem 0x04200000
++
++ehci-platform 4200000.usb: USB 2.0 started, EHCI 1.00
++
++hub 2-0:1.0: USB hub found
++
++hub 2-0:1.0: 1 port detected
++
++hub 1-0:1.0: USB hub found
++
++hub 1-0:1.0: 1 port detected
++
++sunxi-mmc 4021000.mmc: initialized, max. request size: 1024 KB, uses new timings mode
++
++Freeing unused kernel memory: 768K
++
++Run /init as init process
++
++Loading, please wait...
++
++Starting systemd-udevd version 259.9-0ubuntu0.1
++
++
++mmc1: Failed to initialize a non-removable card
++
++usb 2-1: new high-speed USB device number 2 using ehci-platform
++
++t736-smhc3-pio 4023000.mmc: first IDMA request completed: CMD8 bytes=512 IRQ=0000002c IDST=00000002
++
++hub 2-1:1.0: USB hub found
++
++hub 2-1:1.0: 4 ports detected
++
++t736-dwmac 4500000.ethernet end0: renamed from eth0
++
++usb 2-1.4: new high-speed USB device number 3 using ehci-platform
++
++hub 2-1.4:1.0: USB hub found
++
++hub 2-1.4:1.0: 6 ports detected
++
++Begin: Loading essential drivers ... done.
++
++Begin: Running /scripts/init-premount ... usb 2-1.4.4: new high-speed USB device number 4 using ehci-platform
++
++t736-smhc3-pio 4023000.mmc: timing=9 card=400000 parent=24000000 mux=0 M=30 N=1 module=8000001d sample=0 signal=1 (no rail writes)
++
++t736-smhc3-pio 4023000.mmc: timing=9 card=50000000 parent=800000000 mux=1 M=8 N=1 module=81000007 sample=32 signal=1 (no rail writes)
++
++t736-smhc3-pio 4023000.mmc: timing=9 card=200000000 parent=800000000 mux=1 M=2 N=1 module=81000001 sample=49 signal=1 (no rail writes)
++
++usb 2-1.4.6: new high-speed USB device number 5 using ehci-platform
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD21 CTRL=20000020 DMAC=00000080 DLBA=10002800 IDIE=00000032 IDST=00000022 RINT=000000ac STATUS=0000a906 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=128 host=128 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000080 36ef4000 00000000
++
++input: wch.cn KMFU HID as /devices/platform/4200000.usb/usb2/2-1/2-1.4/2-1.4.6/2-1.4.6:1.0/0003:1A86:8022.0001/input/input0
++
++t736-smhc3-pio 4023000.mmc: HS200 tuning card=200000000 pass=ffffffc0ffffffff abort_err=0000003f00000000 window=0+32 tap=15 verified=16x128 THLD=00800001 SFC=00000006
++
++hid-generic 0003:1A86:8022.0001: input: USB HID v1.10 Keyboard [wch.cn KMFU HID] on usb-4200000.usb-1.4.6/input0
++
++input: wch.cn KMFU HID as /devices/platform/4200000.usb/usb2/2-1/2-1.4/2-1.4.6/2-1.4.6:1.1/0003:1A86:8022.0002/input/input1
++
++hid-generic 0003:1A86:8022.0002: input: USB HID v1.10 Mouse [wch.cn KMFU HID] on usb-4200000.usb-1.4.6/input1
++
++input: wch.cn KMFU HID as /devices/platform/4200000.usb/usb2/2-1/2-1.4/2-1.4.6/2-1.4.6:1.2/0003:1A86:8022.0003/input/input2
++
++hid-generic 0003:1A86:8022.0003: input: USB HID v1.10 Device [wch.cn KMFU HID] on usb-4200000.usb-1.4.6/input2
++
++random: crng init done
++
++t736-smhc3-pio 4023000.mmc: timing=1 card=25000000 parent=800000000 mux=1 M=16 N=1 module=8100000f sample=0 signal=1 (no rail writes)
++
++usb 2-1.4.5: new high-speed USB device number 6 using ehci-platform
++
++usb-storage 2-1.4.5:1.0: USB Mass Storage device detected
++
++scsi host0: usb-storage 2-1.4.5:1.0
++
++t736-smhc3-pio 4023000.mmc: timing=10 card=50000000 parent=800000000 mux=1 M=8 N=1 module=81000007 sample=32 signal=1 (no rail writes)
++
++t736-smhc3-pio 4023000.mmc: timing=10 card=200000000 parent=800000000 mux=1 M=2 N=1 module=81000001 sample=14 signal=1 (no rail writes)
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD8 CTRL=20000020 DMAC=00000080 DLBA=10002800 IDIE=00000032 IDST=00000022 RINT=000080ac STATUS=00004106 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=512 host=512 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000200 36ef4000 00000000
++
++t736-smhc3-pio 4023000.mmc: HS400 tuned card=200000000 cmd_pass=fffffff1ffffffff cmd_window=0+33 cmd=16 ds_pass=0000000003fffff0 ds_window=4+22 ds=14 abort_err=fffffffffc00000f verified=16xCMD13+16x512 EXT_CSD=03/06 R1=00000900 THLD=02000001 SFC=00000006
++
++mmc0: new HS400 MMC card at address 0001
++
++mmcblk0: mmc0:0001 A31Y5C 58.2 GiB
++
++ mmcblk0: p1 p2 p3 p4 p5 p6
++
++mmcblk0boot0: mmc0:0001 A31Y5C 4.00 MiB
++
++mmcblk0boot1: mmc0:0001 A31Y5C 4.00 MiB
++
++scsi 0:0:0:0: CD-ROM            wch.cn   KMFU             1.00 PQ: 0 ANSI: 5
++
++EXT4-fs (mmcblk0p4): mounted filesystem 4d8c73ce-75f9-4794-bef2-664d7cecbbbb r/w with ordered data mode. Quota mode: disabled.
++
++systemd[1]: System time advanced to timestamp on /var/lib/systemd/timesync/clock: Fri 2026-11-20 08:03:47 UTC
++
++systemd[1]: systemd 259.9-0ubuntu0.1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
++
++systemd[1]: Detected architecture arm64.
++
++systemd[1]: Hostname set to <atlasa1>.
++
++systemd[1]: bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
++
++systemd[1]: Queued start job for default target graphical.target.
++
++systemd[1]: Created slice system-cups.slice - CUPS Slice.
++
++systemd[1]: Created slice system-modprobe.slice - Slice /system/modprobe.
++
++systemd[1]: Created slice system-serial\x2dgetty.slice - Slice /system/serial-getty.
++
++systemd[1]: Created slice user.slice - User and Session Slice.
++
++systemd[1]: Started systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
++
++systemd[1]: Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
++
++systemd[1]: Expecting device dev-ttyS0.device - /dev/ttyS0...
++
++systemd[1]: Reached target imports.target - Image Downloads.
++
++systemd[1]: Reached target slices.target - Slice Units.
++
++systemd[1]: Reached target swap.target - Swaps.
++
++systemd[1]: Listening on rpcbind.socket - RPCbind Server Activation Socket.
++
++systemd[1]: Listening on syslog.socket - Syslog Socket.
++
++systemd[1]: Listening on systemd-ask-password.socket - Query the User Interactively for a Password.
++
++systemd[1]: Listening on systemd-creds.socket - Credential Encryption/Decryption.
++
++systemd[1]: Listening on systemd-factory-reset.socket - Factory Reset Management.
++
++systemd[1]: Listening on systemd-journald-dev-log.socket - Journal Socket (/dev/log).
++
++systemd[1]: Listening on systemd-journald.socket - Journal Sockets.
++
++systemd[1]: Listening on systemd-mute-console.socket - Console Output Muting Service Socket.
++
++systemd[1]: systemd-pcrextend.socket - TPM PCR Measurements skipped, unmet condition check ConditionSecurity=measured-uki
++
++systemd[1]: systemd-pcrlock.socket - Make TPM PCR Policy skipped, unmet condition check ConditionSecurity=measured-uki
++
++systemd[1]: Listening on systemd-resolved-monitor.socket - Resolve Monitor Varlink Socket.
++
++systemd[1]: Listening on systemd-resolved-varlink.socket - Resolve Service Varlink Socket.
++
++systemd[1]: Listening on systemd-udevd-control.socket - udev Control Socket.
++
++systemd[1]: Listening on systemd-udevd-kernel.socket - udev Kernel Socket.
++
++systemd[1]: Listening on systemd-udevd-varlink.socket - udev Varlink Socket.
++
++systemd[1]: dev-hugepages.mount - Huge Pages File System skipped, unmet condition check ConditionPathExists=/sys/kernel/mm/hugepages
++
++systemd[1]: Mounting dev-mqueue.mount - POSIX Message Queue File System...
++
++systemd[1]: Mounting sys-kernel-debug.mount - Kernel Debug File System...
++
++systemd[1]: Mounting sys-kernel-tracing.mount - Kernel Trace File System...
++
++systemd[1]: tmp.mount: x-systemd.graceful-option=usrquota specified, but option is not available, suppressing.
++
++systemd[1]: Mounting tmp.mount - Temporary Directory /tmp...
++
++systemd[1]: Starting systemd-journald.service - Journal Service...
++
++systemd[1]: auth-rpcgss-module.service - Kernel Module supporting RPCSEC_GSS skipped, unmet condition check ConditionPathExists=/etc/krb5.keytab
++
++systemd[1]: Starting fake-hwclock-load.service - Restore the current clock...
++
++systemd[1]: Starting keyboard-setup.service - Set the console keyboard layout...
++
++systemd[1]: kmod-static-nodes.service - Create List of Static Device Nodes skipped, unmet condition check ConditionFileNotEmpty=/lib/modules/6.18.63-t736-gnome-v46/modules.devname
++
++systemd-journald[281]: Collecting audit messages is disabled.
++
++systemd[1]: modprobe@configfs.service - Load Kernel Module configfs skipped, unmet condition check ConditionKernelModuleLoaded=!configfs
++
++systemd[1]: Mounting sys-kernel-config.mount - Kernel Configuration File System...
++
++systemd[1]: modprobe@drm.service - Load Kernel Module drm skipped, unmet condition check ConditionKernelModuleLoaded=!drm
++
++systemd[1]: Starting modprobe@efi_pstore.service - Load Kernel Module efi_pstore...
++
++systemd[1]: modprobe@fuse.service - Load Kernel Module fuse skipped, unmet condition check ConditionKernelModuleLoaded=!fuse
++
++systemd[1]: Mounting sys-fs-fuse-connections.mount - FUSE Control File System...
++
++systemd[1]: systemd-hibernate-clear.service - Clear Stale Hibernate Storage Info skipped, unmet condition check ConditionPathExists=/sys/firmware/efi/efivars/HibernateLocation-8cf2644b-4b0b-428f-9387-6d876050dc67
++
++systemd[1]: Starting systemd-modules-load.service - Load Kernel Modules...
++
++systemd[1]: systemd-pcrmachine.service - TPM PCR Machine ID Measurement skipped, unmet condition check ConditionSecurity=measured-uki
++
++systemd-journald[281]: Time jumped backwards, rotating.
++
++systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...
++
++systemd[1]: systemd-tpm2-setup-early.service - Early TPM SRK Setup skipped, unmet condition check ConditionSecurity=measured-uki
++
++systemd[1]: systemd-pcrnvdone.service - TPM PCR NvPCR Initialization Separator skipped, unmet condition check ConditionPathExists=/etc/initrd-release
++
++systemd[1]: systemd-pcrproduct.service - TPM NvPCR Product ID Measurement skipped, unmet condition check ConditionSecurity=measured-uki
++
++systemd[1]: Starting systemd-udev-load-credentials.service - Load udev Rules from Credentials...
++
++systemd[1]: Starting systemd-udev-trigger.service - Coldplug All udev Devices...
++
++systemd[1]: Started systemd-journald.service - Journal Service.
++
++pvrsrvkm: loading out-of-tree module taints kernel.
++
++[sunxi bxm]SysDevInit start!
++
++pvrsrvkm 1800000.gpu: T736 GPU fixed 400000000 Hz, supply 900000 uV, CCF/genpd enabled
++
++[sunxi bxm]SysDevInit end!
++
++PVR_K:  299: Read BVNC 36.56.104.183 from HW device registers
++
++PVR_K:  299: RGX Device registered BVNC 36.56.104.183 with 1 core in the system
++
++[drm] Initialized pvr 24.2.6603887 for 1800000.gpu on minor 1
++
++]104\]104\]3008;start=4a22bda60ebb4eb589ab014051c0c8a8;user=root;hostname=atlasa1;machineid=8a50f23fcdf249f083516259a0626cf9;bootid=eea17b47ea8a4bc581cc33004d7f7b8b;pid=2274;pidfdid=2275;comm=(agetty);servicename=serial-getty@ttyS0.service;invocationid=a86495fc72bf4a23a6d7ef4586193082;type=service\
++
++
++Armbian-unofficial 26.11.0-trunk resolute ttyS0 
++
++
++
++atlasa1 login: 
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-zstd-trial.log b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-zstd-trial.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..65aa17c8048d4da967c18215a22628914e5e6d3c
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v46-zstd-trial.log
+@@ -0,0 +1,317 @@
++
++
++
++Broadcast message from root@atlasa1 (Fri 2026-11-20 08:14:35 UTC):
++
++
++
++
++
++The system will power off now!
++
++
++
++
++
++
++
++
++
++]3008;end=4c3d5d56783046df9ea4417ef3215172\]104\]3008;end=96d226b91a0349dd92ed2eef0881c8f6\reboot: Power down
++
++T736 source eMMC SPL v4; fixed LPDDR4x and peripheral power; Ctrl-C within 3 seconds for recovery
++
++CCU before DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++T736 source SRAM host + authorized libdram v1
++
++init_DRAM begin seed tpr3=110000 tpr13=6063
++
++DRAM BOOT DRIVE INFO: V0.6035
++
++DDR rail dcdc8 requested=1100 effective=1100 rc=0
++
++DDR rail eldo1 requested=660 effective=650 rc=0
++
++DRAM_VCC set to 1100 mv
++
++DRAM CLK =1800 MHZ
++
++DRAM Type =8 (8:LPDDR4,9:LPDDR5)
++
++Training result is = 7
++
++DRAM Pstate 0 training, frequency is 1800 Mhz
++
++DRAM SIZE =8192 MBytes, para1 = 311a, para2 = a0001001, dram_tpr13 = 6063
++
++DRAM simple test OK.
++
++init_DRAM returned 8192 MiB, ticks=78748352
++
++MEM PASS: 8 x 64KiB windows, 4 address/data patterns, 524288 words checked; upper physical RAM pending
++
++BOARD power rc=0 DCDC1 en=ff voltage=17 DC1SW1=17->1f DLDO2=d->d LDO_EN3=40->42
++
++CCU after DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++SPL eMMC open rc=0 sectors=122142720 irq=0 r1=900
++
++SPL load addr=47000000 bytes=5040 LBA=24577
++
++SPL load addr=48000000 bytes=53924 LBA=24587
++
++SPL load addr=52000000 bytes=265640 LBA=24693
++
++SPL payload CRCs passed; source AArch64 handoff
++
++H00c51838 81000000 47000000 00000001 00000000 
++AT736 A64 source handoff EL=000000000000000c
++
++A64 MEM PASS 262144 x 64-bit checks, including RAM above 4GiB and final 64KiB
++
++Entering source TF-A 0x48000000
++
++
++NOTICE:  BL31: v2.15.0(debug):t736-independent-candidate-7d322909
++
++NOTICE:  BL31: Built : 06:57:46, Nov 13 2026
++
++INFO:    GICv3 without legacy support detected.
++
++INFO:    ARM GICv3 driver initialized in EL3
++
++INFO:    Maximum SPI INTID supported: 287
++
++NOTICE:  BL31: Detected Allwinner A733 SoC (1903)
++
++NOTICE:  BL31: Found U-Boot DTB at 0x5203fab0, model: T736 custom board RAM bring-up
++
++INFO:    Configuring SPC Controller
++
++INFO:    BL31: Platform setup done
++
++INFO:    BL31: Initializing runtime services
++
++INFO:    BL31: cortex_a55: CPU workaround for erratum 1530923 was applied
++
++INFO:    PSCI: Suspend is unavailable
++
++INFO:    BL31: Preparing for EL3 exit to normal world
++
++INFO:    Entry point address = 0x52000000
++
++INFO:    SPSR = 0x3c9
++
++INFO:    Changed devicetree.
++
++
++
++<debug_uart>
++
++
++
++
++
++U-Boot 2026.10-t736-bringup (Nov 18 2026 - 00:00:00 +0000)
++
++
++
++Model: T736 custom board RAM bring-up
++
++Board: T736 source boot candidate; authorized vendor DDR library
++
++DRAM:  8 GiB
++
++Core:  4 devices, 4 uclasses, devicetree: separate
++
++CPU-D A76 step=1 reg=201c before=00000000 desired=00010000 actual=00010000 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=2 reg=2000 before=40801400 desired=40801400 actual=40801400 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=3 reg=2000 before=40801400 desired=48801400 actual=48801400 CTRL=48801400 STAT=48801400 CLK=00010000 rc=0
++
++CPU-D A76 step=4 reg=2000 before=48801400 desired=48802000 actual=48801400 CTRL=48801400 STAT=48802000 CLK=00010000 rc=0
++
++CPU-D A76 step=5 reg=2000 before=48801400 desired=c8802000 actual=c8801400 CTRL=c8801400 STAT=c8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=6 reg=2000 before=c8802000 desired=e8802000 actual=e8802000 CTRL=e8802000 STAT=e8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=7 reg=2000 before=f8802000 desired=ec802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=8 reg=2000 before=f8802000 desired=f8802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=9 reg=201c before=00010000 desired=03010000 actual=03010000 CTRL=f8802000 STAT=f8802000 CLK=03010000 rc=0
++
++CPU-D A76 step=10 reg=201c before=03010000 desired=00000000 actual=00000000 CTRL=f8802000 STAT=f8802000 CLK=00000000 rc=0
++
++CPU-D A76 step=11 reg=2000 before=f8802000 desired=e0802000 actual=f0802000 CTRL=f0802000 STAT=f0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=12 reg=2000 before=f0802000 desired=c0802000 actual=c0802000 CTRL=c0802000 STAT=c0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=13 reg=2000 before=c0802000 desired=c0802700 actual=c0802000 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=14 reg=2000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=e0802700 STAT=e0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=15 reg=2000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=16 reg=2000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=17 reg=2000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=18 reg=2000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=19 reg=201c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A76 rc=0 stage=8 CTRL=f8802700 STAT=f8802700 CLK=03000000 mutation=1 rollback=0/0 slow=0 guard=0 trace=19
++
++CPU-D: A76 PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A76 cold416 then warm1014 PASS
++
++CPU-D A55 step=1 reg=101c before=03000000 desired=00000000 actual=00000000 CTRL=f8801300 STAT=f8801300 CLK=00000000 rc=0
++
++CPU-D A55 step=2 reg=1000 before=f8801300 desired=e0801300 actual=f0801300 CTRL=f0801300 STAT=f0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=3 reg=1000 before=f0801300 desired=c0801300 actual=c0801300 CTRL=c0801300 STAT=c0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=4 reg=1000 before=c0801300 desired=c0802700 actual=c0802700 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=5 reg=1000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=6 reg=1000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=7 reg=1000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=8 reg=1000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=9 reg=1000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=10 reg=101c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D A55 step=11 reg=101c before=03000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A55 rc=0 stage=8 core=412fd050/81000000 CNT=24000000 DAIF=2c0/2c0
++
++CPU-D: A55 f8801300/f8801300/03000000 -> f8802700/f8802700/03000000 mutation=1 rollback=0 slow=0 guard=0
++
++CPU-D: PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A55/A76 configured N39/1=1014MHz; DSU and PMIC unchanged
++
++MMC:   T736 SMHC3 read-only PIO: 0
++
++Loading Environment from nowhere...
++Loading Environment from nowhere... OK
++
++In:    serial@2500000
++
++Out:   serial@2500000
++
++Err:   serial@2500000
++
++
++Hit any key to stop autoboot: 3
++Hit any key to stop autoboot: 0
++
++T736-mainline=> setenv kernel_comp_addr_r 0x68000000
++
++T736-mainline=> setenv bootargs earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256 loglevel=5 systemd.show_status=error
++
++T736-mainline=> mmc dev 0
++
++switch to partitions #0, OK
++
++mmc0(part 0) is current device
++
++T736-mainline=> ext4load mmc 0:4 0x60000000 /boot/atlasa1-bootfast-20261120/Image-v46.gz
++
++5783631 bytes read in 1145 ms (4.8 MiB/s)
++
++T736-mainline=> setenv kernel_comp_size ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x64000000 /boot/atlasa1-bootfast-20261120/initrd-v46.zstd
++
++20026612 bytes read in 3941 ms (4.8 MiB/s)
++
++T736-mainline=> setenv rdsize ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x63000000 /boot/t736-gnome-v46.dtb
++
++16696 bytes read in 5 ms (3.2 MiB/s)
++
++T736-mainline=> booti 0x60000000 0x64000000:${rdsize} 0x63000000
++
++   Uncompressing Kernel Image to 0
++
++## Flattened Device Tree blob at 63000000
++
++   Booting using the fdt blob at 0x63000000
++
++Working FDT set to 63000000
++
++   Loading Ramdisk to ad477000, end ae7904f4 ... OK
++
++   Loading Device Tree to 00000000ad46f000, end 00000000ad476137 ... OK
++
++Working FDT set to ad46f000
++
++
++
++Starting kernel ...
++
++
++
++Booting Linux on physical CPU 0x0000000000 [0x412fd050]
++
++Linux version 6.18.63-t736-gnome-v46 (ubuntu@ubuntu2404) (aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #46 SMP 2026-11-19 00:00:00 UTC
++
++Machine model: T736 custom board mainline bring-up
++
++earlycon: uart8250 at MMIO32 0x0000000002500000 (options '')
++
++printk: legacy bootconsole [uart8250] enabled
++
++ITS: No ITS available, not enabling LPIs
++
++[drm:commit_init_connecting.isra.0] *ERROR* offline mode: init connecting not found sunxi_drm_offline_mode_pre_init
++
++gpio gpiochip0: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++gpio gpiochip1: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-r-pinctrl 7025000.pinctrl: supply vcc-pl not found, using dummy regulator
++
++clk: Not disabling unused clocks
++
++[drm] suxni tcon hdmi set rate: 241500000Hz and get diff: 241500000Hz
++
++Loading, please wait...
++
++Starting systemd-udevd version 259.9-0ubuntu0.1
++
++
++Begin: Loading essential drivers ... done.
++
++Begin: Running /scripts/init-premount ... t736-smhc3-pio 4023000.mmc: DMA snapshot CMD21 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000000ac STATUS=0000a906 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=128 host=128 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000080 36f10000 00000000
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD8 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000080ac STATUS=00004106 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=512 host=512 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000200 36f10000 00000000
++
++pvrsrvkm: loading out-of-tree module taints kernel.
++
++]104\]104\]3008;start=c8958b9d276747d29f40e84c0e2093c9;user=root;hostname=atlasa1;machineid=8a50f23fcdf249f083516259a0626cf9;bootid=f9f386483f474cae86e290c6c08c86bb;pid=2277;pidfdid=2278;comm=(agetty);servicename=serial-getty@ttyS0.service;invocationid=32263e1315804254a0e097bc2f49854a;type=service\
++
++
++Armbian-unofficial 26.11.0-trunk resolute ttyS0 
++
++
++
++atlasa1 login: 
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-config-trial.log b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-config-trial.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..77c3bb2806877eca201ca6fc0532b1beba13b0e3
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-config-trial.log
+@@ -0,0 +1,310 @@
++
++
++
++Broadcast message from root@atlasa1 (Fri 2026-11-20 08:16:47 UTC):
++
++
++
++
++
++The system will power off now!
++
++
++
++
++
++
++
++
++
++
++
++
++]3008;end=4222c484ac7443eb9bd0ee64a107df5b\]104\]3008;end=5a9e453d374e4d43a2900c40d3636167\reboot: Power down
++
++T736 source eMMC SPL v4; fixed LPDDR4x and peripheral power; Ctrl-C within 3 seconds for recovery
++
++CCU before DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++T736 source SRAM host + authorized libdram v1
++
++init_DRAM begin seed tpr3=110000 tpr13=6063
++
++DRAM BOOT DRIVE INFO: V0.6035
++
++DDR rail dcdc8 requested=1100 effective=1100 rc=0
++
++DDR rail eldo1 requested=660 effective=650 rc=0
++
++DRAM_VCC set to 1100 mv
++
++DRAM CLK =1800 MHZ
++
++DRAM Type =8 (8:LPDDR4,9:LPDDR5)
++
++Training result is = 7
++
++DRAM Pstate 0 training, frequency is 1800 Mhz
++
++DRAM SIZE =8192 MBytes, para1 = 311a, para2 = a0001001, dram_tpr13 = 6063
++
++DRAM simple test OK.
++
++init_DRAM returned 8192 MiB, ticks=78615104
++
++MEM PASS: 8 x 64KiB windows, 4 address/data patterns, 524288 words checked; upper physical RAM pending
++
++BOARD power rc=0 DCDC1 en=ff voltage=17 DC1SW1=17->1f DLDO2=d->d LDO_EN3=40->42
++
++CCU after DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++SPL eMMC open rc=0 sectors=122142720 irq=0 r1=900
++
++SPL load addr=47000000 bytes=5040 LBA=24577
++
++SPL load addr=48000000 bytes=53924 LBA=24587
++
++SPL load addr=52000000 bytes=265640 LBA=24693
++
++SPL payload CRCs passed; source AArch64 handoff
++
++H00c51838 81000000 47000000 00000001 00000000 
++AT736 A64 source handoff EL=000000000000000c
++
++A64 MEM PASS 262144 x 64-bit checks, including RAM above 4GiB and final 64KiB
++
++Entering source TF-A 0x48000000
++
++
++NOTICE:  BL31: v2.15.0(debug):t736-independent-candidate-7d322909
++
++NOTICE:  BL31: Built : 06:57:46, Nov 13 2026
++
++INFO:    GICv3 without legacy support detected.
++
++INFO:    ARM GICv3 driver initialized in EL3
++
++INFO:    Maximum SPI INTID supported: 287
++
++NOTICE:  BL31: Detected Allwinner A733 SoC (1903)
++
++NOTICE:  BL31: Found U-Boot DTB at 0x5203fab0, model: T736 custom board RAM bring-up
++
++INFO:    Configuring SPC Controller
++
++INFO:    BL31: Platform setup done
++
++INFO:    BL31: Initializing runtime services
++
++INFO:    BL31: cortex_a55: CPU workaround for erratum 1530923 was applied
++
++INFO:    PSCI: Suspend is unavailable
++
++INFO:    BL31: Preparing for EL3 exit to normal world
++
++INFO:    Entry point address = 0x52000000
++
++INFO:    SPSR = 0x3c9
++
++INFO:    Changed devicetree.
++
++
++
++<debug_uart>
++
++
++
++
++
++U-Boot 2026.10-t736-bringup (Nov 18 2026 - 00:00:00 +0000)
++
++
++
++Model: T736 custom board RAM bring-up
++
++Board: T736 source boot candidate; authorized vendor DDR library
++
++DRAM:  8 GiB
++
++Core:  4 devices, 4 uclasses, devicetree: separate
++
++CPU-D A76 step=1 reg=201c before=00000000 desired=00010000 actual=00010000 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=2 reg=2000 before=40801400 desired=40801400 actual=40801400 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=3 reg=2000 before=40801400 desired=48801400 actual=48801400 CTRL=48801400 STAT=48801400 CLK=00010000 rc=0
++
++CPU-D A76 step=4 reg=2000 before=48801400 desired=48802000 actual=48801400 CTRL=48801400 STAT=48802000 CLK=00010000 rc=0
++
++CPU-D A76 step=5 reg=2000 before=48801400 desired=c8802000 actual=c8801400 CTRL=c8801400 STAT=c8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=6 reg=2000 before=c8802000 desired=e8802000 actual=e8802000 CTRL=e8802000 STAT=e8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=7 reg=2000 before=f8802000 desired=ec802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=8 reg=2000 before=f8802000 desired=f8802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=9 reg=201c before=00010000 desired=03010000 actual=03010000 CTRL=f8802000 STAT=f8802000 CLK=03010000 rc=0
++
++CPU-D A76 step=10 reg=201c before=03010000 desired=00000000 actual=00000000 CTRL=f8802000 STAT=f8802000 CLK=00000000 rc=0
++
++CPU-D A76 step=11 reg=2000 before=f8802000 desired=e0802000 actual=f0802000 CTRL=f0802000 STAT=f0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=12 reg=2000 before=f0802000 desired=c0802000 actual=c0802000 CTRL=c0802000 STAT=c0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=13 reg=2000 before=c0802000 desired=c0802700 actual=c0802000 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=14 reg=2000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=e0802700 STAT=e0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=15 reg=2000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=16 reg=2000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=17 reg=2000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=18 reg=2000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=19 reg=201c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A76 rc=0 stage=8 CTRL=f8802700 STAT=f8802700 CLK=03000000 mutation=1 rollback=0/0 slow=0 guard=0 trace=19
++
++CPU-D: A76 PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A76 cold416 then warm1014 PASS
++
++CPU-D A55 step=1 reg=101c before=03000000 desired=00000000 actual=00000000 CTRL=f8801300 STAT=f8801300 CLK=00000000 rc=0
++
++CPU-D A55 step=2 reg=1000 before=f8801300 desired=e0801300 actual=f0801300 CTRL=f0801300 STAT=f0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=3 reg=1000 before=f0801300 desired=c0801300 actual=c0801300 CTRL=c0801300 STAT=c0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=4 reg=1000 before=c0801300 desired=c0802700 actual=c0802700 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=5 reg=1000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=6 reg=1000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=7 reg=1000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=8 reg=1000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=9 reg=1000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=10 reg=101c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D A55 step=11 reg=101c before=03000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A55 rc=0 stage=8 core=412fd050/81000000 CNT=24000000 DAIF=2c0/2c0
++
++CPU-D: A55 f8801300/f8801300/03000000 -> f8802700/f8802700/03000000 mutation=1 rollback=0 slow=0 guard=0
++
++CPU-D: PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A55/A76 configured N39/1=1014MHz; DSU and PMIC unchanged
++
++MMC:   T736 SMHC3 read-only PIO: 0
++
++Loading Environment from nowhere...
++Loading Environment from nowhere... OK
++
++In:    serial@2500000
++
++Out:   serial@2500000
++
++Err:   serial@2500000
++
++
++Hit any key to stop autoboot: 3
++Hit any key to stop autoboot: 0
++
++T736-mainline=> setenv kernel_comp_addr_r 0x68000000
++
++T736-mainline=> setenv bootargs earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256
++
++T736-mainline=> mmc dev 0
++
++switch to partitions #0, OK
++
++mmc0(part 0) is current device
++
++T736-mainline=> ext4load mmc 0:4 0x60000000 /boot/Image-6.18.63-t736-gnome-v47.gz
++
++5784055 bytes read in 1141 ms (4.8 MiB/s)
++
++T736-mainline=> setenv kernel_comp_size ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x64000000 /boot/initrd.img-6.18.63-t736-gnome-v47
++
++18459861 bytes read in 3631 ms (4.8 MiB/s)
++
++T736-mainline=> setenv rdsize ${filesize}
++
++T736-mainline=> ext4load mmc 0:4 0x63000000 /boot/t736-gnome-v47.dtb
++
++16696 bytes read in 6 ms (2.7 MiB/s)
++
++T736-mainline=> booti 0x60000000 0x64000000:${rdsize} 0x63000000
++
++   Uncompressing Kernel Image to 0
++
++## Flattened Device Tree blob at 63000000
++
++   Booting using the fdt blob at 0x63000000
++
++Working FDT set to 63000000
++
++   Loading Ramdisk to ad5f5000, end ae78fcd5 ... OK
++
++   Loading Device Tree to 00000000ad5ed000, end 00000000ad5f4137 ... OK
++
++Working FDT set to ad5ed000
++
++
++
++Starting kernel ...
++
++
++
++ITS: No ITS available, not enabling LPIs
++
++[drm:commit_init_connecting.isra.0] *ERROR* offline mode: init connecting not found sunxi_drm_offline_mode_pre_init
++
++gpio gpiochip0: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++gpio gpiochip1: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-r-pinctrl 7025000.pinctrl: supply vcc-pl not found, using dummy regulator
++
++clk: Not disabling unused clocks
++
++[drm] suxni tcon hdmi set rate: 241500000Hz and get diff: 241500000Hz
++
++Loading, please wait...
++
++Starting systemd-udevd version 259.9-0ubuntu0.1
++
++
++Begin: Loading essential drivers ... done.
++
++Begin: Running /scripts/init-premount ... t736-smhc3-pio 4023000.mmc: DMA snapshot CMD21 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000000ac STATUS=0000a906 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=128 host=128 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000080 36f10000 00000000
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD8 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000080ac STATUS=00004106 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=512 host=512 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000200 36f10000 00000000
++
++pvrsrvkm: loading out-of-tree module taints kernel.
++
++]104\]104\]3008;start=fc7c0927146c4e0384c186b739435f4d;user=root;hostname=atlasa1;machineid=8a50f23fcdf249f083516259a0626cf9;bootid=e3a21ace994348e3821a608406faba83;pid=2272;pidfdid=2273;comm=(agetty);servicename=serial-getty@ttyS0.service;invocationid=ab29b2a506cd441da7255f40925cac7b;type=service\
++
++
++Armbian-unofficial 26.11.0-trunk resolute ttyS0 
++
++
++
++atlasa1 login: 
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.log b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.log
+new file mode 100644
+index 0000000000000000000000000000000000000000..628c34972424cf109961c8957c198e5e716ff2af
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.log
+@@ -0,0 +1,290 @@
++
++
++
++Broadcast message from root@atlasa1 (Fri 2026-11-20 08:19:02 UTC):
++
++
++
++
++
++The system will power off now!
++
++
++
++
++
++
++
++
++
++
++
++
++]3008;end=6621d117639144febc34ccb858369efa\]104\]3008;end=ec0392e0460e410f89efd47f1bf95dfe\reboot: Power down
++
++T736 source SRAM host + authorized libdram v1
++
++init_DRAM begin seed tpr3=110000 tpr13=6063
++
++DRAM BOOT DRIVE INFO: V0.6035
++
++DDR rail dcdc8 requested=1100 effective=1100 rc=0
++
++DDR rail eldo1 requested=660 effective=650 rc=0
++
++DRAM_VCC set to 1100 mv
++
++DRAM CLK =1800 MHZ
++
++DRAM Type =8 (8:LPDDR4,9:LPDDR5)
++
++Training result is = 7
++
++DRAM Pstate 0 training, frequency is 1800 Mhz
++
++DRAM SIZE =8192 MBytes, para1 = 311a, para2 = a0001001, dram_tpr13 = 6063
++
++DRAM simple test OK.
++
++init_DRAM returned 8192 MiB, ticks=78544745
++
++MEM PASS: 8 x 64KiB windows, 4 address/data patterns, 524288 words checked; upper physical RAM pending
++
++BOARD power rc=0 DCDC1 en=ff voltage=17 DC1SW1=17->1f DLDO2=d->d LDO_EN3=40->42
++
++CCU after DDR: PERI0=ff126310 AHB=3000002 APB0=3000005
++
++SPL eMMC open rc=0 sectors=122142720 irq=0 r1=900
++
++SPL load addr=47000000 bytes=5040 LBA=24577
++
++SPL load addr=48000000 bytes=53924 LBA=24587
++
++SPL load addr=52000000 bytes=265640 LBA=24693
++
++SPL payload CRCs passed; source AArch64 handoff
++
++H00c51838 81000000 47000000 00000001 00000000 
++AT736 A64 source handoff EL=000000000000000c
++
++A64 MEM PASS 262144 x 64-bit checks, including RAM above 4GiB and final 64KiB
++
++Entering source TF-A 0x48000000
++
++
++NOTICE:  BL31: v2.15.0(debug):t736-independent-candidate-7d322909
++
++NOTICE:  BL31: Built : 06:57:46, Nov 13 2026
++
++INFO:    GICv3 without legacy support detected.
++
++INFO:    ARM GICv3 driver initialized in EL3
++
++INFO:    Maximum SPI INTID supported: 287
++
++NOTICE:  BL31: Detected Allwinner A733 SoC (1903)
++
++NOTICE:  BL31: Found U-Boot DTB at 0x5203fab0, model: T736 custom board RAM bring-up
++
++INFO:    Configuring SPC Controller
++
++INFO:    BL31: Platform setup done
++
++INFO:    BL31: Initializing runtime services
++
++INFO:    BL31: cortex_a55: CPU workaround for erratum 1530923 was applied
++
++INFO:    PSCI: Suspend is unavailable
++
++INFO:    BL31: Preparing for EL3 exit to normal world
++
++INFO:    Entry point address = 0x52000000
++
++INFO:    SPSR = 0x3c9
++
++INFO:    Changed devicetree.
++
++
++
++<debug_uart>
++
++
++
++
++
++U-Boot 2026.10-t736-bringup (Nov 18 2026 - 00:00:00 +0000)
++
++
++
++Model: T736 custom board RAM bring-up
++
++Board: T736 source boot candidate; authorized vendor DDR library
++
++DRAM:  8 GiB
++
++Core:  4 devices, 4 uclasses, devicetree: separate
++
++CPU-D A76 step=1 reg=201c before=00000000 desired=00010000 actual=00010000 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=2 reg=2000 before=40801400 desired=40801400 actual=40801400 CTRL=40801400 STAT=40801400 CLK=00010000 rc=0
++
++CPU-D A76 step=3 reg=2000 before=40801400 desired=48801400 actual=48801400 CTRL=48801400 STAT=48801400 CLK=00010000 rc=0
++
++CPU-D A76 step=4 reg=2000 before=48801400 desired=48802000 actual=48801400 CTRL=48801400 STAT=48802000 CLK=00010000 rc=0
++
++CPU-D A76 step=5 reg=2000 before=48801400 desired=c8802000 actual=c8801400 CTRL=c8801400 STAT=c8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=6 reg=2000 before=c8802000 desired=e8802000 actual=e8802000 CTRL=e8802000 STAT=e8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=7 reg=2000 before=f8802000 desired=ec802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=8 reg=2000 before=f8802000 desired=f8802000 actual=f8802000 CTRL=f8802000 STAT=f8802000 CLK=00010000 rc=0
++
++CPU-D A76 step=9 reg=201c before=00010000 desired=03010000 actual=03010000 CTRL=f8802000 STAT=f8802000 CLK=03010000 rc=0
++
++CPU-D A76 step=10 reg=201c before=03010000 desired=00000000 actual=00000000 CTRL=f8802000 STAT=f8802000 CLK=00000000 rc=0
++
++CPU-D A76 step=11 reg=2000 before=f8802000 desired=e0802000 actual=f0802000 CTRL=f0802000 STAT=f0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=12 reg=2000 before=f0802000 desired=c0802000 actual=c0802000 CTRL=c0802000 STAT=c0802000 CLK=00000000 rc=0
++
++CPU-D A76 step=13 reg=2000 before=c0802000 desired=c0802700 actual=c0802000 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=14 reg=2000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=e0802700 STAT=e0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=15 reg=2000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=16 reg=2000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A76 step=17 reg=2000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=18 reg=2000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A76 step=19 reg=201c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A76 rc=0 stage=8 CTRL=f8802700 STAT=f8802700 CLK=03000000 mutation=1 rollback=0/0 slow=0 guard=0 trace=19
++
++CPU-D: A76 PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A76 cold416 then warm1014 PASS
++
++CPU-D A55 step=1 reg=101c before=03000000 desired=00000000 actual=00000000 CTRL=f8801300 STAT=f8801300 CLK=00000000 rc=0
++
++CPU-D A55 step=2 reg=1000 before=f8801300 desired=e0801300 actual=f0801300 CTRL=f0801300 STAT=f0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=3 reg=1000 before=f0801300 desired=c0801300 actual=c0801300 CTRL=c0801300 STAT=c0801300 CLK=00000000 rc=0
++
++CPU-D A55 step=4 reg=1000 before=c0801300 desired=c0802700 actual=c0802700 CTRL=c0802700 STAT=c0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=5 reg=1000 before=c0802700 desired=e0802700 actual=e0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=6 reg=1000 before=f0802700 desired=e4802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=7 reg=1000 before=f0802700 desired=f0802700 actual=f0802700 CTRL=f0802700 STAT=f0802700 CLK=00000000 rc=0
++
++CPU-D A55 step=8 reg=1000 before=f0802700 desired=e8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=9 reg=1000 before=f8802700 desired=f8802700 actual=f8802700 CTRL=f8802700 STAT=f8802700 CLK=00000000 rc=0
++
++CPU-D A55 step=10 reg=101c before=00000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D A55 step=11 reg=101c before=03000000 desired=03000000 actual=03000000 CTRL=f8802700 STAT=f8802700 CLK=03000000 rc=0
++
++CPU-D: A55 rc=0 stage=8 core=412fd050/81000000 CNT=24000000 DAIF=2c0/2c0
++
++CPU-D: A55 f8801300/f8801300/03000000 -> f8802700/f8802700/03000000 mutation=1 rollback=0 slow=0 guard=0
++
++CPU-D: PMIC 03/ff/28/28/00/00 -> 03/ff/28/28/00/00
++
++CPU-D: A55/A76 configured N39/1=1014MHz; DSU and PMIC unchanged
++
++MMC:   T736 SMHC3 read-only PIO: 0
++
++Loading Environment from nowhere...
++Loading Environment from nowhere... OK
++
++In:    serial@2500000
++
++Out:   serial@2500000
++
++Err:   serial@2500000
++
++
++Hit any key to stop autoboot: 3
++Hit any key to stop autoboot: 2
++Hit any key to stop autoboot: 1
++Hit any key to stop autoboot: 0
++
++switch to partitions #0, OK
++
++mmc0(part 0) is current device
++
++5784055 bytes read in 1141 ms (4.8 MiB/s)
++
++18459861 bytes read in 3632 ms (4.8 MiB/s)
++
++16696 bytes read in 5 ms (3.2 MiB/s)
++
++   Uncompressing Kernel Image to 0
++
++## Flattened Device Tree blob at 63000000
++
++   Booting using the fdt blob at 0x63000000
++
++Working FDT set to 63000000
++
++   Loading Ramdisk to ad5f5000, end ae78fcd5 ... OK
++
++   Loading Device Tree to 00000000ad5ed000, end 00000000ad5f4137 ... OK
++
++Working FDT set to ad5ed000
++
++
++
++Starting kernel ...
++
++
++
++ITS: No ITS available, not enabling LPIs
++
++[drm:commit_init_connecting.isra.0] *ERROR* offline mode: init connecting not found sunxi_drm_offline_mode_pre_init
++
++gpio gpiochip0: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++gpio gpiochip1: Static allocation of GPIO base is deprecated, use dynamic allocation.
++
++t736-r-pinctrl 7025000.pinctrl: supply vcc-pl not found, using dummy regulator
++
++clk: Not disabling unused clocks
++
++[drm] suxni tcon hdmi set rate: 241500000Hz and get diff: 241500000Hz
++
++Loading, please wait...
++
++Starting systemd-udevd version 259.9-0ubuntu0.1
++
++
++Begin: Loading essential drivers ... done.
++
++Begin: Running /scripts/init-premount ... t736-smhc3-pio 4023000.mmc: DMA snapshot CMD21 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000000ac STATUS=0000a906 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=128 host=128 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000080 36f10000 00000000
++
++t736-smhc3-pio 4023000.mmc: DMA snapshot CMD8 CTRL=20000020 DMAC=00000080 DLBA=10002400 IDIE=00000032 IDST=00000022 RINT=000080ac STATUS=00004106 FIFO_words=0 FTH=300f00f0 owned=0/1
++
++t736-smhc3-pio 4023000.mmc: DMA bytecounts card=512 host=512 OWN_bitmap=00000000:00000000
++
++t736-smhc3-pio 4023000.mmc: DMA desc0 0000000c 00000200 36f10000 00000000
++
++pvrsrvkm: loading out-of-tree module taints kernel.
++
++]104\]104\]3008;start=17de231a74c240f1b067e5de2d984bf8;user=root;hostname=atlasa1;machineid=8a50f23fcdf249f083516259a0626cf9;bootid=a09e9cb1db514f9a83b141de3299c51f;pid=2264;pidfdid=2265;comm=(agetty);servicename=serial-getty@ttyS0.service;invocationid=a4f4f13bda1243f1bdc21794da2e73fb;type=servic
++
++
++Armbian-unofficial 26.11.0-trunk resolute ttyS0 
++
++
++
++atlasa1 login: 
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.timing.json b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.timing.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..1702424a295a487471d68c270d9ae46146a1e4d8
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/boot-v47-default-final.timing.json
+@@ -0,0 +1,41 @@
++{
++  "scope": "host observations; MCP buffering and one-shot command delays are included",
++  "events": [
++    {
++      "event": "power-cycle-command",
++      "host_elapsed_seconds": 12.541
++    },
++    {
++      "event": "power-cycle-return",
++      "host_elapsed_seconds": 24.313
++    },
++    {
++      "event": "T736 source SRAM host",
++      "host_elapsed_seconds": 27.249
++    },
++    {
++      "event": "init_DRAM returned",
++      "host_elapsed_seconds": 30.516
++    },
++    {
++      "event": "U-Boot 2026",
++      "host_elapsed_seconds": 31.761
++    },
++    {
++      "event": "Hit any key to stop autoboot:",
++      "host_elapsed_seconds": 32.183
++    },
++    {
++      "event": "Uncompressing Kernel Image",
++      "host_elapsed_seconds": 39.998
++    },
++    {
++      "event": "Starting kernel",
++      "host_elapsed_seconds": 40.231
++    },
++    {
++      "event": " login:",
++      "host_elapsed_seconds": 62.181
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/compressed-v45-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/compressed-v45-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..d86a707f5a1f7c66885c843090559d1063cb7eca
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/compressed-v45-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 7.694s (kernel) + 16.384s (userspace) = 24.079s 
++graphical.target reached after 16.253s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/emmc-direct-read-v46.json b/userpatches/atlasa1-release/evidence/bootfast-20261120/emmc-direct-read-v46.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..6255f9948400189de5ef1b03cb8a0b63890d81e7
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/emmc-direct-read-v46.json
+@@ -0,0 +1,20 @@
++[
++  {
++    "trial": 1,
++    "bytes": 13631488,
++    "direct": true,
++    "sha256": "d87feafee75e70872652a9d6a71d3d961420befc8f4f436ce59783b5b408fd7c"
++  },
++  {
++    "trial": 2,
++    "bytes": 13631488,
++    "direct": true,
++    "sha256": "d87feafee75e70872652a9d6a71d3d961420befc8f4f436ce59783b5b408fd7c"
++  },
++  {
++    "trial": 3,
++    "bytes": 13631488,
++    "direct": true,
++    "sha256": "d87feafee75e70872652a9d6a71d3d961420befc8f4f436ce59783b5b408fd7c"
++  }
++]
+\ No newline at end of file
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/measurements.json b/userpatches/atlasa1-release/evidence/bootfast-20261120/measurements.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..de288898c2b82acf95c6ec2a766d397c68bbcaa2
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/measurements.json
+@@ -0,0 +1,80 @@
++{
++  "v45_normal": {
++    "kernel": 7.631,
++    "userspace": 16.404,
++    "total": 24.036
++  },
++  "v45_gzip_image": {
++    "kernel": 7.694,
++    "userspace": 16.384,
++    "total": 24.079
++  },
++  "v46_gzip_image": {
++    "kernel": 6.335,
++    "userspace": 16.4,
++    "total": 22.735
++  },
++  "v46_quiet_gzip": {
++    "kernel": 5.334,
++    "userspace": 15.782,
++    "total": 21.116
++  },
++  "scope": "systemd Linux kernel/initramfs plus userspace; excludes SPL and U-Boot",
++  "kernel_read_ms": {
++    "raw": 2796,
++    "gzip": 1142
++  },
++  "dma_snapshots": {
++    "v45": 46,
++    "v46": 2
++  },
++  "tuning_retained": true,
++  "error_classifier_tests": "HS200 recovery and HS400 policy host tests passed",
++  "compression_tests": "Real ARM64 roundtrip, gzip input, idempotency, invalid-input and conflicting-output rejection passed",
++  "v46_archive_sha256": "ff78f7153490591261723d908f803f137712e7a2d0313969135edf0e1df11eb8",
++  "v47_archive_sha256": "28bebbaf3ca676ae6afb8e32163e8ea61ca3c74d3d5045c2d5fbd83087b0b07a",
++  "default_acceptance": {
++    "kernel": "6.18.63-t736-gnome-v47",
++    "kernel_seconds": 5.264,
++    "userspace_seconds": 15.615,
++    "total_seconds": 20.879,
++    "gdm_wayland_greeter": "active",
++    "pvr": "24.2.6603887, BVNC 36.56.104.183",
++    "cedar_socket": "active",
++    "failed_units": 0,
++    "dpkg_audit": "clean",
++    "power_cycle": "10-second off, default U-Boot, no injected commands",
++    "raw_kernel_sha256": "de8905754f5f780d7ffd51dce5c94fd2a4bb75b293c2315f274c8d64ac25f1a8",
++    "gzip_kernel_sha256": "afdd333faf31ade636286e0e9e4b2f6eb069896bd857b45b71bd9d540f965c56",
++    "initrd_sha256": "e6104216ad716e3ab8d83cbde19831e1d3400e7e30f2313c720839827ecc77ae",
++    "dtb_sha256": "a2018f5d02947ea2995829d8333ba72cc04b1293df6b7df0542414050e8b5a6d",
++    "rollback": "/var/backups/atlasa1-bootfast-20261120/restore.sh",
++    "new_release_image_published": false
++  },
++  "v46_quiet_zstd": {
++    "kernel": 5.22,
++    "userspace": 15.729,
++    "total": 20.95
++  },
++  "initrd_compression_decision": {
++    "selected": "gzip",
++    "gzip_bytes": 18459938,
++    "zstd_bytes": 20026612,
++    "reason": "The 0.166-second Linux timing difference is outweighed by about 0.31 seconds more U-Boot loading at the measured 4.8 MiB/s; no reliable total-boot improvement demonstrated."
++  },
++  "v47_default_configuration_trial": {
++    "kernel": 5.233,
++    "userspace": 15.821,
++    "total": 21.055,
++    "temporary_log_bootargs": false,
++    "gdm": "active",
++    "cedar_socket": "active",
++    "failed_units": 0
++  },
++  "source_verification": {
++    "single_armbian_patch": "clean apply passed; extracted boot helper and recipes matched canonical sources",
++    "mmc_patch": "clean apply against preserved v26 source matched the compiled v47 driver after LF normalization",
++    "compiled_mmc_sha256": "5dccdb7abe0d3925f4c8abb8b40e86f27f4dfc24cc2a96474eb56d3b541e09a1",
++    "shell_syntax": "configure, verify and candidate builder passed bash -n"
++  }
++}
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-quiet-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-quiet-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f219fb06f3184aec7393f82b7d1b5e500437c49
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-quiet-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 5.334s (kernel) + 15.782s (userspace) = 21.116s 
++graphical.target reached after 15.587s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..802bf0d88c7117ecfc4e1f693e7301195a9d9981
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 6.335s (kernel) + 16.400s (userspace) = 22.735s 
++graphical.target reached after 16.241s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-zstd-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-zstd-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..9dc4dc780ca6b1d4d5c169656c482f77e630d32f
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v46-zstd-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 5.220s (kernel) + 15.729s (userspace) = 20.950s 
++graphical.target reached after 15.728s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-default-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-default-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..c6d71d33f8c1cdb5846e4bef4678eec3bfb0720b
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-default-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 5.264s (kernel) + 15.615s (userspace) = 20.879s 
++graphical.target reached after 15.613s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-gnome.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-gnome.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c7b831d27d5b31cb7a6be6aeff9f402562c754b
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-gnome.txt
+@@ -0,0 +1,3 @@
++[   14.697590] atlasa1 gnome-shell[1220]: Running GNOME Shell (using mutter 50.1) as a Wayland display server
++[   15.196845] atlasa1 gnome-shell[1220]: GPU /dev/dri/card0 selected primary given udev rule
++[   20.422784] atlasa1 gnome-shell[1220]: Registering display with GDM
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-kernel.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-kernel.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..476260488d89278566113f1f0a0dafed86474519
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-final-kernel.txt
+@@ -0,0 +1,6 @@
++[    2.318555] t736-smhc3-pio 4023000.mmc: HS200 tuning card=200000000 pass=ffffffc0ffffffff abort_err=0000003f00000000 window=0+32 tap=15 verified=16x128 THLD=00800001 SFC=00000006
++[    4.638934] t736-smhc3-pio 4023000.mmc: HS400 tuned card=200000000 cmd_pass=fffffff1ffffffff cmd_window=0+33 cmd=16 ds_pass=0000000003fffff0 ds_window=4+22 ds=14 abort_err=fffffffffc00000f verified=16xCMD13+16x512 EXT_CSD=03/06 R1=00000900 THLD=02000001 SFC=00000006
++[    4.982628] EXT4-fs (mmcblk0p4): mounted filesystem 4d8c73ce-75f9-4794-bef2-664d7cecbbbb r/w with ordered data mode. Quota mode: disabled.
++[    7.482311] PVR_K:  290: Read BVNC 36.56.104.183 from HW device registers
++[    7.482877] [drm] Initialized pvr 24.2.6603887 for 1800000.gpu on minor 1
++[    7.542946] EXT4-fs (mmcblk0p4): re-mounted 4d8c73ce-75f9-4794-bef2-664d7cecbbbb.
+diff --git a/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-trial-time.txt b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-trial-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..d11a543079d9160bb9dd509f3fac4d22e681bcfb
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/bootfast-20261120/v47-trial-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 5.233s (kernel) + 15.821s (userspace) = 21.055s 
++graphical.target reached after 15.654s in userspace.
 diff --git a/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json b/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..0798778236467351f7e2695a83f505ab8b83d8ff
@@ -126720,10 +129407,10 @@ index 0000000000000000000000000000000000000000..57844f588f0fe304ebc7def4d581f832
 + 	{ .compatible = "allwinner,sun7i-a20-mmc", .data = &sun7i_a20_cfg },
 diff --git a/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/README.md b/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/README.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..8e7ecee03be9ed3359b982fd0dd463cc9a8c3190
+index 0000000000000000000000000000000000000000..3846c8156dcdf8c0482c6e06fd1e38f0e75c77c1
 --- /dev/null
 +++ b/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/README.md
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,75 @@
 +# GNOME media candidates
 +
 +These patches are experiments against the verified v30 Linux/PVR source replay.
@@ -126757,6 +129444,11 @@ index 0000000000000000000000000000000000000000..8e7ecee03be9ed3359b982fd0dd463cc
 +  tracepoint string assignment for Linux 6.18. The v42 candidate enables
 +  function/event tracing with the same non-preemptible configuration as v41.
 +  Tracing is a diagnostic option, not a performance improvement.
++- `v46-mmc-tuning-log.patch`: retain the first expected bad-tap DMA snapshot
++  during each tuning pass. Report every error outside the existing recovery
++  classifier. Keep tuning, verification, DMA ownership and error handling intact.
++  v47 additionally sets the default console loglevel to 5. Kernel information
++  remains in the log buffer; the UART displays warnings and errors.
 +
 +Build from pinned upstream Linux and the configured Tina SDK using the normal
 +source replay checks, then these explicit candidate deltas:
@@ -126768,6 +129460,8 @@ index 0000000000000000000000000000000000000000..8e7ecee03be9ed3359b982fd0dd463cc
 +bash tools/build_gnome_media_candidate.sh /src/linux /src/tina /tmp/gnome-v40 --cedar-import
 +bash tools/build_gnome_media_candidate.sh /src/linux /src/tina /tmp/gnome-v41 --prime-scanout
 +bash tools/build_gnome_media_candidate.sh /src/linux /src/tina /tmp/gnome-v42 --display-trace
++bash tools/build_gnome_media_candidate.sh /src/linux /src/tina /tmp/gnome-v46 --boot-log
++bash tools/build_gnome_media_candidate.sh /src/linux /src/tina /tmp/gnome-v47 --boot-fast
 +```
 +
 +The output archive uses `usr/lib/modules`, preserving merged-/usr systems.
@@ -126775,6 +129469,14 @@ index 0000000000000000000000000000000000000000..8e7ecee03be9ed3359b982fd0dd463cc
 +and boot files, run depmod/mkinitramfs, and use a one-shot boot. Retain the current
 +default kernel and independent serial recovery. Never replace `/lib` when
 +installing a candidate archive.
++
++For compressed kernel loading, run AtlasA1-build's `tools/prepare_atlasa1_boot_kernel.py` with
++the versioned Image and a new output path. It validates the ARM64 header,
++checks the gzip roundtrip and preserves the uncompressed input. The source
++U-Boot supports this format. Install `config/initramfs/50-atlasa1-boot-status.conf`
++under `/etc/systemd/system.conf.d/` to display failed systemd jobs while retaining
++the journal. See [boot measurements](https://github.com/dshanpi/AtlasA1-build/blob/main/docs/BOOT_SPLASH.md)
++for measured scope and results. The helper and rootfs configuration live in AtlasA1-build.
 +
 +The earlier v35 experiment armed an event *after* RCQ completion, adding a refresh
 +of latency; its measured 1080p60 rate fell to about 27.5 fps. That rejected patch
@@ -127337,6 +130039,27 @@ index 0000000000000000000000000000000000000000..654087d57585c8aff065e4e27ad1e01c
 + 		__entry->id = id;
 + 		__entry->value = value;
 + 		),
+diff --git a/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/v46-mmc-tuning-log.patch b/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/v46-mmc-tuning-log.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..74f1fc0dffcf3856130fe7b73eeb9755d3dc0228
+--- /dev/null
++++ b/userpatches/atlasa1-release/patches/linux/gnome-media-20261119/v46-mmc-tuning-log.patch
+@@ -0,0 +1,15 @@
++--- a/drivers/mmc/host/t736_mmc_pio.c
+++++ b/drivers/mmc/host/t736_mmc_pio.c
++@@ -821,8 +821,11 @@
++ 		}
++ 	}
++ 	if (data) {
+++		/* Bad sampling taps are expected during read-only tuning. Keep the
+++		 * first snapshot, but always report errors outside that classifier.
+++		 */
++ 		if (ret && (!host->tuning_running || !host->tuning_error_reported ||
++-			    (dma_status & T736_DMA_ERRORS))) {
+++			    !t736_tuning_error_recoverable(ret, status, dma_status))) {
++ 			t736_dma_snapshot(host, cmd);
++ 			if (host->tuning_running)
++ 				host->tuning_error_reported = true;
 diff --git a/userpatches/atlasa1-release/patches/linux/media-v30-pvr-replay/board.patch b/userpatches/atlasa1-release/patches/linux/media-v30-pvr-replay/board.patch
 new file mode 100644
 index 0000000000000000000000000000000000000000..350f3b092e1224be84d647f96bdba95b461dde95
@@ -160378,10 +163101,10 @@ index 0000000000000000000000000000000000000000..be965162a18ac8601c7d986255945327
 +    main()
 diff --git a/userpatches/atlasa1-release/tools/build_gnome_media_candidate.sh b/userpatches/atlasa1-release/tools/build_gnome_media_candidate.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..39c9a660eb4860a896deeeda13444032ccd62919
+index 0000000000000000000000000000000000000000..e47f3b7b6cb04197dfde18efbae2c80be1999098
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_gnome_media_candidate.sh
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,128 @@
 +#!/usr/bin/env bash
 +# Experimental GNOME display candidates; never changes the default image recipe.
 +set -euo pipefail
@@ -160394,7 +163117,9 @@ index 0000000000000000000000000000000000000000..39c9a660eb4860a896deeeda13444032
 +    --prime-scanout:4) build=41; rate=400000000 ;;
 +    --display-trace:4) build=42; rate=400000000 ;;
 +    --pcie-nvme:4) build=45; rate=400000000 ;;
-+    *) echo "Usage: $0 LINUX_ARCHIVE_OR_GIT_REPO TINA_SDK NEW_OUTPUT [--gpu600|--rcq-preempt|--rcq-poll|--cedar-import|--prime-scanout|--display-trace|--pcie-nvme]" >&2; exit 2 ;;
++    --boot-log:4) build=46; rate=400000000 ;;
++    --boot-fast:4) build=47; rate=400000000 ;;
++    *) echo "Usage: $0 LINUX_ARCHIVE_OR_GIT_REPO TINA_SDK NEW_OUTPUT [--gpu600|--rcq-preempt|--rcq-poll|--cedar-import|--prime-scanout|--display-trace|--pcie-nvme|--boot-log|--boot-fast]" >&2; exit 2 ;;
 +esac
 +upstream=$(realpath -e "$1")
 +tina=$(realpath -e "$2")
@@ -160423,6 +163148,9 @@ index 0000000000000000000000000000000000000000..39c9a660eb4860a896deeeda13444032
 +if (( build >= 42 )); then
 +    patch --batch --forward --fuzz=0 -d "$work/linux" -p1 -i "$patches/v42-trace-api.patch"
 +    patch --batch --forward --fuzz=0 -d "$work/pvr-src" -p1 -i "$patches/v42-pvr-trace-api.patch"
++fi
++if (( build >= 46 )); then
++    patch --batch --forward --fuzz=0 -d "$work/linux" -p1 -i "$patches/v46-mmc-tuning-log.patch"
 +fi
 +export ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KBUILD_BUILD_VERSION="$build" LOCALVERSION=
 +export SOURCE_DATE_EPOCH=1795046400 KBUILD_BUILD_TIMESTAMP='2026-11-19 00:00:00 UTC'
@@ -160458,6 +163186,9 @@ index 0000000000000000000000000000000000000000..39c9a660eb4860a896deeeda13444032
 +fi
 +if (( build >= 42 )); then
 +    "$work/linux/scripts/config" --file "$kernel/.config" --enable FTRACE --enable FUNCTION_TRACER --enable FUNCTION_GRAPH_TRACER
++fi
++if (( build >= 47 )); then
++    "$work/linux/scripts/config" --file "$kernel/.config" --set-val CONSOLE_LOGLEVEL_DEFAULT 5
 +fi
 +km=(make -C "$work/linux" O="$kernel" -j"${JOBS:-7}")
 +"${km[@]}" olddefconfig
@@ -160953,10 +163684,10 @@ index 0000000000000000000000000000000000000000..39018cc4d307af3baca9bf84125b4d5e
 +if __name__=='__main__':main()
 diff --git a/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..230e49d300ecf1d041875fce98bbc543e145c304
+index 0000000000000000000000000000000000000000..a5023faca2381fbb13b3041c9ad4c9b2644ead65
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
-@@ -0,0 +1,142 @@
+@@ -0,0 +1,144 @@
 +#!/bin/bash
 +# Install the AtlasA1 board support into a fresh official Armbian Resolute desktop rootfs.
 +set -euo pipefail
@@ -161063,6 +163794,7 @@ index 0000000000000000000000000000000000000000..230e49d300ecf1d041875fce98bbc543
 +target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
 +install -Dm755 "$(dirname "$0")/../config/initramfs/wait-for-root" "$root/usr/lib/atlasa1/wait-for-root"
 +install -Dm755 "$(dirname "$0")/../config/initramfs/atlasa1-root-wait" "$root/etc/initramfs-tools/hooks/atlasa1-root-wait"
++install -Dm644 "$(dirname "$0")/../config/initramfs/50-atlasa1-boot-status.conf" "$root/etc/systemd/system.conf.d/50-atlasa1-boot-status.conf"
 +bash "$(dirname "$0")/stage_atlasa1_plymouth.sh" "$root"
 +install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/$board_dtb" \
 +    "$root/boot/dtb/allwinner/t736-mainline-bringup.dtb"
@@ -161071,10 +163803,11 @@ index 0000000000000000000000000000000000000000..230e49d300ecf1d041875fce98bbc543
 +else
 +    target update-initramfs -c -k "$release"
 +fi
-+for name in vmlinuz initrd.img; do
-+    [[ -s "$root/boot/$name-$release" ]]
-+    ln -sfn "$name-$release" "$root/boot/$name-6.18.63-t736-armbian"
-+done
++python3 "$(dirname "$0")/prepare_atlasa1_boot_kernel.py" \
++    "$root/boot/vmlinuz-$release" "$root/boot/vmlinuz-$release.atlasa1.gz"
++ln -sfn "vmlinuz-$release.atlasa1.gz" "$root/boot/vmlinuz-6.18.63-t736-armbian"
++[[ -s "$root/boot/initrd.img-$release" ]]
++ln -sfn "initrd.img-$release" "$root/boot/initrd.img-6.18.63-t736-armbian"
 +systemctl --root="$root" enable t736-cedar.socket serial-getty@ttyS0.service
 +systemctl --root="$root" is-enabled t736-cedar.socket
 +# eMMC does not expose SMART. Keep the daemon available for add-on drives.
@@ -162149,6 +164882,63 @@ index 0000000000000000000000000000000000000000..7e27dc34ec227af6507d09308a693ddf
 +
 +if __name__ == '__main__':
 +    main()
+diff --git a/userpatches/atlasa1-release/tools/prepare_atlasa1_boot_kernel.py b/userpatches/atlasa1-release/tools/prepare_atlasa1_boot_kernel.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..5ba36dbf02d453f8bb3da8246e418f0e19aa044f
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/prepare_atlasa1_boot_kernel.py
+@@ -0,0 +1,51 @@
++#!/usr/bin/env python3
++"""Create a checked gzip ARM64 Image for the source U-Boot booti path."""
++import argparse
++import gzip
++import hashlib
++import json
++import os
++from pathlib import Path
++import tempfile
++
++
++def prepare(source, output):
++    raw = source.read_bytes()
++    if raw[:2] == b'\x1f\x8b':
++        raw = gzip.decompress(raw)
++    if len(raw) < 64 or raw[56:60] != b'ARM\x64':
++        raise ValueError('Expected an ARM64 Linux Image')
++    compressed = gzip.compress(raw, compresslevel=6, mtime=0)
++    if len(raw) > 10 * len(compressed):
++        raise ValueError('Image exceeds the source U-Boot decompression bound')
++    if gzip.decompress(compressed) != raw:
++        raise ValueError('Compressed Image verification failed')
++    if output.exists() or output.is_symlink():
++        if output.is_symlink() or output.read_bytes() != compressed:
++            raise FileExistsError(output)
++    else:
++        output.parent.mkdir(parents=True, exist_ok=True)
++        temporary = None
++        try:
++            with tempfile.NamedTemporaryFile(dir=output.parent, delete=False) as stream:
++                temporary = Path(stream.name)
++                stream.write(compressed)
++                stream.flush()
++                os.fsync(stream.fileno())
++            temporary.chmod(0o644)
++            # Never overwrite an existing boot artifact, including on a race.
++            os.link(temporary, output)
++        finally:
++            if temporary is not None:
++                temporary.unlink(missing_ok=True)
++    return dict(raw_bytes=len(raw), gzip_bytes=len(compressed),
++                raw_sha256=hashlib.sha256(raw).hexdigest(),
++                gzip_sha256=hashlib.sha256(compressed).hexdigest())
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('source', type=Path)
++    parser.add_argument('output', type=Path)
++    args = parser.parse_args()
++    print(json.dumps(prepare(args.source, args.output), indent=2))
 diff --git a/userpatches/atlasa1-release/tools/prepare_atlasa1_resolute_media.py b/userpatches/atlasa1-release/tools/prepare_atlasa1_resolute_media.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..3218686ba9a4b2bc02db4da36ff3a0a027c61d5e
@@ -166410,10 +169200,10 @@ index 0000000000000000000000000000000000000000..8a60768990a627009b47465c1f1d2a40
 +}
 diff --git a/userpatches/atlasa1-release/tools/verify_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/verify_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..a8c8677b25a81b2cb303be66e257c162f15e92da
+index 0000000000000000000000000000000000000000..827cd118aa9385e747a46db324c0ec42e68f6a79
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/verify_atlasa1_resolute.sh
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,72 @@
 +#!/bin/bash
 +# Run the release checks against a mounted Ubuntu image on AArch64 or with binfmt.
 +set -euo pipefail
@@ -166468,9 +169258,17 @@ index 0000000000000000000000000000000000000000..a8c8677b25a81b2cb303be66e257c162
 +target systemctl is-enabled serial-getty@ttyS0.service
 +target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
 +[[ -s "$root/boot/initrd.img-6.18.63-t736-armbian" ]]
-+for name in vmlinuz initrd.img; do
-+    [[ $(target readlink -f "/boot/$name-6.18.63-t736-armbian") == "/boot/$name-$release" ]]
-+done
++[[ $(target readlink -f /boot/vmlinuz-6.18.63-t736-armbian) == "/boot/vmlinuz-$release.atlasa1.gz" ]]
++[[ $(target readlink -f /boot/initrd.img-6.18.63-t736-armbian) == "/boot/initrd.img-$release" ]]
++python3 - "$root/boot/vmlinuz-$release" "$root/boot/vmlinuz-$release.atlasa1.gz" <<'PY'
++import gzip, sys
++from pathlib import Path
++source = Path(sys.argv[1]).read_bytes()
++if source[:2] == b'\x1f\x8b':
++    source = gzip.decompress(source)
++assert source[56:60] == b'ARM\x64'
++assert gzip.decompress(Path(sys.argv[2]).read_bytes()) == source
++PY
 +lsinitramfs "$root/boot/initrd.img-6.18.63-t736-armbian" | grep -x init
 +relocations=$(target env LD_LIBRARY_PATH="$libs" ldd -r "$player" 2>&1)
 +if grep -Ei 'not found|undefined symbol' <<<"$relocations"; then exit 1; fi
