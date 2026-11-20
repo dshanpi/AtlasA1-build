@@ -140,6 +140,7 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
                 'tools/stage_atlasa1_gnome_wayland.sh', 'tools/activate_atlasa1_gnome.sh',
                 'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
                 'docs/CHROMIUM.md', 'tools/validation/chromium_playback.py',
+                'docs/BOOT_SPLASH.md', 'tools/stage_atlasa1_plymouth.sh',
                 'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
                 'tools/validation/firefox_renderer_probe.py',
                 'tools/validation/ffplay_wayland_present.c',
@@ -153,6 +154,10 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
                 'evidence/atlasa1-gnome-wayland-20261119.json'):
         _file(ROOT, destination, rel, rel, records)
     _tree(ROOT, destination, 'config/gnome-wayland', 'config/gnome-wayland', records)
+    _tree(ROOT, destination, 'config/plymouth', 'config/plymouth', records)
+    _tree(ROOT, destination, 'config/initramfs', 'config/initramfs', records)
+    _tree(ROOT, destination, 'evidence/boot-and-cleanup-20261120', 'evidence/boot-and-cleanup-20261120', records)
+    _tree(ROOT, destination, 'tools/browser/chromium156', 'tools/browser/chromium156', records)
     _tree(ROOT, destination, 'evidence/gnome-wayland-20261119', 'evidence/gnome-wayland-20261119', records)
     _tree(ROOT, destination, 'evidence/gnome-media-20261119', 'evidence/gnome-media-20261119', records)
 

@@ -11,6 +11,9 @@ BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
     'docs/GNOME_WAYLAND.md', 'config/gnome-wayland/*',
     'docs/CHROMIUM.md', 'tools/validation/chromium_playback.py',
+    'docs/BOOT_SPLASH.md', 'tools/stage_atlasa1_plymouth.sh', 'config/plymouth/*',
+    'config/initramfs/*', 'tools/browser/chromium156/*',
+    'evidence/boot-and-cleanup-20261120/*',
     'docs/GNOME_MEDIA.md', 'evidence/gnome-media-20261119/*.json', 'evidence/gnome-media-20261119/*.log',
     'tools/build_gnome_media_candidate.sh', 'patches/linux/gnome-media-20261119/*',
     'tools/validation/sdl_texture_ring.c', 'tools/validation/sdl_packed_yuv.c',

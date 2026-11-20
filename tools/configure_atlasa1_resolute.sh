@@ -83,7 +83,7 @@ target id t736-cedar >/dev/null 2>&1 || target useradd -r -g t736-cedar -G t736 
 printf 'root:1234\nt736:1234\n' | target chpasswd
 # Preserve Armbian's first-login password change for the public root account.
 target chage -d 0 root
-packages=(initramfs-tools ffmpeg gstreamer1.0-tools
+packages=(initramfs-tools plymouth plymouth-themes fonts-ubuntu ffmpeg gstreamer1.0-tools
     gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad)
 for deb in "${board_debs[@]}"; do
     [[ $(dpkg-deb -f "$deb" Architecture) == arm64 ]]
@@ -102,6 +102,9 @@ rsync -a --chown=root:root "$overlay/" "$root/"
 install -D -m 0644 "$pvr" "$root/lib/modules/$release/extra/pvrsrvkm.ko"
 target depmod -a "$release"
 target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
+install -Dm755 "$(dirname "$0")/../config/initramfs/wait-for-root" "$root/usr/lib/atlasa1/wait-for-root"
+install -Dm755 "$(dirname "$0")/../config/initramfs/atlasa1-root-wait" "$root/etc/initramfs-tools/hooks/atlasa1-root-wait"
+bash "$(dirname "$0")/stage_atlasa1_plymouth.sh" "$root"
 install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/$board_dtb" \
     "$root/boot/dtb/allwinner/t736-mainline-bringup.dtb"
 if [[ -s "$root/boot/initrd.img-$release" ]]; then

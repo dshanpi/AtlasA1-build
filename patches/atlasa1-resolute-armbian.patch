@@ -6151,6 +6151,33 @@ index 0000000000000000000000000000000000000000..0b1613b314e0ea603bd70b213aef076f
 + 	spin_lock_init(&host->lock);
 + 
 + 	ret = sunxi_mmc_resource_request(host, pdev);
+diff --git a/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/diagnostic-command-phase.patch b/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/diagnostic-command-phase.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..937041d5a9fd8131700f306048b77463164b6ad4
+--- /dev/null
++++ b/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/diagnostic-command-phase.patch
+@@ -0,0 +1,21 @@
++--- a/atlasa1-sdio-diag.c
+++++ b/atlasa1-sdio-diag.c
++@@ -268,6 +268,10 @@
++ 	bool ccu_has_timings_switch;
++ };
++ 
+++static unsigned int cmd_phase;
+++module_param(cmd_phase, uint, 0444);
+++MODULE_PARM_DESC(cmd_phase, "Diagnostic command sample phase 0..3");
+++
++ struct sunxi_mmc_host {
++ 	void __iomem *pg, *pm, *rtc;
++ 	struct device *dev;
++@@ -852,6 +856,7 @@
++ 			/* T736 identification and SDR <= 26 MHz use the same phases. */
++ 			mmc_writel(host, REG_DRV_DL, (drive & ~BIT(17)) | BIT(16));
++ 			rval &= ~(GENMASK(9, 8) | GENMASK(5, 4));
+++			rval |= (cmd_phase & 3) << 4;
++ 		}
++ 		rval |= SDXC_2X_TIMING_MODE;
++ 		mmc_writel(host, REG_SD_NTSR, rval);
 diff --git a/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/diagnostic-extra-settle.patch b/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/diagnostic-extra-settle.patch
 new file mode 100644
 index 0000000000000000000000000000000000000000..b4beee347ae2a9ea55584c5b9849fcfe7209956d
@@ -6216,6 +6243,55 @@ index 0000000000000000000000000000000000000000..d0523308cf5372328c4cb522bc0e9701
 +sleep 7
 +journalctl -k -b -o cat | grep 'atlasa1-sdio-diag'
 +```
+diff --git a/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/run-phase-trial.sh b/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/run-phase-trial.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..bd441e9699c8661176576bb5995776d0a81507f9
+--- /dev/null
++++ b/userpatches/atlasa1-release/boards/wireless-v31/diagnostics/run-phase-trial.sh
+@@ -0,0 +1,43 @@
++#!/usr/bin/env bash
++# Diagnostic only, SDIO1 only. Never cycle the shared PCIe/WLAN 3.3 V supply.
++set -euo pipefail
++[[ $EUID == 0 && $# == 2 ]] || { echo "Usage: sudo $0 MODULE NEW_LOG" >&2; exit 2; }
++module=$(realpath -e "$1")
++test ! -e "$2"
++exec > >(tee "$2") 2>&1
++device=/sys/bus/platform/devices/4021000.mmc
++test "$(basename "$(readlink "$device/driver")")" = sunxi-mmc
++original_bt=$(cat /sys/class/rfkill/rfkill0/soft)
++cleanup() {
++    if [[ -L $device/driver ]]; then
++        driver=$(basename "$(readlink "$device/driver")")
++        if [[ $driver == atlasa1-sdio-diag ]]; then
++            echo 4021000.mmc > /sys/bus/platform/drivers/atlasa1-sdio-diag/unbind
++        fi
++    fi
++    printf '\n' > "$device/driver_override"
++    rmmod atlasa1_sdio_diag 2>/dev/null || true
++    if [[ ! -L $device/driver ]]; then
++        echo 4021000.mmc > /sys/bus/platform/drivers/sunxi-mmc/bind
++    fi
++    echo "$original_bt" > /sys/class/rfkill/rfkill0/soft
++}
++trap cleanup EXIT
++uname -r
++sha256sum "$module"
++echo 0 > /sys/class/rfkill/rfkill0/soft
++for phase in 1 2 3; do
++    printf 'COMMAND_SAMPLE_PHASE %s\n' "$phase"
++    echo 4021000.mmc > /sys/bus/platform/drivers/sunxi-mmc/unbind
++    echo atlasa1-sdio-diag > "$device/driver_override"
++    insmod "$module" cmd_phase="$phase"
++    sleep 6
++    find /sys/bus/sdio/devices -mindepth 1 -maxdepth 1 -printf '%f\n'
++    dmesg | grep 'atlasa1-sdio-diag.*probe CMD' | tail -12
++    echo 4021000.mmc > /sys/bus/platform/drivers/atlasa1-sdio-diag/unbind
++    rmmod atlasa1_sdio_diag
++    printf '\n' > "$device/driver_override"
++    echo 4021000.mmc > /sys/bus/platform/drivers/sunxi-mmc/bind
++    sleep 3
++done
++lsblk -n -o NAME,SIZE /dev/nvme0n1
 diff --git a/userpatches/atlasa1-release/boards/wireless-v31/kernel.config b/userpatches/atlasa1-release/boards/wireless-v31/kernel.config
 new file mode 100644
 index 0000000000000000000000000000000000000000..c0e8243384edf0627ecae663bd03eb22dd011ca1
@@ -6622,6 +6698,196 @@ index 0000000000000000000000000000000000000000..5e0cca92a547d869f0e79b985d5ded65
 +    xrandr --output HDMI-1 --set dynamicrange 0 >/dev/null 2>&1 || true
 +fi
 +exit 0
+diff --git a/userpatches/atlasa1-release/config/initramfs/atlasa1-root-wait b/userpatches/atlasa1-release/config/initramfs/atlasa1-root-wait
+new file mode 100755
+index 0000000000000000000000000000000000000000..8934fa8fcdc5df36442c793f8a032a79bd4ca2d7
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/initramfs/atlasa1-root-wait
+@@ -0,0 +1,8 @@
++#!/bin/sh
++set -eu
++case "${1:-}" in prereqs) exit 0;; esac
++. /usr/share/initramfs-tools/hook-functions
++copy_exec /usr/lib/initramfs-tools/bin/wait-for-root /usr/sbin/wait-for-root.atlasa1-original
++mkdir -p "$DESTDIR/usr/sbin"
++cp /usr/lib/atlasa1/wait-for-root "$DESTDIR/usr/sbin/wait-for-root"
++chmod 755 "$DESTDIR/usr/sbin/wait-for-root"
+diff --git a/userpatches/atlasa1-release/config/initramfs/wait-for-root b/userpatches/atlasa1-release/config/initramfs/wait-for-root
+new file mode 100755
+index 0000000000000000000000000000000000000000..607e45ad11bbf7867f3bccb7b642de5ec9b17a11
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/initramfs/wait-for-root
+@@ -0,0 +1,12 @@
++#!/bin/sh
++# Ubuntu 0.151ubuntu1 resolves an existing PARTUUID= device, but does not
++# match PARTUUID= against later udev events. Pass the equivalent stable
++# symlink so its event matcher can finish as soon as the partition appears.
++if [ "$#" -eq 2 ]; then
++    case "$1" in
++        PARTUUID=*)
++            exec /usr/sbin/wait-for-root.atlasa1-original "/dev/disk/by-partuuid/${1#PARTUUID=}" "$2"
++            ;;
++    esac
++fi
++exec /usr/sbin/wait-for-root.atlasa1-original "$@"
+diff --git a/userpatches/atlasa1-release/config/plymouth/50-atlasa1.conf b/userpatches/atlasa1-release/config/plymouth/50-atlasa1.conf
+new file mode 100644
+index 0000000000000000000000000000000000000000..d01906c8431d7cac520bf43d2f62361170120db2
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/50-atlasa1.conf
+@@ -0,0 +1,12 @@
++[Unit]
++# Enable only when the AtlasA1 theme was explicitly installed. Keep the
++# distribution unit's dependency ordering and GDM's normal quit/handoff path.
++ConditionKernelCommandLine=
++ConditionKernelCommandLine=!plymouth.enable=0
++ConditionKernelCommandLine=!nosplash
++ConditionPathExists=/etc/plymouth/atlasa1-enabled
++
++[Service]
++ExecStart=
++ExecStart=/usr/lib/atlasa1/start-plymouth
++ExecStartPost=
+diff --git a/userpatches/atlasa1-release/config/plymouth/atlasa1.plymouth b/userpatches/atlasa1-release/config/plymouth/atlasa1.plymouth
+new file mode 100644
+index 0000000000000000000000000000000000000000..15f38b01dea8114657a38870980b0a505b1821a6
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/atlasa1.plymouth
+@@ -0,0 +1,8 @@
++[Plymouth Theme]
++Name=Atlas A1
++Description=Atlas A1 Armbian boot screen
++ModuleName=script
++
++[script]
++ImageDir=/usr/share/plymouth/themes/atlasa1
++ScriptFile=/usr/share/plymouth/themes/atlasa1/atlasa1.script
+diff --git a/userpatches/atlasa1-release/config/plymouth/atlasa1.script b/userpatches/atlasa1-release/config/plymouth/atlasa1.script
+new file mode 100644
+index 0000000000000000000000000000000000000000..4318f1d33c652848890db3262c1bbbc682c1407c
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/atlasa1.script
+@@ -0,0 +1,63 @@
++# Text and vector-like primitives: no binary artwork or extra font dependency.
++Window.SetBackgroundTopColor(0.025, 0.035, 0.055);
++Window.SetBackgroundBottomColor(0.025, 0.035, 0.055);
++
++title.image = Image.Text("ATLAS A1", 0.94, 0.96, 0.98, 1, "Ubuntu Bold 44");
++title.sprite = Sprite(title.image);
++subtitle.image = Image.Text("Armbian  /  Ubuntu", 0.52, 0.60, 0.68, 1, "Ubuntu 15");
++subtitle.sprite = Sprite(subtitle.image);
++accent.image = Image.Text("_", 0.20, 0.75, 0.82, 1, "Ubuntu Bold 16").Scale(60, 4);
++accent.sprite = Sprite(accent.image);
++for (i = 0; i < 3; i++) {
++    dots[i].image = Image.Text("•", 0.20, 0.75, 0.82, 1, "Ubuntu 22");
++    dots[i].sprite = Sprite(dots[i].image);
++}
++message.image = Image.Text("", 0.65, 0.70, 0.76, 1, "Ubuntu 13");
++message.sprite = Sprite(message.image);
++phase = 0;
++mode = "normal";
++
++fun place_center(sprite, image, y) {
++    sprite.SetPosition(Window.GetX() + (Window.GetWidth() - image.GetWidth()) / 2,
++                       Window.GetY() + y, 10);
++}
++
++fun refresh() {
++    global.phase += 0.07;
++    local.middle = Window.GetHeight() * 0.44;
++    place_center(title.sprite, title.image, middle - title.image.GetHeight());
++    place_center(accent.sprite, accent.image, middle + 20);
++    place_center(subtitle.sprite, subtitle.image, middle + 46);
++    place_center(message.sprite, message.image, middle + 160);
++    for (i = 0; i < 3; i++) {
++        dots[i].sprite.SetPosition(Window.GetX() + Window.GetWidth()/2 - 30 + i*24,
++                                  Window.GetY() + middle + 104, 10);
++        if (mode == "normal")
++            dots[i].sprite.SetOpacity(0.25 + 0.75*(Math.Cos(phase - i*0.8)+1)/2);
++        else
++            dots[i].sprite.SetOpacity(0);
++    }
++}
++Plymouth.SetRefreshFunction(refresh);
++
++fun set_message(text) {
++    global.message.image = Image.Text(text, 0.65, 0.70, 0.76, 1, "Ubuntu 13");
++    if (message.image.GetWidth() > Window.GetWidth()*0.85) {
++        global.message.image = message.image.Scale(Window.GetWidth()*0.85,
++            message.image.GetHeight()*Window.GetWidth()*0.85/message.image.GetWidth());
++    }
++    message.sprite.SetImage(message.image);
++}
++fun display_message(text) { if (mode == "normal") set_message(text); }
++fun display_normal() { global.mode = "normal"; set_message(""); }
++fun display_question(prompt, entry) { global.mode = "question"; set_message(prompt + "  " + entry); }
++fun display_password(prompt, bullets) {
++    global.mode = "password";
++    local.mask = "";
++    for (i = 0; i < bullets; i++) mask += "•";
++    set_message(prompt + "  " + mask);
++}
++Plymouth.SetMessageFunction(display_message);
++Plymouth.SetDisplayNormalFunction(display_normal);
++Plymouth.SetDisplayQuestionFunction(display_question);
++Plymouth.SetDisplayPasswordFunction(display_password);
+diff --git a/userpatches/atlasa1-release/config/plymouth/init-premount b/userpatches/atlasa1-release/config/plymouth/init-premount
+new file mode 100755
+index 0000000000000000000000000000000000000000..9e77de1930655652b1ae427b5dd759d05dda73bb
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/init-premount
+@@ -0,0 +1,6 @@
++#!/bin/sh
++PREREQ="udev"
++case "${1:-}" in prereqs) echo "$PREREQ"; exit 0;; esac
++# The existing source U-Boot predates a configurable splash flag. This opt-in
++# marker enables only the branded initramfs; recovery boot remains unchanged.
++/usr/lib/atlasa1/start-plymouth || true
+diff --git a/userpatches/atlasa1-release/config/plymouth/initramfs-hook b/userpatches/atlasa1-release/config/plymouth/initramfs-hook
+new file mode 100755
+index 0000000000000000000000000000000000000000..40015daf12c9313b921bdb5bf6ff505bcc48eacd
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/initramfs-hook
+@@ -0,0 +1,9 @@
++#!/bin/sh
++set -e
++PREREQ="plymouth"
++case "${1:-}" in prereqs) echo "$PREREQ"; exit 0;; esac
++. /usr/share/initramfs-tools/hook-functions
++test -e /etc/plymouth/atlasa1-enabled || exit 0
++copy_exec /usr/lib/atlasa1/start-plymouth
++mkdir -p "$DESTDIR/etc/plymouth"
++cp /etc/plymouth/atlasa1-enabled "$DESTDIR/etc/plymouth/"
+diff --git a/userpatches/atlasa1-release/config/plymouth/start-atlasa1-plymouth b/userpatches/atlasa1-release/config/plymouth/start-atlasa1-plymouth
+new file mode 100755
+index 0000000000000000000000000000000000000000..b4dd9d37d045251ea4fa0b22e41d01e78a76d91f
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/plymouth/start-atlasa1-plymouth
+@@ -0,0 +1,24 @@
++#!/bin/sh
++# Called from initramfs or systemd. Keep UART logs and honor rescue/disable modes.
++set -eu
++trace() {
++    if [ -d /run/initramfs ]; then
++        read -r uptime unused < /proc/uptime
++        printf '%s %s\n' "$uptime" "$1" >> /run/initramfs/atlasa1-plymouth-timing
++    fi
++}
++test -e /etc/plymouth/atlasa1-enabled || exit 0
++for arg in $(cat /proc/cmdline); do
++    case "$arg" in
++        nosplash*|plymouth.enable=0|single|rescue|emergency|systemd.unit=rescue.target|systemd.unit=emergency.target)
++            exit 0 ;;
++    esac
++done
++trace helper-enter
++/usr/bin/plymouth --ping 2>/dev/null && { trace already-running; exit 0; }
++mkdir -p /run/plymouth
++/usr/sbin/plymouthd --mode=boot --ignore-serial-consoles --graphical-boot \
++    --pid-file=/run/plymouth/pid --attach-to-session
++trace daemon-ready
++/usr/bin/plymouth show-splash
++trace splash-ready
 diff --git a/userpatches/atlasa1-release/config/t736-lp4x-fixed.fex b/userpatches/atlasa1-release/config/t736-lp4x-fixed.fex
 new file mode 100644
 index 0000000000000000000000000000000000000000..ff18285c721dd57e043a5791c09faf059ef2ec86
@@ -7959,12 +8225,87 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_FSPI_CONF_HEADER is not set
 +# CONFIG_TOOLS_MKFWUMDATA is not set
 +# CONFIG_TOOLS_FWUMDATA is not set
+diff --git a/userpatches/atlasa1-release/docs/BOOT_SPLASH.md b/userpatches/atlasa1-release/docs/BOOT_SPLASH.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a8a221e17e300db6e93fdaf96de3d03502d788f0
+--- /dev/null
++++ b/userpatches/atlasa1-release/docs/BOOT_SPLASH.md
+@@ -0,0 +1,69 @@
++# Atlas A1 boot animation
++
++The Ubuntu rootfs configuration installs Plymouth, its script renderer and the
++Atlas A1 theme before generating the initramfs. The theme is source text: a dark
++background, Atlas A1 / Armbian / Ubuntu branding and three animated activity dots.
++
++This starts in the Linux initramfs. It does not provide a U-Boot HDMI logo before
++Linux initializes the display. Serial diagnostics remain available. The helper
++honours `nosplash`, `plymouth.enable=0` and rescue/emergency boot modes; the
++`/etc/plymouth/atlasa1-enabled` marker explicitly opts in without changing the
++source U-Boot's fixed command line. Password prompts mask the entered text.
++
++To stage into an existing rootfs, install the dependencies and run:
++
++```sh
++bash tools/stage_atlasa1_plymouth.sh /path/to/rootfs
++# Rebuild the selected kernel's initramfs in that rootfs, then regenerate the
++# matching U-Boot uInitrd using the image builder's existing procedure.
++```
++
++On 2026-11-20 the installed v45 board displayed the theme during a real reboot
++and handed the display to GDM. Two KMS captures at 2560x1440 differed only in
++the activity-dot region (1252,751)-(1307,758), confirming animation. The temporary
++capture service timed out after producing both frames; it was disabled and is
++not part of this theme or the rootfs recipe. Subsequent cold boots without that
++service reached GDM successfully. Boot latency and its root-wait fix are
++documented below; these measurements exclude SPL/U-Boot time.
++
++Captured frame SHA-256:
++
++- `a834ed8fcdc51686360587c46782a10be980175b0def2c083d5bbe7bf1d062e3`
++- `9facabdced4706006400fd65c93e67db908e09ab4342b1e3e2cf867e61d1bb4b`
++
++Disable by removing the marker and the Atlas systemd drop-in, selecting the
++previous `default.plymouth` alternative and restoring `plymouthd.conf`, then
++rebuilding the initramfs/uInitrd. Keep a copy of the original boot artifacts
++when changing an installed system. No kernel, DTB or SSD partition changes are
++needed to install or remove this theme.
++
++## Root-device wait fix (Ubuntu 26.04)
++
++Ubuntu initramfs-tools-bin 0.151ubuntu1 accepts `PARTUUID=` for its initial
++lookup, but `wait-for-root.c:matching_device()` does not match that form against
++later udev events. On Atlas A1 the eMMC appeared at about 7.1 seconds, while
++`wait-for-root PARTUUID=... 30` ran from 4.51 to 34.51 seconds and exited 1.
++The shell fallback then found the partition immediately. Plymouth had finished
++showing the splash at 4.42 seconds; it was not the 30-second blocker.
++
++`config/initramfs/atlasa1-root-wait` preserves the distribution helper inside
++the initramfs and installs a wrapper translating only `PARTUUID=...` to
++`/dev/disk/by-partuuid/...`. The original helper already matches udev symlinks.
++Timeouts, filesystem identification, fsck and the stable partition identity
++are retained. The package-owned executable in the root filesystem is unchanged.
++`configure_atlasa1_resolute.sh` installs the hook before building the initramfs.
++
++The first fixed v45 cold boot mounted root at 7.466 seconds and reached
++`graphical.target` in 24.196 seconds (kernel/initramfs 7.671, userspace 16.525),
++down from 51.311 seconds. GDM, PowerVR and the Cedar socket were active, with
++no failed systemd units. A second cold boot, after removing temporary diagnostic
++hooks, reached the graphical target in 24.036 seconds (7.631 + 16.404).
++Root mounted at 7.428 seconds; the Wayland greeter was active. The measurements
++are in `evidence/boot-and-cleanup-20261120/`. These are systemd/kernel timings, not a stopwatch
++measurement from application of board power to a usable logged-in desktop.
++
++For an existing installation, install the wrapper as
++`/usr/lib/atlasa1/wait-for-root` and the hook as
++`/etc/initramfs-tools/hooks/atlasa1-root-wait`, both mode 0755, then rebuild the
++selected initramfs and its uInitrd. To undo this fix, remove the hook and rebuild
++both artifacts, or restore the matching backed-up boot artifacts.
 diff --git a/userpatches/atlasa1-release/docs/CHROMIUM.md b/userpatches/atlasa1-release/docs/CHROMIUM.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..56eb098c991f2edee4691e9b86c9d090b157413b
+index 0000000000000000000000000000000000000000..a085cc553de48c0809a648e5905d8e423c258905
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/CHROMIUM.md
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,84 @@
 +# AtlasA1 GNOME 下的 Chromium
 +
 +2026-11-20 在 `6.18.63-t736-gnome-v45`、GNOME Wayland 和 Chromium
@@ -8024,7 +8365,13 @@ index 0000000000000000000000000000000000000000..56eb098c991f2edee4691e9b86c9d090
 +沙箱、原始压缩包回退、seek/flush、EOS、格式切换和视频帧生命周期约束。
 +另一方案是完整实现 Chromium 兼容的 VA-API/V4L2 适配，包括 surface、参考帧、
 +同步和缓冲导出；创建一个设备节点或伪造能力枚举不构成实现。
-+整编 Chromium 前需安排构建空间：本次构建机仅余 4.2 GiB，尚未启动整编。
++已将早期 v1～v11 的 32 个镜像文件归档、逐个解压校验 SHA-256 后，删除了
++构建机上的已备份副本，释放约 40.6 GiB。没有删除当前镜像、恢复包或源码。
++
++`tools/browser/chromium156/` 保存 156.0.8078.73 的 Cedar 适配候选，包括
++独立解码器枚举、GPU 进程沙箱前预连接和异步解码队列。客户端交叉编译通过；
++完整 Chromium 尚在补齐精确版本的构建依赖，C++ 解码器尚未完成编译与实板
++验证。此目录仅供继续开发和备份，未接入生产镜像，不代表 Chrome 硬解通过。
 +
 +## 复测
 +
@@ -8468,10 +8815,10 @@ index 0000000000000000000000000000000000000000..fa631c59a93a36ea0c36e8b0056e4b53
 +首次启动另有两个 systemd 单元报错。RC1 内核缺少 `rpc_pipefs`，板载 eMMC 也不提供 SMART。仓库中的根文件系统配置为前者添加了启动条件，并让 `smartd` 在没有 SMART 磁盘时继续运行。两项修改已在烧录后的板上验证。[FES 与首次冷启动记录](../evidence/atlasa1-ubuntu26-rc1-fes-coldboot-20261118.json)
 diff --git a/userpatches/atlasa1-release/docs/WIRELESS.md b/userpatches/atlasa1-release/docs/WIRELESS.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..1b65329895094b5716556a01ade43632fbc89f3e
+index 0000000000000000000000000000000000000000..9b5ab73ac755884c633f6a70e002d2fa0a64f83a
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/WIRELESS.md
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,103 @@
 +# AtlasA1 板载 Wi‑Fi 和蓝牙
 +
 +## 2026-11-20：确认 AIC8800D80，枚举仍未通过
@@ -8539,6 +8886,26 @@ index 0000000000000000000000000000000000000000..1b65329895094b5716556a01ade43632
 +硬件指南列出参考板默认 AW869C Wi‑Fi 6。底板图同时画出 UW2（AW869 系列，另有 AP6281s 晶振备注）和 U53（NF3205Q）焊位。参考设计 BOM 分别列有 UW2 和 U53 两个位置，并将 RW62、RW101 和 YW3 标为 NC。U53 的 32 kHz 走 RW92（0R），UW2 的 LPO 走 RW101（NC/0R），UW2 的蓝牙使能另经过 RW62（NC/0R）。Tina 的有效设备树没有为 WLAN 或 BT 注册可控的 32 kHz 时钟。实装型号仍须结合 SDIO ID 或实板丝印确认。
 +
 +历史 Tina 串口记录中 `aicbsp_init` 和 `rwnx` 开始初始化，但 SDIO CMD52、CMD5 多次响应超时，驱动退出，未报告 SDIO 厂商或设备 ID。v31 先使用通用 SDIO 枚举读取身份，再据此选用驱动与固件。
++
++## 2026-11-20 补充：已确认 AIC8800D80
++
++用户确认实装 AW869C / AIC8800D80，且同一板此前在 Tina 中正常使用。
++因此上述历史超时记录不能用来推断模组损坏或 Tina 一直不可用。
++当前软件排查应以恢复原厂工作时的供电、引脚和主控启动状态为目标。
++
++本轮开启 32 kHz、延长使能稳定时间、扫描命令相位仍未枚举 SDIO function。
++PG0～5 的 GPIO 上拉读值为 111111，下拉为 011111，禁用拉阻为 111111；
++这与 CMD/DATA 外部上拉相符，不能把复用态的 DAT0 读值当成所有数据线拉低。
++诊断补丁位于 `boards/wireless-v31/diagnostics/`，不是已验证的无线功能。
++AIC BSP/FDRV 模块已编译，但固件下载、Wi-Fi 扫描与蓝牙 HCI 均未验收。
++蓝牙固件依赖 SDIO 下载，不能只靠出现 UART/rfkill 就宣称蓝牙通过。
++
++尝试原厂 6.6.98 内核加不挂载磁盘的 RAM 根文件系统时，内核入口后即复位，
++未进入测试脚本，因此没有取得原厂 SDIO 对照结果。此实验还留下异常的
++CPU 电源/时钟状态，源 U-Boot 的保护检查拒绝升频，导致后续暖启动明显变慢。
++完整断电后默认 v45 恢复 1.014 GHz 配置。跨启动链的暖复位兼容问题尚未修复，
++不可直接重做该原厂内核试验，也不能将它记作“Tina 无线失败”。
++共享 3.3 V 同时供应 PCIe SSD，本轮未切断该电源，未写入 SSD。
 +
 +## 实板验收
 +
@@ -10687,6 +11054,401 @@ index 0000000000000000000000000000000000000000..f41990fdf07ca9f3eae9bf7db1c06a11
 +    "runtime_status": "SDIO host, controlled power rail and UART/rfkill established. Wi-Fi connectivity and Bluetooth discovery not validated."
 +  }
 +}
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/boot-latency.json b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/boot-latency.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f03ad86fd0596b03e0d4d0daf8ce4db33aaa968
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/boot-latency.json
+@@ -0,0 +1,57 @@
++{
++  "date": "2026-11-20",
++  "kernel": "6.18.63-t736-gnome-v45",
++  "distribution": "Ubuntu 26.04",
++  "initramfs_tools_bin": "0.151ubuntu1",
++  "symptom": "PARTUUID root device appears during udev monitoring but wait-for-root times out",
++  "source_reference": "https://git.launchpad.net/ubuntu/+source/initramfs-tools/plain/wait-for-root.c",
++  "upstream_source_observation": "main maps PARTUUID to a symlink for stat; matching_device lacks PARTUUID handling for subsequent events",
++  "before": {
++    "kernel_seconds": 35.047,
++    "userspace_seconds": 16.263,
++    "total_seconds": 51.311,
++    "wait_start_seconds": 4.51,
++    "wait_end_seconds": 34.51,
++    "wait_exit_code": 1
++  },
++  "fixed_cold_boots": [
++    {
++      "kernel_seconds": 7.671,
++      "userspace_seconds": 16.525,
++      "total_seconds": 24.196,
++      "root_mount_seconds": 7.465793
++    },
++    {
++      "kernel_seconds": 7.631,
++      "userspace_seconds": 16.404,
++      "total_seconds": 24.036,
++      "root_mount_seconds": 7.42773,
++      "diagnostic_hooks_removed": true,
++      "gdm_wayland_greeter": "active",
++      "cedar_socket": "active",
++      "systemd_failed_units": 0,
++      "pvr": "24.2.6603887, BVNC 36.56.104.183"
++    }
++  ],
++  "measurement_scope": "Linux kernel and initramfs entry through systemd graphical.target; excludes SPL/U-Boot, user login, and application readiness",
++  "fix": "Translate PARTUUID to /dev/disk/by-partuuid for the unmodified distribution wait-for-root helper within initramfs",
++  "preserved": [
++    "root partition identity",
++    "original timeout",
++    "fsck",
++    "HS400",
++    "Plymouth",
++    "serial console"
++  ],
++  "boot_artifacts": {
++    "Image_sha256": "beaec567afb9ecc1a5b427e2a0fc73ef391fcd742c45dd5b4240652891595f8a",
++    "initrd_sha256": "52e5b063d088be98d313cb529e6d1d4b70b119801fa052ab3cb461c3e63f83ee",
++    "dtb_sha256": "a2018f5d02947ea2995829d8333ba72cc04b1293df6b7df0542414050e8b5a6d"
++  },
++  "separate_unresolved_issue": "Foreign Tina RAM kernel reset left CPU power state incompatible with current U-Boot precondition; cold power cycle restored 1014MHz. Do not repeat that trial until warm-reset compatibility is fixed.",
++  "release_image_rebuilt": false,
++  "source_sha256": {
++    "config/initramfs/atlasa1-root-wait": "66270cd41af7ae22ecfaff86c7858ebaaffd01240d6b6b4999ce0c1139695707",
++    "config/initramfs/wait-for-root": "64126875e885dffbc7767d9e1c15cb259ef76e27c1ec08ad49528f90acb6b068"
++  }
++}
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-plymouth.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-plymouth.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..acb9206a3650888f84d09c5f37304ca646725b9a
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-plymouth.txt
+@@ -0,0 +1,6 @@
++2.91 helper-enter
++2.92 daemon-ready
++4.42 splash-ready
++4.42 local-premount
++38.39 helper-enter
++38.39 already-running
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-systemd-time.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-systemd-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..57d56ae57fb2ae27ff8a0183ff4c6353f5357cab
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-systemd-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 35.047s (kernel) + 16.263s (userspace) = 51.311s 
++graphical.target reached after 16.159s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-trace.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-trace.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a3e6e53865bd6d66e27067551c57d75cce4aad9
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/deep-trace.txt
+@@ -0,0 +1,12 @@
++4.42 ENTER /scripts/local-premount/atlas-timing
++4.42 EXIT /scripts/local-premount/atlas-timing
++4.43 ENTER /scripts/local-premount/btrfs
++4.49 EXIT /scripts/local-premount/btrfs
++4.50 ENTER /scripts/local-premount/fixrtc
++4.50 EXIT /scripts/local-premount/fixrtc
++4.50 ENTER /scripts/local-premount/ntfs_3g
++4.50 EXIT /scripts/local-premount/ntfs_3g
++4.51 ENTER /scripts/local-premount/resume
++4.51 EXIT /scripts/local-premount/resume
++4.51 WAIT PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 30
++34.51 DONE 1 PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 30
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/early-images-manifest.json b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/early-images-manifest.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..80514e3bb88d52e9962c8ed4a1aadeaf53c9000c
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/early-images-manifest.json
+@@ -0,0 +1,235 @@
++{
++  "remote_root": "/home/ubuntu/t736-mainline/output",
++  "files": [
++    {
++      "name": "rootfs-armbian-raw-v10.ext4",
++      "size": 7802716160,
++      "allocated": 664915968,
++      "mtime_ns": 1794568410917139518,
++      "sha256": "b247ef1d51451c8c6dfaa9bdeee5c80312e6ec28165d5e9a462023f01ac1d61e"
++    },
++    {
++      "name": "rootfs-armbian-raw-v11.ext4",
++      "size": 7802716160,
++      "allocated": 664915968,
++      "mtime_ns": 1794569531827961609,
++      "sha256": "41c84fc742914ed1b19b12601b740a986156eca1f0675678e0267564a8483af4"
++    },
++    {
++      "name": "rootfs-armbian-raw-v6.ext4",
++      "size": 7802716160,
++      "allocated": 639578112,
++      "mtime_ns": 1794557837055831097,
++      "sha256": "f883e516b60f0848954b9ba5b3bbd316411237bba577bb03554b05bf8d331712"
++    },
++    {
++      "name": "rootfs-armbian-raw-v7.ext4",
++      "size": 7802716160,
++      "allocated": 664899584,
++      "mtime_ns": 1794564924922273286,
++      "sha256": "c77d31cb45ea279083e350360b1af4a6428bde63e19f4a498a30d600584a7622"
++    },
++    {
++      "name": "rootfs-armbian-raw-v8.ext4",
++      "size": 7802716160,
++      "allocated": 664899584,
++      "mtime_ns": 1794566127531516746,
++      "sha256": "a59c9997e81408970b66e90495d17a20b410a29fbcbd7f0a02b76fe101aca9ee"
++    },
++    {
++      "name": "rootfs-armbian-raw-v9.ext4",
++      "size": 7802716160,
++      "allocated": 664899584,
++      "mtime_ns": 1794566741836217201,
++      "sha256": "2a65ff543a9f4d6ad49689088939ab1e3aea5d08a4e9a8b2e25318e2da6f1302"
++    },
++    {
++      "name": "rootfs-armbian-source-v1.ext4",
++      "size": 7802716160,
++      "allocated": 597778432,
++      "mtime_ns": 1794647358464254763,
++      "sha256": "2a2db9d822ec89c7bc11d7b288e24e0e4ffdc0621de34926856c7909240c402e"
++    },
++    {
++      "name": "rootfs-armbian-source-v10.ext4",
++      "size": 7802716160,
++      "allocated": 3247882240,
++      "mtime_ns": 1794827779531182072,
++      "sha256": "935a58e933ec831c470a5ef20c89dd5f0f675f417d4fa43bbe0a831e91414469"
++    },
++    {
++      "name": "rootfs-armbian-source-v5.ext4",
++      "size": 7802716160,
++      "allocated": 667340800,
++      "mtime_ns": 1794653812962751705,
++      "sha256": "937fd211c70aeb529d64bbb50a9d6b83f91736c80a5cd608d541c1f02ad6a21e"
++    },
++    {
++      "name": "rootfs-armbian-source-v6.ext4",
++      "size": 7802716160,
++      "allocated": 671019008,
++      "mtime_ns": 1794655284417781531,
++      "sha256": "b68942b741988cef35a8bece83a3c3209498ba111aec6e7bf58056c6ef5e187f"
++    },
++    {
++      "name": "rootfs-armbian-source-v7.ext4",
++      "size": 7802716160,
++      "allocated": 3156819968,
++      "mtime_ns": 1794801366979818667,
++      "sha256": "a157f764cdd7a9e09be36579e8f93217ac10f02a2111e67e052fc43d21a79873"
++    },
++    {
++      "name": "rootfs-armbian-source-v8.ext4",
++      "size": 7802716160,
++      "allocated": 3187433472,
++      "mtime_ns": 1794811852334374223,
++      "sha256": "862fb1cd2ac9aaf04afc0c22d85950a95a79d24b845fbff512a1e6c71b642a83"
++    },
++    {
++      "name": "rootfs-armbian-source-v9.ext4",
++      "size": 7802716160,
++      "allocated": 3191218176,
++      "mtime_ns": 1794819097952844565,
++      "sha256": "d3c56757a3ab03aff75c6796e92c4acb64396f5d144fc659466aed6c4f2b2d9a"
++    },
++    {
++      "name": "rootfs-armbian-t736-v2.ext4",
++      "size": 7802716160,
++      "allocated": 599105536,
++      "mtime_ns": 1794511683200449775,
++      "sha256": "c5b0a42f409af3cc0463c3668b32f0ea660efe775df10f57f0329c74e5004007"
++    },
++    {
++      "name": "rootfs-armbian-t736-v3.ext4",
++      "size": 7802716160,
++      "allocated": 609112064,
++      "mtime_ns": 1794539555787903359,
++      "sha256": "a9672570505a653a130e54355cafb99648c37ca335a277dd558acaa13f4b2421"
++    },
++    {
++      "name": "rootfs-armbian-t736.ext4",
++      "size": 7802716160,
++      "allocated": 632885248,
++      "mtime_ns": 1794511387288076435,
++      "sha256": "c7cf8cf8fe909a48fd23684bf73282af3f322af60b32b7313078c9c7b50a81e2"
++    },
++    {
++      "name": "t736-armbian-source-v1.raw.img",
++      "size": 8589934592,
++      "allocated": 705196032,
++      "mtime_ns": 1794647389916579226,
++      "sha256": "fc6044e2b25a74c7405c66dfd6464885fb26af0b329959c7f17a22a0c017f079"
++    },
++    {
++      "name": "t736-armbian-source-v10.raw.img",
++      "size": 8589934592,
++      "allocated": 3634143232,
++      "mtime_ns": 1794827922397429135,
++      "sha256": "5af964ac3f24b747151bc4f3f292dcae943e6be28bc2d4cabe17dc876547cecf"
++    },
++    {
++      "name": "t736-armbian-source-v2.raw.img",
++      "size": 8589934592,
++      "allocated": 705196032,
++      "mtime_ns": 1794648291686122665,
++      "sha256": "64fec54b74b6cc1491eac7e6ebf7fcd1daed54ccc2fc185dc5e57c70583796d3"
++    },
++    {
++      "name": "t736-armbian-source-v3.raw.img",
++      "size": 8589934592,
++      "allocated": 705196032,
++      "mtime_ns": 1794650747527352568,
++      "sha256": "911951b5cbcbc667a68506bc0bc1bdd4929e3edcafff136af3d42cccd3b721a6"
++    },
++    {
++      "name": "t736-armbian-source-v4.raw.img",
++      "size": 8589934592,
++      "allocated": 705196032,
++      "mtime_ns": 1794652807002352572,
++      "sha256": "5a12219a0dc8f39b3d06d5eaa19b2324da33e308f23fe9f028e64a1a33ce69dc"
++    },
++    {
++      "name": "t736-armbian-source-v5.raw.img",
++      "size": 8589934592,
++      "allocated": 782004224,
++      "mtime_ns": 1794653843265188902,
++      "sha256": "9170068457e68fbeb58e6243735799cd4887e2e3baa4eea3ada43671c782c561"
++    },
++    {
++      "name": "t736-armbian-source-v6.raw.img",
++      "size": 8589934592,
++      "allocated": 798781440,
++      "mtime_ns": 1794655314649203025,
++      "sha256": "5e36cd917e6c49c51e5946faecd838394dce0161dd0926c095b848236729d377"
++    },
++    {
++      "name": "t736-armbian-source-v7.raw.img",
++      "size": 8589934592,
++      "allocated": 3491524608,
++      "mtime_ns": 1794801440751905389,
++      "sha256": "3fae1e69f666cb84b1559f2639a123c941d1bcaf981c292c6c6899a117598eb7"
++    },
++    {
++      "name": "t736-armbian-source-v8.raw.img",
++      "size": 8589934592,
++      "allocated": 3575410688,
++      "mtime_ns": 1794811900201402141,
++      "sha256": "6c32027b4137783316467824d371e8a88fca1f55661170b64d70f35018921bb9"
++    },
++    {
++      "name": "t736-armbian-source-v9.raw.img",
++      "size": 8589934592,
++      "allocated": 3575410688,
++      "mtime_ns": 1794819165129370663,
++      "sha256": "831e8ea5679d3adb6f3616027114ddaa4cfb83c0032c24fb847ad81a94b73f0e"
++    },
++    {
++      "name": "t736-armbian-v10.raw.img",
++      "size": 8589934592,
++      "allocated": 733839360,
++      "mtime_ns": 1794568436145715009,
++      "sha256": "0f0b617c47e7280857260ae94dbf69cec725b7faebdf9251e86133658c17f354"
++    },
++    {
++      "name": "t736-armbian-v11.raw.img",
++      "size": 8589934592,
++      "allocated": 733839360,
++      "mtime_ns": 1794569557236557574,
++      "sha256": "341685b90e944cc82861f4f89693110ee491a34992e4808c74b6ae1a22d80b6e"
++    },
++    {
++      "name": "t736-armbian-v6.raw.img",
++      "size": 8589934592,
++      "allocated": 708673536,
++      "mtime_ns": 1794562347270071495,
++      "sha256": "d0d099b5dbeb57f455e1934828fafd623fcbd32e310f60394940ca57db483756"
++    },
++    {
++      "name": "t736-armbian-v7.raw.img",
++      "size": 8589934592,
++      "allocated": 733839360,
++      "mtime_ns": 1794564972332517184,
++      "sha256": "8c1f0990b3c2ecdb54d044dc38d86376b1ab48a7462c13ec1d061f835d696e33"
++    },
++    {
++      "name": "t736-armbian-v8.raw.img",
++      "size": 8589934592,
++      "allocated": 733839360,
++      "mtime_ns": 1794566171733969240,
++      "sha256": "f021201beb4818eaf401327fa7fb757740376d612c048bef830a0a5334660202"
++    },
++    {
++      "name": "t736-armbian-v9.raw.img",
++      "size": 8589934592,
++      "allocated": 733839360,
++      "mtime_ns": 1794566767290851333,
++      "sha256": "12c8b6e8c01828bf4a0bd73abd629401adbfc0f712eb3f431b9d9f1cff7dc998"
++    }
++  ],
++  "archive": "local-offline-backup/t736-early-images-v1-v11.tar.gz",
++  "archive_sha256": "9b324fa5a5c3e210d245e526bf93c8e77a585459ac74a738f8432b9ac2e2ea42",
++  "archive_size": 18798649505,
++  "all_file_contents_verified": true,
++  "remote_files_deleted": true,
++  "recovery": "Extract the verified sparse tar archive with GNU tar --sparse into the original output directory if needed."
++}
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-kernel-selected.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-kernel-selected.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf29631838d4b0803a17d1d00651845d7db3d1b8
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-kernel-selected.txt
+@@ -0,0 +1,8 @@
++[    7.032285] t736-smhc3-pio 4023000.mmc: HS400 tuned card=200000000 cmd_pass=fffffff9ffffffff cmd_window=0+33 cmd=16 ds_pass=0000000003fffff0 ds_window=4+22 ds=14 abort_err=fffffffffc00000f verified=16xCMD13+16x512 EXT_CSD=03/06 R1=00000900 THLD=02000001 SFC=00000006
++[    7.072082] mmcblk0: mmc0:0001 A31Y5C 58.2 GiB
++[    7.077221]  mmcblk0: p1 p2 p3 p4 p5 p6
++[    7.427730] EXT4-fs (mmcblk0p4): mounted filesystem 4d8c73ce-75f9-4794-bef2-664d7cecbbbb r/w with ordered data mode. Quota mode: disabled.
++[   10.362983] PVR_K:  301: Read BVNC 36.56.104.183 from HW device registers
++[   10.370889] PVR_K:  301: RGX Device registered BVNC 36.56.104.183 with 1 core in the system
++[   10.378531] [drm] Initialized pvr 24.2.6603887 for 1800000.gpu on minor 1
++[   10.505820] EXT4-fs (mmcblk0p4): re-mounted 4d8c73ce-75f9-4794-bef2-664d7cecbbbb.
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-plymouth.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-plymouth.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..614af3c412c01a992ffde5d3fe94e16c45481be6
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-plymouth.txt
+@@ -0,0 +1,5 @@
++2.89 helper-enter
++2.90 daemon-ready
++4.41 splash-ready
++10.94 helper-enter
++10.94 already-running
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-time.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..95bbefd1797cbfa3116ecb4a6574f99520d94fb5
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/final-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 7.631s (kernel) + 16.404s (userspace) = 24.036s 
++graphical.target reached after 16.404s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-plymouth.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-plymouth.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..1a73f59024a44e3100700f4bc728f8118bde3c0c
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-plymouth.txt
+@@ -0,0 +1,6 @@
++2.89 helper-enter
++2.90 daemon-ready
++4.38 splash-ready
++4.39 local-premount
++11.10 helper-enter
++11.10 already-running
+diff --git a/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-time.txt b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-time.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..527fe313ed645740ee8abe0a8ac9bfef9d852d02
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/boot-and-cleanup-20261120/fixed-time.txt
+@@ -0,0 +1,2 @@
++Startup finished in 7.671s (kernel) + 16.525s (userspace) = 24.196s 
++graphical.target reached after 16.524s in userspace.
 diff --git a/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json b/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..0798778236467351f7e2695a83f505ab8b83d8ff
@@ -153877,6 +154639,459 @@ index 0000000000000000000000000000000000000000..dfa12dbaa861d35888716274a252880f
 +# Vendor parser uses this spelling. Scope this file to the broker mount namespace.
 +[paramter]
 +cdc_log_level = 6
+diff --git a/userpatches/atlasa1-release/tools/browser/chromium156/apply_candidate.py b/userpatches/atlasa1-release/tools/browser/chromium156/apply_candidate.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..28d918213c2ebbdb6dccb0b00d6c0cb521eb5878
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/chromium156/apply_candidate.py
+@@ -0,0 +1,75 @@
++#!/usr/bin/env python3
++"""Apply the opt-in Cedar candidate to a Chromium 156.0.8078.73 source tree.
++
++This is a development adapter, not an accepted browser release. Run on an
++isolated source tree; preserve the source archive and distribution patch list.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import shutil
++
++p = argparse.ArgumentParser(description=__doc__)
++p.add_argument('source', type=Path)
++args = p.parse_args()
++root = args.source.resolve(strict=True)
++here = Path(__file__).resolve().parent
++assert (root / 'chrome/VERSION').read_text().splitlines() == [
++    'MAJOR=156', 'MINOR=0', 'BUILD=8078', 'PATCH=73']
++marker = root / 'atlasa1-cedar-candidate.json'
++assert not marker.exists(), 'candidate is already staged'
++records = {}
++changes = {}
++
++def replace(name, old, new):
++    path = root / name
++    text = changes.get(name, path.read_text())
++    assert text.count(old) == 1, (name, 'source context changed')
++    changes[name] = text.replace(old, new)
++
++replace('media/base/decoder.h',
++        '  kMaxValue = kVideoToolbox',
++        '  kCedar = 20,  // AtlasA1 Cedar broker (downstream)\n  kMaxValue = kCedar')
++replace('media/base/decoder.cc',
++        '    case VideoDecoderType::kVideoToolbox:\n      return "VideoToolboxVideoDecoder";',
++        '    case VideoDecoderType::kVideoToolbox:\n      return "VideoToolboxVideoDecoder";\n'
++        '    case VideoDecoderType::kCedar:\n      return "CedarVideoDecoder";')
++replace('tools/metrics/histograms/enums.xml',
++        '  <int value="19" label="VideoToolbox Video Decoder"/>',
++        '  <int value="19" label="VideoToolbox Video Decoder"/>\n'
++        '  <int value="20" label="AtlasA1 Cedar Video Decoder"/>')
++name = 'media/mojo/services/gpu_mojo_media_client_linux.cc'
++replace(name, '#include <algorithm>',
++        '#include <algorithm>\n#include "media/mojo/services/cedar_video_decoder.h"')
++replace(name, '      VideoDecoderTraits& traits) final {',
++        '      VideoDecoderTraits& traits) final {\n'
++        '    if (CedarVideoDecoder::Available() && !traits.oop_video_decoder)\n'
++        '      return std::make_unique<CedarVideoDecoder>();')
++replace(name, '  GetPlatformSupportedVideoDecoderConfigs() final {',
++        '  GetPlatformSupportedVideoDecoderConfigs() final {\n'
++        '    if (CedarVideoDecoder::Available())\n'
++        '      return CedarVideoDecoder::SupportedConfigs();')
++replace(name, '  VideoDecoderType GetPlatformDecoderImplementationType() final {',
++        '  VideoDecoderType GetPlatformDecoderImplementationType() final {\n'
++        '    if (CedarVideoDecoder::Available()) return VideoDecoderType::kCedar;')
++replace('media/mojo/services/BUILD.gn',
++        '      sources += [ "gpu_mojo_media_client_linux.cc" ]',
++        '      sources += [ "gpu_mojo_media_client_linux.cc",\n'
++        '                   "cedar_video_decoder.cc", "cedar_video_decoder.h",\n'
++        '                   "cedar_client.h" ]\n      libs = [ "dl" ]')
++# Validate every context before mutating any file.
++for name, text in changes.items():
++    path = root / name
++    records[name] = {'before': hashlib.sha256(path.read_bytes()).hexdigest()}
++    path.write_text(text, newline='\n')
++    records[name]['after'] = hashlib.sha256(path.read_bytes()).hexdigest()
++for source in [here / 'cedar_video_decoder.cc', here / 'cedar_video_decoder.h',
++               here.parent / 'shm_v2/cedar_client.h']:
++    target = root / 'media/mojo/services' / source.name
++    assert not target.exists()
++    shutil.copyfile(source, target)
++    records[target.relative_to(root).as_posix()] = {
++        'added': hashlib.sha256(target.read_bytes()).hexdigest()}
++marker.write_text(json.dumps({'status': 'UNVALIDATED_CANDIDATE', 'files': records}, indent=2) + '\n')
++print(marker)
+diff --git a/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.cc b/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.cc
+new file mode 100644
+index 0000000000000000000000000000000000000000..4209d3932da0e271f4cfb9e3dc601f094650d755
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.cc
+@@ -0,0 +1,237 @@
++// SPDX-License-Identifier: MIT
++#include "media/mojo/services/cedar_video_decoder.h"
++
++#include <dlfcn.h>
++#include <errno.h>
++#include <atomic>
++#include <memory>
++#include <vector>
++
++#include "base/functional/bind.h"
++#include "base/task/thread_pool.h"
++#include "base/threading/platform_thread.h"
++#include "base/time/time.h"
++#include "media/base/decoder_buffer.h"
++#include "media/base/video_frame.h"
++
++extern "C" {
++#include "media/mojo/services/cedar_client.h"
++}
++
++namespace media {
++namespace {
++struct Api {
++  decltype(&t736_client_available) available = nullptr;
++  decltype(&t736_client_open) open = nullptr;
++  decltype(&t736_client_push) push = nullptr;
++  decltype(&t736_client_pull) pull = nullptr;
++  decltype(&t736_client_drain) drain = nullptr;
++  decltype(&t736_client_flush) flush = nullptr;
++  decltype(&t736_client_close) close = nullptr;
++  Api() {
++#define LOAD(n) n = reinterpret_cast<decltype(n)>(dlsym(RTLD_DEFAULT, "t736_client_" #n))
++    LOAD(available); LOAD(open); LOAD(push); LOAD(pull);
++    LOAD(drain); LOAD(flush); LOAD(close);
++#undef LOAD
++  }
++  bool Ready() const {
++    return available && open && push && pull && drain && flush && close &&
++           available() == 1;
++  }
++};
++const Api& Client() { static const Api api; return api; }
++// The v2 client connection carries one hardware context. A second player must
++// fall back rather than flush or close the first player's context.
++std::atomic<bool> leased{false};
++using Code = DecoderStatus::Codes;
++}  // namespace
++
++struct CedarVideoDecoder::Result {
++  DecoderStatus status = Code::kOk;
++  std::vector<scoped_refptr<VideoFrame>> frames;
++  bool eos = false;
++};
++
++class CedarVideoDecoder::Worker {
++ public:
++  ~Worker() { Close(); }
++  DecoderStatus Initialize(VideoDecoderConfig config, bool low_delay) {
++    Close();
++    if (low_delay || config.is_encrypted() || !config.IsValidConfig() ||
++        config.alpha_mode() != VideoDecoderConfig::AlphaMode::kIsOpaque ||
++        (config.coded_size().width() & 1) ||
++        (config.coded_size().height() & 1) ||
++        !IsVideoDecoderConfigSupported(SupportedConfigs(), config))
++      return Code::kUnsupportedConfig;
++    if (!Available()) return Code::kFailedToCreateDecoder;
++    bool expected = false;
++    if (!leased.compare_exchange_strong(expected, true))
++      return Code::kTooManyDecoders;
++    owns_lease_ = true;
++    config_ = config;
++    session_ = Client().open(config.codec() == VideoCodec::kH264
++                                ? T736_CODEC_H264 : T736_CODEC_HEVC,
++                            config.coded_size().width(),
++                            config.coded_size().height());
++    if (session_ <= 0) { Close(); return Code::kFailedToCreateDecoder; }
++    return Code::kOk;
++  }
++
++  Result Decode(scoped_refptr<DecoderBuffer> buffer) {
++    Result result;
++    if (session_ <= 0) { result.status = Code::kNotInitialized; return result; }
++    const auto deadline = base::TimeTicks::Now() + base::Seconds(5);
++    if (buffer->end_of_stream()) {
++      if (Client().drain(session_) < 0) {
++        result.status = Code::kPlatformDecodeFailure;
++        return result;
++      }
++      while (!result.eos && result.status.is_ok()) {
++        Receive(result, 10);
++        if (base::TimeTicks::Now() >= deadline) {
++          result.status = Code::kPlatformDecodeFailure;
++          break;
++        }
++      }
++      return result;
++    }
++    if (!buffer->size() || buffer->size() > T736_MAX_PACKET ||
++        buffer->decrypt_config()) {
++      result.status = Code::kMalformedBitstream;
++      return result;
++    }
++    int status;
++    do {
++      status = Client().push(session_, buffer->data(), buffer->size(),
++                             buffer->timestamp().InMicroseconds(),
++                             buffer->timestamp().InMicroseconds());
++      if (status != -EAGAIN) break;
++      Receive(result, 5);
++      if (!result.status.is_ok()) return result;
++    } while (base::TimeTicks::Now() < deadline);
++    if (status < 0) result.status = Code::kPlatformDecodeFailure;
++    if (result.status.is_ok()) Receive(result, 0);
++    return result;
++  }
++
++  Result Poll() { Result result; if (session_ > 0) Receive(result, 0); return result; }
++  void Reset() { if (session_ > 0 && Client().flush(session_) < 0) Close(); }
++
++ private:
++  void Close() {
++    if (session_ > 0) Client().close(session_);
++    session_ = 0;
++    pixels_.reset();
++    if (owns_lease_) leased.store(false);
++    owns_lease_ = false;
++  }
++  void Receive(Result& result, unsigned wait_ms) {
++    // Bound output buffering even if the peer behaves incorrectly. The broker
++    // validates dimensions and lengths before copying into this allocation.
++    for (int count = 0; count < 8; ++count) {
++      if (result.frames.size() >= 64) {
++        result.status = Code::kPlatformDecodeFailure; return;
++      }
++      if (!pixels_)
++        pixels_ = std::make_unique<std::vector<uint8_t>>(
++            config_.coded_size().GetArea() * 3 / 2);
++      t736_frame picture{};
++      int status = Client().pull(session_, pixels_->data(), pixels_->size(),
++                                 &picture, count == 0 ? wait_ms : 0);
++      if (status == 0) return;
++      if (status == 2) { result.eos = true; return; }
++      if (status != 1) { result.status = Code::kPlatformDecodeFailure; return; }
++      gfx::Size size(picture.width, picture.height);
++      if (size != config_.coded_size() ||
++          picture.bytes_written != pixels_->size()) {
++        result.status = Code::kPlatformDecodeFailure; return;
++      }
++      auto frame = VideoFrame::WrapExternalData(
++          PIXEL_FORMAT_I420, size, config_.visible_rect(), config_.natural_size(),
++          base::span<const uint8_t>(*pixels_), base::Microseconds(picture.pts_us));
++      if (!frame) { result.status = Code::kFailedToGetVideoFrame; return; }
++      frame->AddDestructionObserver(base::BindOnce(
++          [](std::unique_ptr<std::vector<uint8_t>>) {}, std::move(pixels_)));
++      frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
++      frame->metadata().power_efficient = true;
++      result.frames.push_back(std::move(frame));
++    }
++  }
++  int session_ = 0;
++  bool owns_lease_ = false;
++  VideoDecoderConfig config_;
++  std::unique_ptr<std::vector<uint8_t>> pixels_;
++};
++
++bool CedarVideoDecoder::Available() {
++  return Client().Ready();
++}
++SupportedVideoDecoderConfigs CedarVideoDecoder::SupportedConfigs() {
++  SupportedVideoDecoderConfigs configs;
++  for (auto profile : {H264PROFILE_BASELINE, H264PROFILE_MAIN,
++                       H264PROFILE_HIGH, HEVCPROFILE_MAIN})
++    configs.emplace_back(profile, profile, gfx::Size(16,16),
++                         gfx::Size(3840,2160), false, false);
++  return configs;
++}
++CedarVideoDecoder::CedarVideoDecoder()
++    : worker_(base::ThreadPool::CreateSequencedTaskRunner(
++          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
++CedarVideoDecoder::~CedarVideoDecoder() {
++  if (decode_cb_) std::move(decode_cb_).Run(Code::kAborted);
++}
++void CedarVideoDecoder::Initialize(const VideoDecoderConfig& config, bool low_delay,
++    CdmContext*, InitCB callback, const OutputCB& output, const WaitingCB&) {
++  poll_timer_.Stop();
++  weak_factory_.InvalidateWeakPtrs();
++  initialized_ = failed_ = false;
++  output_cb_ = output;
++  worker_.AsyncCall(&Worker::Initialize).WithArgs(config, low_delay).Then(
++      base::BindOnce(&CedarVideoDecoder::OnInitialized,
++                     weak_factory_.GetWeakPtr(), std::move(callback)));
++}
++void CedarVideoDecoder::OnInitialized(InitCB callback, DecoderStatus status) {
++  initialized_ = status.is_ok();
++  std::move(callback).Run(std::move(status));
++}
++void CedarVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB cb) {
++  CHECK(!decode_cb_);
++  poll_timer_.Stop();
++  decode_cb_ = std::move(cb);
++  worker_.AsyncCall(&Worker::Decode).WithArgs(std::move(buffer)).Then(
++      base::BindOnce(&CedarVideoDecoder::OnDecoded, weak_factory_.GetWeakPtr()));
++}
++void CedarVideoDecoder::Deliver(Result& result) {
++  if (!result.status.is_ok()) failed_ = true;
++  for (auto& frame : result.frames) output_cb_.Run(std::move(frame));
++}
++void CedarVideoDecoder::OnDecoded(Result result) {
++  Deliver(result);
++  if (failed_ && result.status.is_ok()) result.status = Code::kPlatformDecodeFailure;
++  if (!result.eos) SchedulePoll();
++  std::move(decode_cb_).Run(std::move(result.status));
++}
++void CedarVideoDecoder::SchedulePoll() {
++  if (!initialized_ || failed_ || poll_timer_.IsRunning()) return;
++  poll_timer_.Start(FROM_HERE, base::Milliseconds(5), this, &CedarVideoDecoder::Poll);
++}
++void CedarVideoDecoder::Poll() {
++  if (decode_cb_) return;
++  worker_.AsyncCall(&Worker::Poll).Then(
++      base::BindOnce(&CedarVideoDecoder::OnPolled, weak_factory_.GetWeakPtr()));
++}
++void CedarVideoDecoder::OnPolled(Result result) {
++  Deliver(result);
++  if (!result.eos && !decode_cb_) SchedulePoll();
++}
++void CedarVideoDecoder::Reset(base::OnceClosure done) {
++  poll_timer_.Stop();
++  weak_factory_.InvalidateWeakPtrs();
++  if (decode_cb_) std::move(decode_cb_).Run(Code::kAborted);
++  failed_ = false;
++  worker_.AsyncCall(&Worker::Reset).Then(std::move(done));
++}
++bool CedarVideoDecoder::NeedsBitstreamConversion() const { return true; }
++bool CedarVideoDecoder::IsPlatformDecoder() const { return true; }
++VideoDecoderType CedarVideoDecoder::GetDecoderType() const { return VideoDecoderType::kCedar; }
++}  // namespace media
+diff --git a/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.h b/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..0270ea475b271ce04b1356d2f2059d2d1b16527a
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/chromium156/cedar_video_decoder.h
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: MIT
++#ifndef MEDIA_MOJO_SERVICES_CEDAR_VIDEO_DECODER_H_
++#define MEDIA_MOJO_SERVICES_CEDAR_VIDEO_DECODER_H_
++
++#include "base/memory/weak_ptr.h"
++#include "base/threading/sequence_bound.h"
++#include "base/timer/timer.h"
++#include "media/base/supported_video_decoder_config.h"
++#include "media/base/video_decoder.h"
++
++namespace media {
++// Candidate broker adapter. No device opens, socket connects or dma-buf imports
++// occur here: the opt-in preload establishes the ordinary-memory channel before
++// the GPU sandbox starts. Broker failure leaves the software decoder available.
++class CedarVideoDecoder final : public VideoDecoder {
++ public:
++  static bool Available();
++  static SupportedVideoDecoderConfigs SupportedConfigs();
++  CedarVideoDecoder();
++  ~CedarVideoDecoder() override;
++  void Initialize(const VideoDecoderConfig&, bool, CdmContext*, InitCB,
++                  const OutputCB&, const WaitingCB&) override;
++  void Decode(scoped_refptr<DecoderBuffer>, DecodeCB) override;
++  void Reset(base::OnceClosure) override;
++  bool NeedsBitstreamConversion() const override;
++  bool IsPlatformDecoder() const override;
++  VideoDecoderType GetDecoderType() const override;
++
++ private:
++  struct Result;
++  class Worker;
++  void OnInitialized(InitCB, DecoderStatus);
++  void OnDecoded(Result);
++  void Poll();
++  void OnPolled(Result);
++  void Deliver(Result&);
++  void SchedulePoll();
++  base::SequenceBound<Worker> worker_;
++  OutputCB output_cb_;
++  DecodeCB decode_cb_;
++  base::OneShotTimer poll_timer_;
++  bool initialized_ = false;
++  bool failed_ = false;
++  base::WeakPtrFactory<CedarVideoDecoder> weak_factory_{this};
++};
++}  // namespace media
++#endif
+diff --git a/userpatches/atlasa1-release/tools/browser/chromium156/client-preconnect.patch b/userpatches/atlasa1-release/tools/browser/chromium156/client-preconnect.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..76589c22fd3a0b6f67c0625e5c94c3c8ae7eb45d
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/chromium156/client-preconnect.patch
+@@ -0,0 +1,46 @@
++--- a/cedar_client.c
+++++ b/cedar_client.c
++@@ -101,6 +101,27 @@
++            executable.st_uid == 0 && !(executable.st_mode & (S_IWGRP | S_IWOTH));
++ }
++ 
+++static int is_chromium_gpu(int argc, char **argv)
+++{
+++    char path[PATH_MAX];
+++    struct stat executable;
+++    int gpu = 0;
+++    if (!getuid() || getuid() != geteuid()) return 0;
+++    for (int i = 1; i < argc; ++i)
+++        if (!strncmp(argv[i], "--type=", 7)) {
+++            if (strcmp(argv[i], "--type=gpu-process") || gpu) return 0;
+++            gpu = 1;
+++        }
+++    if (!gpu) return 0;
+++    ssize_t length = readlink("/proc/self/exe", path, sizeof(path) - 1);
+++    if (length <= 0 || length >= (ssize_t)sizeof(path) - 1) return 0;
+++    path[length] = '\0';
+++    if (strcmp(path, "/usr/lib/chromium/chromium") &&
+++        strcmp(path, "/opt/atlasa1-chromium/chrome")) return 0;
+++    return !stat("/proc/self/exe", &executable) && S_ISREG(executable.st_mode) &&
+++           executable.st_uid == 0 && !(executable.st_mode & (S_IWGRP | S_IWOTH));
+++}
+++
++ /* glibc invokes init-array functions with the original process arguments.
++  * Firefox's forkserver must be disabled by the isolated launcher, so RDD has
++  * its own exec and constructor. Browser/content/utility processes never connect.
++@@ -112,11 +133,14 @@
++     const char *enabled = getenv("T736_CEDAR_ENABLE");
++     const char *test = getenv("T736_CEDAR_TEST_CLIENT");
++     const char *native = getenv("T736_CEDAR_NATIVE_PLAYER");
+++    const char *chromium = getenv("T736_CEDAR_CHROMIUM");
++     const char *trace_env = getenv("T736_CEDAR_TRACE");
++     trace = trace_env && !strcmp(trace_env, "1");
++     int rdd = argc > 1 && !strcmp(argv[argc - 1], "rdd");
++     if (!enabled || strcmp(enabled, "1")) return;
++-    if (native && !strcmp(native, "1")) {
+++    if (chromium && !strcmp(chromium, "1")) {
+++        if (!is_chromium_gpu(argc, argv)) return;
+++    } else if (native && !strcmp(native, "1")) {
++         if (!is_native_player()) return;
++     } else if (!rdd && (!test || strcmp(test, "1"))) {
++         return;
+diff --git a/userpatches/atlasa1-release/tools/browser/chromium156/README.md b/userpatches/atlasa1-release/tools/browser/chromium156/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..1601161ec76e7aafcb9409731b8c0afe44e9e94b
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/chromium156/README.md
+@@ -0,0 +1,18 @@
++# Chromium 156 Cedar development candidate
++
++Status: not built or hardware validated as a complete browser. Do not install
++this as the production Chromium package or claim hardware decode acceptance.
++The existing installed browser still uses FFmpeg software decoding.
++
++`apply_candidate.py` targets exactly Chromium 156.0.8078.73. It adds a separate
++`CedarVideoDecoder` identity and the Linux GPU media factory integration.
++`client-preconnect.patch` is applied to a separate copy of `shm_v2/cedar_client.c`;
++the shared production client is unchanged. The client alone cross-compiles with
++`-Wall -Wextra -Werror`. Its constructor opt-in requires both
++`T736_CEDAR_ENABLE=1` and `T736_CEDAR_CHROMIUM=1` and checks the executable and UID.
++It is intended to connect before the GPU process sandbox, without disabling it.
++
++Remaining acceptance includes building the full browser, sandboxed broker IPC,
++Annex-B parameter sets, actual Cedar output, PTS, EOS, seek/reset and error
++fallback, concurrent players, colours, A/V sync, 1080p60 and 4K performance.
++The current candidate copies frames into owned I420 memory; it is not zero-copy.
 diff --git a/userpatches/atlasa1-release/tools/browser/copy_candidate/cedar_parallel_copy.h b/userpatches/atlasa1-release/tools/browser/copy_candidate/cedar_parallel_copy.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..9acdb8d1d47f19812d2170741508d530691963b1
@@ -159738,10 +160953,10 @@ index 0000000000000000000000000000000000000000..39018cc4d307af3baca9bf84125b4d5e
 +if __name__=='__main__':main()
 diff --git a/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..11a1a28c8d2886ff06831b28dd438034f5974052
+index 0000000000000000000000000000000000000000..230e49d300ecf1d041875fce98bbc543e145c304
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/configure_atlasa1_resolute.sh
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,142 @@
 +#!/bin/bash
 +# Install the AtlasA1 board support into a fresh official Armbian Resolute desktop rootfs.
 +set -euo pipefail
@@ -159827,7 +161042,7 @@ index 0000000000000000000000000000000000000000..11a1a28c8d2886ff06831b28dd438034
 +printf 'root:1234\nt736:1234\n' | target chpasswd
 +# Preserve Armbian's first-login password change for the public root account.
 +target chage -d 0 root
-+packages=(initramfs-tools ffmpeg gstreamer1.0-tools
++packages=(initramfs-tools plymouth plymouth-themes fonts-ubuntu ffmpeg gstreamer1.0-tools
 +    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad)
 +for deb in "${board_debs[@]}"; do
 +    [[ $(dpkg-deb -f "$deb" Architecture) == arm64 ]]
@@ -159846,6 +161061,9 @@ index 0000000000000000000000000000000000000000..11a1a28c8d2886ff06831b28dd438034
 +install -D -m 0644 "$pvr" "$root/lib/modules/$release/extra/pvrsrvkm.ko"
 +target depmod -a "$release"
 +target modinfo -k "$release" -F vermagic pvrsrvkm | grep -F "$release "
++install -Dm755 "$(dirname "$0")/../config/initramfs/wait-for-root" "$root/usr/lib/atlasa1/wait-for-root"
++install -Dm755 "$(dirname "$0")/../config/initramfs/atlasa1-root-wait" "$root/etc/initramfs-tools/hooks/atlasa1-root-wait"
++bash "$(dirname "$0")/stage_atlasa1_plymouth.sh" "$root"
 +install -D -m 0644 "$root/usr/lib/linux-image-$release/allwinner/$board_dtb" \
 +    "$root/boot/dtb/allwinner/t736-mainline-bringup.dtb"
 +if [[ -s "$root/boot/initrd.img-$release" ]]; then
@@ -161269,6 +162487,35 @@ index 0000000000000000000000000000000000000000..e7898a90cad2a4fcbfcdd1cfe5cfe029
 +fi
 +test -x "$root$real"
 +install -Dm755 "$profile/atlasa1-mutter-x11-frames" "$root$helper"
+diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_plymouth.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_plymouth.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..e9575071ba24c90ec9a3d35e3dc371b8df649748
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/stage_atlasa1_plymouth.sh
+@@ -0,0 +1,23 @@
++#!/usr/bin/env bash
++# Stage branding into a rootfs. The caller rebuilds the selected kernel initrd.
++set -euo pipefail
++[[ $# == 1 ]] || { echo "Usage: $0 ROOTFS" >&2; exit 2; }
++root=$(realpath -e "$1")
++project=$(cd "$(dirname "$0")/.." && pwd)
++src="$project/config/plymouth"
++test -x "$root/usr/sbin/plymouthd"
++test -r "$root/usr/lib/aarch64-linux-gnu/plymouth/script.so"
++test -r "$root/usr/lib/aarch64-linux-gnu/plymouth/label-pango.so"
++install -Dm644 "$src/atlasa1.plymouth" "$root/usr/share/plymouth/themes/atlasa1/atlasa1.plymouth"
++install -Dm644 "$src/atlasa1.script" "$root/usr/share/plymouth/themes/atlasa1/atlasa1.script"
++install -Dm755 "$src/start-atlasa1-plymouth" "$root/usr/lib/atlasa1/start-plymouth"
++install -Dm755 "$src/init-premount" "$root/etc/initramfs-tools/scripts/init-premount/atlasa1-plymouth"
++install -Dm755 "$src/initramfs-hook" "$root/etc/initramfs-tools/hooks/atlasa1-plymouth"
++install -Dm644 "$src/50-atlasa1.conf" "$root/etc/systemd/system/plymouth-start.service.d/50-atlasa1.conf"
++install -d "$root/etc/plymouth"
++printf '%s\n' '[Daemon]' 'Theme=atlasa1' 'ShowDelay=0' 'DeviceTimeout=5' > "$root/etc/plymouth/plymouthd.conf"
++printf 'AtlasA1 boot branding enabled\n' > "$root/etc/plymouth/atlasa1-enabled"
++update-alternatives --root "$root" --install /usr/share/plymouth/themes/default.plymouth \
++    default.plymouth /usr/share/plymouth/themes/atlasa1/atlasa1.plymouth 200
++update-alternatives --root "$root" --set default.plymouth \
++    /usr/share/plymouth/themes/atlasa1/atlasa1.plymouth
 diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_resolute_x11.sh
 new file mode 100755
 index 0000000000000000000000000000000000000000..e3991efc25fa2d10d0f6e1bfd3a373ce3ebdf68a
