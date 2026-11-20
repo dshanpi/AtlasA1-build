@@ -76,6 +76,8 @@ INPUTS = (
     'tools/browser/firefox-resolute-copyright', 'tools/browser/firefox-resolute-source.sha256',
     'tools/browser/copy_candidate/firefox-dr1-output.patch', 'tools/browser/verify_firefox_resolute.py',
     'tools/browser/copy_candidate/firefox-stage-timing.patch',
+    'tools/browser/copy_candidate/firefox-panel-output.patch',
+    'tools/browser/copy_candidate/firefox-panel-client.patch',
     'tools/browser/panel_candidate/private-1080p-panel.patch', 'tools/browser/panel_candidate/prefer-omx-panel.patch',
     'tools/browser/panel_candidate/cedar_panel.h', 'tools/browser/build_browser_ffmpeg.py',
     'tools/build_cedar_4k_omx.py', 'tools/prepare_atlasa1_resolute_media.py', 'tests/test_cedar_shm_transport.c',

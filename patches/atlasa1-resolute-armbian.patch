@@ -7583,10 +7583,10 @@ index 0000000000000000000000000000000000000000..80eaaf857656d433156953b393f264c9
 +# CONFIG_TOOLS_FWUMDATA is not set
 diff --git a/userpatches/atlasa1-release/docs/GNOME_MEDIA.md b/userpatches/atlasa1-release/docs/GNOME_MEDIA.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..cbe2a9488593e8a268fde14a57f92d322e4cecd9
+index 0000000000000000000000000000000000000000..1a072782ccecab9ea0651ec97094622845db1873
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/GNOME_MEDIA.md
-@@ -0,0 +1,170 @@
+@@ -0,0 +1,172 @@
 +# GNOME / Wayland 多媒体验收（2026-11-19）
 +
 +当前 Cedar 硬解、PowerVR 和 GNOME 50.1 已连通，但 **GNOME 下的 1080p60、浏览器高帧率、真实音频和硬件编码尚未通过完整验收**。不能把旧的 SDL 提交帧数当作 HDMI 实际显示帧数。
@@ -7743,6 +7743,8 @@ index 0000000000000000000000000000000000000000..cbe2a9488593e8a268fde14a57f92d32
 +未扩大保留槽或绕过 DMA 缓冲隔离。该轮后再次清理启动，避免原尺寸 4K 实验占用缩放播放器需要的上下文。下一步须解决解码缓冲生命周期与浏览器的图像传递，或者以明确标注的硬件缩放路径面向 1080p 显示；不能只靠关闭丢帧统计或修改播放速度。
 +
 +最后一次冷启动后，正式入口的 H.264 1080p60 复测为 59.83 fps、1193 帧丢 3 帧；记录的 `waylandVsync=false`，PowerVR / Cedar / RDD 沙箱均确认。GDM 与解码 service/socket 正常，辅助进程持续存活，Shell 使用全部八核，GPU 错误计数全部为 0，生产 FFmpeg 的 SHA-256 未改变。当前桌面为临时 v42/GNOME，默认启动别名和 `uInitrd` 仍为 v30，没有发布新镜像。
++
++2026-11-20 的后续工作仍以 GNOME 为目标。板卡最初已回到默认 v30/Xfce，经串口完成临时 v42 启动并观察到 GNOME 就绪。随后 SSH 上传中断、本机 8771 MCP 服务关闭，当前板卡状态无法继续核实；没有更改默认启动项。已完成一个默认关闭的 Firefox HEVC 4K→1080p 硬件缩放候选编译及公开补丁重放，候选尚未安装、尚无实板播放成绩。详见 [候选构建与启用边界](../tools/browser/FIREFOX_RESOLUTE.md) 和 [2026-11-20 构建记录](../evidence/gnome-media-20261119/firefox-panel-candidate-20261120.json)。
 +
 +## 音频与编码
 +
@@ -15251,6 +15253,52 @@ index 0000000000000000000000000000000000000000..1173f29d54216ffb0cc808c4a80c28c7
 +        "1080"
 +      ]
 +    ]
++  }
++}
+diff --git a/userpatches/atlasa1-release/evidence/gnome-media-20261119/firefox-panel-candidate-20261120.json b/userpatches/atlasa1-release/evidence/gnome-media-20261119/firefox-panel-candidate-20261120.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e7f5b40189003a37ad0db216b0fc06e19ed3bfa
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/gnome-media-20261119/firefox-panel-candidate-20261120.json
+@@ -0,0 +1,40 @@
++{
++  "schema": 1,
++  "date": "2026-11-20",
++  "target": "GNOME Wayland on AtlasA1",
++  "status": "candidate_built_board_test_blocked",
++  "candidate": "Explicit HEVC 3840x2160 to 1920x1080 OMX output in Firefox DR1 allocator",
++  "default_enabled": false,
++  "runtime_opt_in": "T736_CEDAR_BROWSER_PANEL=1920x1080",
++  "build_opt_in": "ATLAS_FIREFOX_PANEL_CANDIDATE=1",
++  "build_type": "Incremental ARM64 FFmpeg8 replay2, production source/build restored afterward",
++  "public_patch_replay": "After normalizing the Windows input bundle to Git LF, DR1 plus candidate patches apply with zero fuzz and reproduce compiled source bytes",
++  "package_builder": "Shell syntax checked; full clean package build not executed for this candidate",
++  "board_test": {
++    "initial_kernel": "6.18.63-t736-media-v30",
++    "trial_kernel": "6.18.63-t736-gnome-v42",
++    "gnome_ready_observed": true,
++    "gnome_shell_pid": 4163,
++    "candidate_installed": false,
++    "playback_started": false,
++    "reason": "SFTP dropped during codec upload; SSH reverse tunnel then disappeared and local MCP 127.0.0.1:8771 stopped responding. Do not use partially uploaded codec.",
++    "current_board_state": "Unknown after connection loss",
++    "default_boot_changed": false
++  },
++  "validation_boundaries": [
++    "not original-size 4K",
++    "no measured panel-candidate fps",
++    "no pixel comparison",
++    "no seeking/format-switch/fallback acceptance"
++  ],
++  "binaries": {
++    "libavcodec.so.62": {
++      "size": 12853856,
++      "sha256": "af127604807691def8afe038e6ef5da93bd1f682f02a912af919629cf59deeda"
++    },
++    "libt736_cedar_client.so": {
++      "size": 72416,
++      "sha256": "499504ea4e63f73ba06c41315abba0526237e2e4b43ac940cb02ee6c888d5eec"
++    }
 +  }
 +}
 diff --git a/userpatches/atlasa1-release/evidence/gnome-media-20261119/firefox160-timing-source-manifest.json b/userpatches/atlasa1-release/evidence/gnome-media-20261119/firefox160-timing-source-manifest.json
@@ -97180,10 +97228,10 @@ index 0000000000000000000000000000000000000000..b7319e52b51e9c18d4c0ceae90b2d2fa
 +    main()
 diff --git a/userpatches/atlasa1-release/tools/browser/build_firefox_resolute_ffmpeg.sh b/userpatches/atlasa1-release/tools/browser/build_firefox_resolute_ffmpeg.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..bbed8cdc99c90d03263fbe890635cbbdd3c4771d
+index 0000000000000000000000000000000000000000..df32206ed47ed9f55ac67802975e1f5f8d379aeb
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/browser/build_firefox_resolute_ffmpeg.sh
-@@ -0,0 +1,107 @@
+@@ -0,0 +1,118 @@
 +#!/bin/bash
 +# Build the libavcodec.so.62 implementation selected by Ubuntu 26.04 Firefox.
 +set -euo pipefail
@@ -97215,6 +97263,14 @@ index 0000000000000000000000000000000000000000..bbed8cdc99c90d03263fbe890635cbbd
 +cp "$here/ffmpeg_cedar.c" "$here/cedar_client.h" "$work/cedar/"
 +cp "$here/shm_v2/"{cedar_client.c,cedar_client.h,cedar_protocol.h,cedar_shm.h} "$work/cedar/shm_v2/"
 +patch --fuzz=0 -d "$work/cedar" -p3 < "$here/copy_candidate/firefox-dr1-output.patch"
++case ${ATLAS_FIREFOX_PANEL_CANDIDATE:-0} in
++    0) ;;
++    1)
++        patch --fuzz=0 -d "$work/cedar" -p2 < "$here/copy_candidate/firefox-panel-output.patch"
++        patch --fuzz=0 -d "$work/cedar" -p1 < "$here/copy_candidate/firefox-panel-client.patch"
++        ;;
++    *) echo 'ATLAS_FIREFOX_PANEL_CANDIDATE must be 0 or 1' >&2; exit 2 ;;
++esac
 +aarch64-linux-gnu-gcc -O2 -fPIC -shared -pthread -Wl,-z,relro,-z,now \
 +    -Wl,-soname,libt736_cedar_client.so -o "$work/lib/libt736_cedar_client.so" "$work/cedar/shm_v2/cedar_client.c"
 +cd "$work/src"
@@ -97280,6 +97336,9 @@ index 0000000000000000000000000000000000000000..bbed8cdc99c90d03263fbe890635cbbd
 + An additional Firefox profile and a private libavcodec62 use the board's
 + Cedar service for supported media in the sandboxed RDD process.
 +EOF
++if [[ ${ATLAS_FIREFOX_PANEL_CANDIDATE:-0} == 1 ]]; then
++    sed -i 's/^Version: .*/Version: 8.0.1-1~resolute1+panel1/' "$package/DEBIAN/control"
++fi
 +cat > "$package/usr/share/applications/atlasa1-firefox.desktop" <<'EOF'
 +[Desktop Entry]
 +Type=Application
@@ -98511,6 +98570,196 @@ index 0000000000000000000000000000000000000000..4ff0a60945f6c117681d125d242dd2ab
 + int t736_client_drain(int session);
 + int t736_client_flush(int session);
 + int t736_client_close(int session);
+diff --git a/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-client.patch b/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-client.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..134cb335146570242f88c1f852ad5c3da53e962c
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-client.patch
+@@ -0,0 +1,53 @@
++--- a/shm_v2/cedar_client.c
+++++ b/shm_v2/cedar_client.c
++@@ -18,7 +18,7 @@
++ static int connection = -1;
++ static uint32_t serial_number;
++ static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
++-static int trace;
+++static int trace, browser_panel;
++ static unsigned trace_push, trace_pull;
++ static const uint8_t *shared_pixels;
++ static pid_t connected_pid;
++@@ -121,6 +121,8 @@
++     } else if (!rdd && (!test || strcmp(test, "1"))) {
++         return;
++     }
+++    const char *panel = getenv("T736_CEDAR_BROWSER_PANEL");
+++    browser_panel = rdd && panel && !strcmp(panel, "1920x1080");
++     struct sockaddr_un address = { .sun_family = AF_UNIX };
++     struct timeval deadline = { .tv_sec = 15 };
++     struct passwd account, *resolved = NULL;
++@@ -206,7 +208,9 @@
++     if (!error) error = reply.status;
++     if (!error && op == T736_OPEN) {
++         const struct t736_open *args = prefix;
++-        active_session = reply.session; active_width = args->width; active_height = args->height;
+++        active_session = reply.session;
+++        active_width = args->reserved ? args->width / 2 : args->width;
+++        active_height = args->reserved ? args->height / 2 : args->height;
++         error = (int)reply.session;
++     }
++     if (!error && op == T736_CLOSE && (uint32_t)session == active_session)
++@@ -221,6 +225,21 @@
++         !width || !height || width > T736_MAX_WIDTH || height > T736_MAX_HEIGHT ||
++         ((width | height) & 1)) return -EINVAL;
++     struct t736_open args = { (uint32_t)codec, width, height, 0 };
+++    return simple(T736_OPEN, 0, &args, sizeof(args), NULL, 0);
+++}
+++
+++/* Protocol-v2 flag 1 is provided by the existing panel-aware broker.
+++ * The candidate is opt-in for an authenticated RDD, never a sandbox bypass. */
+++int t736_client_panel_requested(void)
+++{
+++    return browser_panel && current_process();
+++}
+++
+++int t736_client_open_panel(int codec, unsigned width, unsigned height)
+++{
+++    if (!t736_client_panel_requested() || codec != T736_CODEC_HEVC ||
+++        width != 3840 || height != 2160) return -EINVAL;
+++    struct t736_open args = { (uint32_t)codec, width, height, 1U };
++     return simple(T736_OPEN, 0, &args, sizeof(args), NULL, 0);
++ }
++ 
+diff --git a/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-output.patch b/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-output.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..893821e4cd283e78fa358767102af877381d1bd9
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-panel-output.patch
+@@ -0,0 +1,125 @@
++--- a/libavcodec/ffmpeg_cedar.c
+++++ b/libavcodec/ffmpeg_cedar.c
++@@ -26,6 +26,8 @@
++ typedef struct CedarAPI {
++     int (*available)(void);
++     int (*open)(int, unsigned, unsigned);
+++    int (*panel_requested)(void);
+++    int (*open_panel)(int, unsigned, unsigned);
++     int (*push)(int, const uint8_t *, size_t, int64_t, int64_t);
++     int (*pull)(int, uint8_t *, size_t, struct t736_frame *, unsigned);
++     int (*pull_to)(int, size_t, struct t736_frame *, unsigned, t736_copy_picture, void *);
++@@ -52,6 +54,9 @@
++     int session, delivered, fatal_error;
++     int offset_set;
++     int64_t offset_us, drain_started, backpressure_started, first_frame_wait_started;
+++    unsigned source_width, source_height;
+++    int fit_panel;
+++    size_t pixel_capacity;
++     AVBufferPool *pixel_pool;
++     AVBufferRef *receive_buffer;
++     unsigned generation;
++@@ -297,6 +302,7 @@
++ {
++ #define LOAD(field) *(void **)(&api->field) = dlsym(RTLD_DEFAULT, "t736_client_" #field)
++     LOAD(available); LOAD(open); LOAD(push); LOAD(pull); LOAD(pull_to);
+++    LOAD(panel_requested); LOAD(open_panel);
++     LOAD(drain); LOAD(flush); LOAD(close);
++ #undef LOAD
++     return api->available && api->open && api->push && api->pull &&
++@@ -339,6 +345,11 @@
++     if (s->delivered)
++         return reason < 0 ? reason : AVERROR(EIO);
++     stop_hardware(s);
+++    if (s->fit_panel) {
+++        avctx->width = s->source_width;
+++        avctx->height = s->source_height;
+++        s->fit_panel = 0;
+++    }
++     if (s->input_in_replay) {
++         av_packet_unref(s->input);
++         s->input_pending = s->input_in_replay = 0;
++@@ -498,7 +509,7 @@
++     const int use_allocator = avctx->get_buffer2 != avcodec_default_get_buffer2;
++     if (use_allocator && s->api.pull_to) {
++         CedarImageTarget target = {avctx, frame};
++-        ret = s->api.pull_to(s->session, T736_MAX_FRAME, &picture, timeout_ms,
+++        ret = s->api.pull_to(s->session, s->pixel_capacity, &picture, timeout_ms,
++                              copy_to_image, &target);
++         if (ret < 0)
++             av_frame_unref(frame);
++@@ -507,7 +518,7 @@
++             s->receive_buffer = av_buffer_pool_get(s->pixel_pool);
++         if (!s->receive_buffer)
++             return AVERROR(ENOMEM);
++-        ret = s->api.pull(s->session, s->receive_buffer->data, T736_MAX_FRAME,
+++        ret = s->api.pull(s->session, s->receive_buffer->data, s->pixel_capacity,
++                           &picture, timeout_ms);
++         if (ret == 1 && use_allocator) {
++             CedarImageTarget target = {avctx, frame};
++@@ -524,7 +535,8 @@
++         picture.height > T736_MAX_HEIGHT || (picture.width | picture.height) & 1)
++         return AVERROR(EPROTO);
++     expected = (size_t)picture.width * picture.height * 3 / 2;
++-    if (picture.bytes_written != expected)
+++    if (picture.bytes_written != expected || expected > s->pixel_capacity ||
+++        (s->fit_panel && (picture.width != 1920 || picture.height != 1080)))
++         return AVERROR(EPROTO);
++     if (picture.pts_us != INT64_MIN &&
++         (picture.pts_us < 0 || picture.pts_us > INT64_MAX / 1000 ||
++@@ -532,9 +544,16 @@
++         return AVERROR(EPROTO);
++     pts = picture.pts_us == INT64_MIN ? AV_NOPTS_VALUE :
++           av_rescale_q(picture.pts_us - s->offset_us, AV_TIME_BASE_Q, packet_timebase(avctx));
++-    ret = ff_set_dimensions(avctx, picture.width, picture.height);
++-    if (ret < 0)
++-        return ret;
+++    if (s->fit_panel) {
+++        /* Keep original coded size; the image handed to Firefox is scaled.
+++         * Firefox CreateFromImage retains the track's original display size. */
+++        avctx->width = picture.width;
+++        avctx->height = picture.height;
+++    } else {
+++        ret = ff_set_dimensions(avctx, picture.width, picture.height);
+++        if (ret < 0)
+++            return ret;
+++    }
++     avctx->pix_fmt = avctx->sw_pix_fmt = AV_PIX_FMT_YUV420P;
++     frame->format = AV_PIX_FMT_YUV420P;
++     frame->width = picture.width;
++@@ -837,6 +856,8 @@
++     const AVBitStreamFilter *filter;
++     int ret;
++     log_extradata(avctx, "input", avctx->extradata, avctx->extradata_size);
+++    s->source_width = avctx->width;
+++    s->source_height = avctx->height;
++     s->input = av_packet_alloc();
++     s->filtered = av_packet_alloc();
++     if (!s->input || !s->filtered)
++@@ -856,14 +877,24 @@
++         return start_software(avctx, ret);
++     log_extradata(avctx, "bsf_output", s->bsf->par_out->extradata,
++                   s->bsf->par_out->extradata_size);
++-    s->pixel_pool = av_buffer_pool_init(T736_MAX_FRAME + AV_INPUT_BUFFER_PADDING_SIZE, NULL);
+++    s->fit_panel = avctx->codec_id == AV_CODEC_ID_HEVC &&
+++                   avctx->width == 3840 && avctx->height == 2160 &&
+++                   avctx->get_buffer2 != avcodec_default_get_buffer2 &&
+++                   s->api.panel_requested && s->api.open_panel && s->api.panel_requested();
+++    s->pixel_capacity = s->fit_panel ? 1920U * 1080U * 3U / 2U : T736_MAX_FRAME;
+++    s->pixel_pool = av_buffer_pool_init(s->pixel_capacity + AV_INPUT_BUFFER_PADDING_SIZE, NULL);
++     if (!s->pixel_pool)
++         return start_software(avctx, AVERROR(ENOMEM));
++-    ret = s->api.open(avctx->codec_id == AV_CODEC_ID_H264 ? T736_CODEC_H264 : T736_CODEC_HEVC,
+++    ret = (s->fit_panel ? s->api.open_panel : s->api.open)(avctx->codec_id == AV_CODEC_ID_H264 ? T736_CODEC_H264 : T736_CODEC_HEVC,
++                       avctx->width, avctx->height);
++     if (ret <= 0)
++         return start_software(avctx, ret < 0 ? ret : AVERROR(EPROTO));
++     s->session = ret;
+++    if (s->fit_panel) {
+++        avctx->width = 1920;
+++        avctx->height = 1080;
+++        fprintf(stderr, "T736_CEDAR_PROXY: browser_panel input=3840x2160 output=1920x1080 hardware_scale=1\n");
+++    }
++     avctx->pix_fmt = avctx->sw_pix_fmt = AV_PIX_FMT_YUV420P;
++     av_log(avctx, AV_LOG_INFO, "T736_CEDAR_PROXY: broker session=%d codec=%s %dx%d ordinary-I420\n",
++            s->session, avctx->codec->name, avctx->width, avctx->height);
 diff --git a/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-stage-timing.patch b/userpatches/atlasa1-release/tools/browser/copy_candidate/firefox-stage-timing.patch
 new file mode 100644
 index 0000000000000000000000000000000000000000..24abd2e72e75f2d0f0c3103ecdb48bddd3bf3b8e
@@ -99520,10 +99769,10 @@ index 0000000000000000000000000000000000000000..8a1a85f6abfbcc5789dccef6d196687b
 +a32bd75677bca735105b04a0ebd190a3481e0d8c2fcacd7d9f17524e240ee879  ffmpeg_8.0.1-3ubuntu2.debian.tar.xz
 diff --git a/userpatches/atlasa1-release/tools/browser/FIREFOX_RESOLUTE.md b/userpatches/atlasa1-release/tools/browser/FIREFOX_RESOLUTE.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..a67fcf952f09a23f458e47ce63cca8ca050ab627
+index 0000000000000000000000000000000000000000..8bba01a668de3890663944b9b8e379ce3e83ebe7
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/browser/FIREFOX_RESOLUTE.md
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,70 @@
 +# Firefox 160 on AtlasA1 Ubuntu 26.04
 +
 +Firefox 160 loads `libavcodec.so.62`. The AtlasA1 Firefox package supplies the Cedar-enabled FFmpeg 8 library in `/opt/atlasa1-firefox/lib` and uses Ubuntu's `libavutil.so.60`. Its preconnected RDD client sends compressed packets to the system Cedar service and receives decoded image data. Firefox retains its RDD seccomp filter and `NoNewPrivs` setting. The package contains FFmpeg, the AtlasA1 client and the launcher. The licensed Cedar runtime comes with the RC1 board image.
@@ -99550,6 +99799,33 @@ index 0000000000000000000000000000000000000000..a67fcf952f09a23f458e47ce63cca8ca
 +The private FFmpeg build uses LGPL-2.1-or-later components. The Cedar client uses its upstream MIT license. The FFmpeg library has SONAME `libavcodec.so.62` and links to the distribution's `libavutil.so.60`, `libc` and `libm`.
 +
 +A clean rebuild with the release build path produced a byte-identical `.deb` with SHA-256 `0e360b0c309f61a6b6562387026ea8bfe3fb7f3248672972dbc7c9781c1c29cb`. FFmpeg includes its absolute source directory in assertion strings, so a different output directory changes the package digest.
++
++## Optional GNOME 1080p-panel candidate (not hardware-validated)
++
++`ATLAS_FIREFOX_PANEL_CANDIDATE=1 bash tools/browser/build_firefox_resolute_ffmpeg.sh INPUT NEW_OUTPUT`
++adds an experimental HEVC 3840×2160 to 1920×1080 Cedar output path, with package
++version `8.0.1-1~resolute1+panel1`. The default build does not apply these patches.
++Even in this candidate, scaling is disabled unless the RDD inherits
++`T736_CEDAR_BROWSER_PANEL=1920x1080`. This is an explicit choice for a 1080p
++display, not a full-resolution 4K mode or automatic monitor detection.
++
++The authenticated RDD requests the existing broker's panel flag; no hardware
++handle enters Firefox, and socket authentication, read-only SHM and the RDD
++sandbox are preserved. The image allocator receives 1920×1080 buffers while
++the original coded dimensions remain available. Firefox's source uses the
++track display dimensions in `CreateFromImage`; runtime dimensions and pixels
++still need verification. Software replay before the first delivered frame
++restores the source dimensions. H.264 and other dimensions retain their existing
++path. This candidate shares the native player's scaled HEVC context; it does
++not fix retained DMA allocations or increase the context limit.
++
++On 2026-11-20 the candidate compiled for ARM64, and applying the public patches
++to the DR1 source reproduced the compiled sources byte for byte. The existing
++incremental build tree was restored. Board transfer was interrupted when both
++SSH and the MCP service disconnected, before installation or playback. Do not
++claim frame rate, pixel correctness, seeking, or fallback acceptance yet.
++Validation must explicitly pass `--decoded-size 1920 1080`; such a result is
++labelled `hardware-scaled-to-1080p`, separately from original-size 4K.
 +
 +## Playback measurement
 +
@@ -106714,10 +106990,10 @@ index 0000000000000000000000000000000000000000..85f0d484f73be78e96935691287f1425
 +}
 diff --git a/userpatches/atlasa1-release/tools/validation/firefox_headless_playback.py b/userpatches/atlasa1-release/tools/validation/firefox_headless_playback.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984b8f608c4
+index 0000000000000000000000000000000000000000..b9c92e73d862708b373ec8a781aa9d8e878ae070
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/validation/firefox_headless_playback.py
-@@ -0,0 +1,449 @@
+@@ -0,0 +1,461 @@
 +#!/usr/bin/env python3
 +"""Measure sandboxed Firefox video frames and Cedar IRQs offscreen or on Wayland."""
 +import argparse
@@ -106897,7 +107173,7 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +    return p.stdout if p.returncode == 0 else ''
 +
 +
-+def classify(samples, seconds, journal_lines, firefox_lines, info, rdd=()):
++def classify(samples, seconds, journal_lines, firefox_lines, info, rdd=(), decoded_size=None):
 +    window = [p for p in samples if p['mediaTime'] >= 2]
 +    if len(window) < 2:
 +        return {'status':'incomplete', 'reason':'video did not reach the measurement window'}
@@ -106911,12 +107187,13 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +    irq = b['irq'] - a['irq'] if a['irq'] is not None and b['irq'] is not None else None
 +    codec = {'h264':1, 'hevc':2}.get(info['codec_name'], 0)
 +    width, height = info['width'], info['height']
++    decoded_width, decoded_height = decoded_size or (width, height)
 +    target_fps = rational(info['avg_frame_rate'])
 +    opens = re.findall(r'CEDAR_BROKER: open session=(\d+) codec=(\d+) (\d+)x(\d+)', journal_lines)
 +    markers = re.findall(r'CEDAR_BROKER: hardware frames=(\d+) session=(\d+) visible=(\d+)x(\d+)', journal_lines)
 +    matched = [s for s,c,w,h in opens if (int(c),int(w),int(h)) == (codec,width,height)]
 +    hw_marker = len(opens) == len(matched) == 1 and any(
-+        s in matched and (int(w),int(h)) == (width,height) for _,s,w,h in markers)
++        s in matched and (int(w),int(h)) == (decoded_width,decoded_height) for _,s,w,h in markers)
 +    rate = (total - dropped)/wall if wall > 0 else 0
 +    checks = {'window_completed': b['phase']=='end' and b['reason'] in ('window','eos')
 +              and wall >= seconds-1 and media >= seconds-1,
@@ -106932,7 +107209,13 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +                  r'T736_CEDAR_CLIENT: preconnected .* rdd=1', firefox_lines))
 +              and 'T736_CEDAR_PROXY: bounded_batch' in firefox_lines,
 +              'no_fallback_logged': 'native fallback=' not in firefox_lines}
++    if decoded_size:
++        checks['explicit_hardware_scale'] = (
++            'T736_CEDAR_PROXY: browser_panel input=3840x2160 output=1920x1080 hardware_scale=1' in firefox_lines
++            and 'image_allocator output=1920x1080' in firefox_lines)
 +    return {'status':'passed' if all(checks.values()) else 'not_verified', 'checks':checks,
++            'decoded_size':[decoded_width,decoded_height],
++            'output_mode':'hardware-scaled-to-1080p' if decoded_size else 'original-size',
 +            'wall_seconds':wall, 'media_seconds':media, 'total_delta':total,
 +            'dropped_delta':dropped, 'presented_delta':presented, 'browser_retained_fps':rate,
 +            'irq_delta':irq, 'broker_sessions':opens, 'broker_frame_markers':markers}
@@ -106984,6 +107267,9 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +    if info['codec_name'] not in ('h264','hevc') or rational(info['avg_frame_rate']) <= 0:
 +        raise ValueError(f'unsupported fixture {info}')
 +    record['fixture'] = info
++    if args.decoded_size and (info['codec_name'],info['width'],info['height'],args.decoded_size) != ('hevc',3840,2160,[1920,1080]):
++        raise ValueError('Only the explicit HEVC 3840x2160 to 1920x1080 candidate is supported')
++    record['requested_decoded_size'] = args.decoded_size
 +    record['launcher'] = str(args.launcher)
 +    record['launcher_sha256'] = hashlib.sha256(args.launcher.read_bytes()).hexdigest()
 +    record['kernel'] = os.uname().release
@@ -107118,7 +107404,7 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +        raw = journal('--after-cursor', cursor[1], '-u', args.unit) if cursor else ''
 +        record['broker_log'] = [s for s in raw.splitlines() if 'CEDAR_BROKER:' in s][-80:]
 +        record['result'] = classify(record['samples'], args.seconds, raw, '\n'.join(lines), info,
-+                                    record.get('rdd', []))
++                                    record.get('rdd', []), args.decoded_size)
 +
 +
 +def main():
@@ -107131,6 +107417,8 @@ index 0000000000000000000000000000000000000000..b5c8bc66d85eb4a676b922a2c0cc9984
 +                    help='Read internal drop counters via loopback Marionette in the isolated test profile')
 +    ap.add_argument('--rdd-cpus',type=int,nargs='+',help='Diagnostic affinity for this temporary Firefox RDD only')
 +    ap.add_argument('--seconds',type=int,default=20)
++    ap.add_argument('--decoded-size', nargs=2, type=int, metavar=('WIDTH','HEIGHT'),
++                    help='Explicitly validate the HEVC 4K-to-1080p candidate; never count it as original-size output')
 +    ap.add_argument('--warmup', type=int, default=0,
 +                    help='Wait on the test page before playback to separate browser startup load')
 +    ap.add_argument('--screen', nargs=2, type=int, metavar=('WIDTH', 'HEIGHT'),

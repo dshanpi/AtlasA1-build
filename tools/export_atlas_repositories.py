@@ -220,6 +220,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
                 "tools/browser/firefox-resolute-source.sha256", "tools/browser/firefox-resolute-copyright",
                 "tools/browser/copy_candidate/firefox-dr1-output.patch", "tools/browser/verify_firefox_resolute.py",
                 "tools/browser/copy_candidate/firefox-stage-timing.patch",
+                "tools/browser/copy_candidate/firefox-panel-output.patch",
+                "tools/browser/copy_candidate/firefox-panel-client.patch",
                 "tools/browser/FIREFOX_RESOLUTE.md", "evidence/atlasa1-firefox160-ffmpeg8-20261118.json",
                 "evidence/atlasa1-firefox-image-integration-20261119.json",
                 "tools/browser/panel_candidate/private-1080p-panel.patch",
