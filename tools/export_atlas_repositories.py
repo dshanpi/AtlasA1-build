@@ -137,7 +137,8 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
 
 def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]]) -> None:
     for rel in ('config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
-                'tools/stage_atlasa1_gnome_wayland.sh', 'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
+                'tools/stage_atlasa1_gnome_wayland.sh', 'tools/activate_atlasa1_gnome.sh',
+                'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
                 'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
                 'tools/validation/firefox_renderer_probe.py',
                 'tools/validation/ffplay_wayland_present.c',
@@ -217,6 +218,7 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "tools/browser/omx_scale_candidate", "tools/browser/omx_scale_candidate", records)
     for rel in ("tools/browser/build_browser_ffmpeg.py", "tools/browser/ffmpeg_cedar.c",
                 "tools/browser/build_firefox_resolute_ffmpeg.sh", "tools/browser/firefox-resolute",
+                "tools/browser/firefox_panel_mode.py", "tools/browser/test_firefox_panel_mode.py",
                 "tools/browser/firefox-resolute-source.sha256", "tools/browser/firefox-resolute-copyright",
                 "tools/browser/copy_candidate/firefox-dr1-output.patch", "tools/browser/verify_firefox_resolute.py",
                 "tools/browser/copy_candidate/firefox-stage-timing.patch",
