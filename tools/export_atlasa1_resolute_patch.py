@@ -10,6 +10,7 @@ PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
     'docs/GNOME_WAYLAND.md', 'config/gnome-wayland/*',
+    'docs/CHROMIUM.md', 'tools/validation/chromium_playback.py',
     'docs/GNOME_MEDIA.md', 'evidence/gnome-media-20261119/*.json', 'evidence/gnome-media-20261119/*.log',
     'tools/build_gnome_media_candidate.sh', 'patches/linux/gnome-media-20261119/*',
     'tools/validation/sdl_texture_ring.c', 'tools/validation/sdl_packed_yuv.c',

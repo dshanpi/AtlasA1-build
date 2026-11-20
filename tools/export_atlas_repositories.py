@@ -139,6 +139,7 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
     for rel in ('config/gpu-userspace-wayland.env', 'config/gpu-userspace-wayland-run.sh',
                 'tools/stage_atlasa1_gnome_wayland.sh', 'tools/activate_atlasa1_gnome.sh',
                 'docs/GNOME_WAYLAND.md', 'docs/GNOME_MEDIA.md',
+                'docs/CHROMIUM.md', 'tools/validation/chromium_playback.py',
                 'tools/validation/wayland_present.c', 'tools/validation/gnome_wayland_browser.py',
                 'tools/validation/firefox_renderer_probe.py',
                 'tools/validation/ffplay_wayland_present.c',

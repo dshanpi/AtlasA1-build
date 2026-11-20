@@ -487,11 +487,25 @@
       "sha256": "2cd7bc09f6200e47986f0a08e3755033964898b2e9ba10e1add250b2d95ac243"
     },
     {
+      "path": "boards/wireless-v31/diagnostics/AIC8800D80.md",
+      "kind": "source",
+      "source": "mainline/boards/wireless-v31/diagnostics/AIC8800D80.md",
+      "size": 2503,
+      "sha256": "8e566fb228bba002be3cc3d7b7cc5a006eab4973f7c272e7bf033ebd3dc8658d"
+    },
+    {
       "path": "boards/wireless-v31/diagnostics/README.md",
       "kind": "source",
       "source": "mainline/boards/wireless-v31/diagnostics/README.md",
       "size": 2121,
       "sha256": "7b2122ff3afc9d43a24b40ac36ee1b16054c3ef3316e2ed309f9009bed31f5a2"
+    },
+    {
+      "path": "boards/wireless-v31/diagnostics/aic8800d80-linux618-candidate.patch",
+      "kind": "source",
+      "source": "mainline/boards/wireless-v31/diagnostics/aic8800d80-linux618-candidate.patch",
+      "size": 7233,
+      "sha256": "6f76f8fcd8117f82434a4e7e0be6fd3ecaec08df60f49cb50ce4ab30a548adb2"
     },
     {
       "path": "boards/wireless-v31/diagnostics/diag-only.patch",
@@ -590,6 +604,13 @@
       "source": "mainline/config/gnome-wayland/61-atlasa1-gnome.rules",
       "size": 181,
       "sha256": "0f7574668204ab1509d00c8c90d792770bdc29589cc9154faf20a5f156d79630"
+    },
+    {
+      "path": "config/gnome-wayland/90-atlasa1-pvr",
+      "kind": "source",
+      "source": "mainline/config/gnome-wayland/90-atlasa1-pvr",
+      "size": 681,
+      "sha256": "71d91e65d626236ab8fd003c24f9e964fb92956946aeea541fa68e90677927ab"
     },
     {
       "path": "config/gnome-wayland/atlasa1-gnome-session",
@@ -767,6 +788,13 @@
       "sha256": "c3810e8fcbe7704bbb0211db85ec380d7d3dfe17d487be88ce78f2d50b1dc6c4"
     },
     {
+      "path": "docs/CHROMIUM.md",
+      "kind": "source",
+      "source": "mainline/docs/CHROMIUM.md",
+      "size": 4749,
+      "sha256": "4d5ed291c8e05765f0c979aebd4fd09d3084415873149e2789ae6ddace241ab0"
+    },
+    {
       "path": "docs/CODE_MAP.md",
       "kind": "source",
       "source": "mainline/docs/CODE_MAP.md",
@@ -791,8 +819,8 @@
       "path": "docs/GNOME_WAYLAND.md",
       "kind": "source",
       "source": "mainline/docs/GNOME_WAYLAND.md",
-      "size": 6453,
-      "sha256": "bbdfa3089303a20e4a970757984aefab82f2fb5242d668de7a334af1c9b378ac"
+      "size": 6713,
+      "sha256": "a8a3098ac37aaa826d615ec57f0100706aab083f7e60fc8d2a152291235177fc"
     },
     {
       "path": "docs/HARDWARE_MAP.md",
@@ -819,8 +847,8 @@
       "path": "docs/WIRELESS.md",
       "kind": "source",
       "source": "mainline/docs/WIRELESS.md",
-      "size": 5882,
-      "sha256": "517e33522280f3503e290de40f41e9ee3a824eba0a639aa4f651c76791199e9d"
+      "size": 7034,
+      "sha256": "af053d8d4ae402d7e9e48efe891fa4bef313f697384eb524e9a35d09a66f400d"
     },
     {
       "path": "evidence/armbian-source-boot-layout-test-20261118.json",
@@ -1047,11 +1075,67 @@
       "sha256": "af03eeb04de122f33992314d63019e1fd688446e8ab01f6cbcb860057a65509f"
     },
     {
+      "path": "evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json",
+      "size": 2628,
+      "sha256": "56a606c7fd9c246d17438e77f5b69632b4348f0c2806c698cc3b5dbf0e108111"
+    },
+    {
       "path": "evidence/gnome-media-20261119/broker-dependency-fix-20261120.txt",
       "kind": "source",
       "source": "mainline/evidence/gnome-media-20261119/broker-dependency-fix-20261120.txt",
       "size": 517,
       "sha256": "ad7754a92b3c8cdc3f477737a2425532a2591feda402835c6fc266a829e44755"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-gpu-and-decode-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-gpu-and-decode-20261120.json",
+      "size": 3948,
+      "sha256": "35e730c2da363bb6d76c127a56025d76e5d4bdaa14c1a7bee70af96e62c11b1c"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-h264-baseline-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-h264-baseline-20261120.json",
+      "size": 28850,
+      "sha256": "3c9c57d63cc29cb8faa014e92bfd6b815f9741ac6f2cefbb726d79d508980c56"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-h264-installed-pvr-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-h264-installed-pvr-20261120.json",
+      "size": 24257,
+      "sha256": "5dc7027d3b4b5fd47e45d320b3a2f1a9db809cfd5b4bdce694efa985cd21df56"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-h264-installed-visual-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-h264-installed-visual-20261120.json",
+      "size": 30625,
+      "sha256": "e6a0d2e509ca3a90a0718012f54534975443f9274b72a43468d9805e79b706a8"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-h264-pvr-angle-gles-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-h264-pvr-angle-gles-20261120.json",
+      "size": 23433,
+      "sha256": "67bc2b6e5ce0e8e1ddf536cc0e07ca0d893d7ebb2a894bc3622c3a9061a280d6"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-hevc4k-installed-pvr-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-hevc4k-installed-pvr-20261120.json",
+      "size": 19496,
+      "sha256": "b7f1e2a1bbccbf489c658a6c2f23ab506912ea09c4a79f6d6303c77829c5ab0f"
+    },
+    {
+      "path": "evidence/gnome-media-20261119/chromium-hevc4k-track-validation-20261120.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-media-20261119/chromium-hevc4k-track-validation-20261120.json",
+      "size": 18791,
+      "sha256": "4263da1d6f7e18adc7f386ecda05de22990d52a736bd7001ce71b6f0bc8fb48d"
     },
     {
       "path": "evidence/gnome-media-20261119/default-v42-gnome-20261120.json",
@@ -2296,8 +2380,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 7670947,
-      "sha256": "aee3b01d10e611044c9fd1bce4289c200e12a379aa1402f5a0d592f03218cf72"
+      "size": 7859145,
+      "sha256": "e15b7bed6c0123d699a405e1c3307f79f3196419efcd946fb94143bb0d1ffb88"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5607,15 +5691,15 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 32112,
-      "sha256": "a6cc7986619d0e261c1b6c38fa6f8ba5000df51fb320a4e0e5b2498b824aecbb"
+      "size": 32189,
+      "sha256": "c2646e373aad4817edc2ae8e7d8cb4b3d23b4af9e40761208d2017069dc8080c"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 8320,
-      "sha256": "6b54576ef14beacd75e29d7930f732069021e5b006014742a21c65ff74e2e262"
+      "size": 8385,
+      "sha256": "373de6dd0dc1a3d700ac63be58d4a3cd8e45205b03dfb20cf8e6ab3535b70733"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -5915,8 +5999,8 @@
       "path": "tools/stage_atlasa1_gnome_wayland.sh",
       "kind": "source",
       "source": "mainline/tools/stage_atlasa1_gnome_wayland.sh",
-      "size": 1397,
-      "sha256": "6794088ed27e451bb88304c2db3167179694e0c799245264caf8156f69b498f9"
+      "size": 1476,
+      "sha256": "380f295d9162629b322c2c1bece21a13ae602fb5e5cf81604037fe1c0c7a305c"
     },
     {
       "path": "tools/stage_atlasa1_resolute_x11.sh",
@@ -6008,6 +6092,13 @@
       "source": "mainline/tools/validation/cedar_gpu_import.c",
       "size": 9942,
       "sha256": "bc09254ba1d7f5d0772a8424c096c4e7bb1a6dc47a4ad94c7b1082eeeb1bd156"
+    },
+    {
+      "path": "tools/validation/chromium_playback.py",
+      "kind": "source",
+      "source": "mainline/tools/validation/chromium_playback.py",
+      "size": 9951,
+      "sha256": "cbdac77ad4ba7d4c4daf341375ff28c40725bf0194ad7b63d3f49228555f8d27"
     },
     {
       "path": "tools/validation/ffplay_offscreen.py",
