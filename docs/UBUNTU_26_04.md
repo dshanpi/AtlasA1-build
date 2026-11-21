@@ -35,6 +35,17 @@ Wi-Fi / 蓝牙目前仍未通过：AW869C 即 AIC8800D80，SDIO 未枚举芯片�
 
 Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
 
+## 2026-11-21 GNOME v47 构建
+
+已从新建的官方 Armbian / Ubuntu 26.04 根文件系统生成 GNOME Wayland 完整镜像，未复制旧板卡根文件系统。原始镜像 8,589,934,592 字节，压缩包 1,041,712,836 字节。离线 rootfs 配置、GPT、ext4 fsck、启动文件回读哈希和 XZ 完整性检查均通过。
+
+- 原始镜像 SHA-256：`dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd`
+- `.img.xz` SHA-256：`09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54`
+
+**新镜像整盘 FES 烧录和首次冷启动仍未验证。** 当前 T736 SDK 绑定的烧录 USB 位置未枚举设备，专用 FEL 转换因此在写入前停止；另外发现的 FEL 设备在目标板断电后仍存在，未对其操作。旧板卡已恢复原有 v47 系统。新构建的 kernel、DTB 和启动包与原有实板文件的 SHA-256 相同，但这不能替代完整新根文件系统的启动验收。
+
+镜像内的首次显示初始化脚本已在旧系统的 GDM Wayland 会话实际运行：HDMI 从 2560×1440 切到 1920×1080 60 Hz，配置 XML 保存成功，一分钟后未自动回退。该测试使用隔离配置目录，脚本哈希与镜像内文件一致。[本版验收范围](../evidence/gnome-release-20261121/release-validation.json) · [构建组件](../evidence/gnome-release-20261121/component-build.json) · [安装包清单](../evidence/gnome-release-20261121/installed-packages.tsv)
+
 ## 厂家输入和公开编译依赖
 
 | 输入 | 来源与用途 |

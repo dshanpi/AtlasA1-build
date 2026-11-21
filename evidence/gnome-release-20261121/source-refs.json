@@ -1,0 +1,8 @@
+{
+  "armbian": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "AtlasA1-build": "95ce7d3583f5bb162de73df55bd92b05051941f5",
+  "AtlasA1-linux": "20ff7d303c7131115023c782c5be5c7561cf5824",
+  "AtlasA1-uboot": "b2ebcec55bd575db1779b41604e08f8ad46f2986",
+  "AtlasA1-media": "22d8f8b7af37e8e9c7d30be0e09633f72c478cdb",
+  "patch_sha256": "e87830ddf6dfb80f471e2b22e397344f9468d314d6a0a32d47c06adf62f160ab"
+}

@@ -1029,8 +1029,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 15151,
-      "sha256": "dab9c1f30ae83c55ec09ce5a95077884ec5403be5f34ef14060d72f713c6d202"
+      "size": 16597,
+      "sha256": "259cf9f8dc0ec7afb48dfdfb9c36a4bf06f1da02519a49384dba154ab9bf0c09"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -2648,6 +2648,20 @@
       "source": "mainline/evidence/gnome-release-20261121/offline-checks.json",
       "size": 809,
       "sha256": "810e215505efe1b879897f134726efc4624a5143ddadd5fe6fde659cc9acbd9f"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/release-validation.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/release-validation.json",
+      "size": 1383,
+      "sha256": "68e2949113c0c76ec0b9c289ba66f9f816737806ca107995f04ef98d1c800384"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/source-refs.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/source-refs.json",
+      "size": 398,
+      "sha256": "8697c326af9d766cf0c748c86c0b9e00fa8a5266acf098e809c7a8d989301abf"
     },
     {
       "path": "evidence/gnome-wayland-20261119/app-gpu-maps.txt",

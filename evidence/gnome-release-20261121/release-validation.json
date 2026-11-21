@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-21",
+  "image": "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_arm64.img",
+  "image_sha256": "dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd",
+  "xz_sha256": "09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54",
+  "xz_bytes": 1041712836,
+  "xz_integrity": "passed",
+  "local_transfer_sha256": "passed",
+  "fes_flash": "not_started",
+  "new_image_cold_boot": "unverified",
+  "reason": "Dedicated board-scoped FEL transition did not find the configured USB target. No flash task was started. An unbound FEL device remained present with the target board powered off, so it was not used. Existing eMMC v47 cold boot and serial login recovered.",
+  "nvme_written": false,
+  "private_backup": "Original and latest user/config backups saved and checksum-verified outside the board; not included in release.",
+  "display_helper_on_existing_v47": {
+    "sha256": "0d7c7d2f12118f4269b51815ac7a413430b6e45465d21801c23ef6b673076851",
+    "same_file_as_new_image": true,
+    "session": "GDM Wayland greeter on existing eMMC v47",
+    "initial_mode": "2560x1440@60",
+    "applied_mode": "1920x1080@60",
+    "drm_readback": "passed",
+    "saved_xml": "passed, isolated config directory",
+    "full_new_image_boot": false,
+    "no_automatic_revert": "DRM still 1920x1080@60 after more than 60 seconds"
+  },
+  "existing_v47_failed_systemd_units": []
+}
