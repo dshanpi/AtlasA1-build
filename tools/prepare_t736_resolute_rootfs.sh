@@ -64,10 +64,10 @@ printf '%s\n' 'gdm3 shared/default-x-display-manager select lightdm' 'lightdm sh
 run apt-get -o Acquire::Retries=3 -y --no-install-recommends install \
     "$inside/bsp.deb" armbian-config openssh-server network-manager netplan.io systemd-resolved \
     gdm3 gnome-session gnome-shell gnome-control-center nautilus \
-    rtkit at-spi2-core evolution-data-server python3-gi \
+    rtkit at-spi2-core evolution-data-server python3-gi libxcb-dri2-0 \
     lightdm lightdm-gtk-greeter xfce4-session xfce4-panel xfwm4 xfdesktop4 thunar \
     xserver-xorg-core xserver-xorg-video-fbdev xserver-xorg-input-libinput x11-xserver-utils \
-    firefox ffmpeg gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad pipewire-audio fonts-noto-cjk
+    firefox ffmpeg gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad pipewire-audio fonts-noto-cjk fonts-ubuntu
 [[ -x "$root/usr/lib/firefox/firefox" || -x "$root/opt/firefox/firefox" ]]
 test -x "$root/usr/sbin/lightdm"
 printf '/usr/sbin/lightdm\n' > "$root/etc/X11/default-display-manager"

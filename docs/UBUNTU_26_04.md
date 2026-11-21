@@ -31,7 +31,7 @@ Wi-Fi / 蓝牙目前仍未通过：AW869C 即 AIC8800D80，SDIO 未枚举芯片�
 
 11 月 18 日的早期 v34 整盘也通过了 GPT、ext4 和启动文件回读检查，当时镜像保留了原装 Firefox。[早期镜像记录](../evidence/atlasa1-v34-image-integration-20261118.json)
 
-`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output`。这两种方式调用同一套脚本。
+`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output --gnome-v47`。这两种方式调用同一套脚本。
 
 Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
 
@@ -56,8 +56,8 @@ bash "$recipe/prepare_atlasa1_sdl_sysroot.sh" /srv/atlas-sdl2-arm64
 | 阶段 | 来源及结果 |
 | --- | --- |
 | 启动链 | U-Boot v2026.10、社区 TF-A 固定提交 `7d322909`、固定 DDR 库及本板源码。生成 eGON SPL、stage64、BL31、U-Boot 和含每段 CRC 的启动包。 |
-| 内核和 GPU | Linux v6.18.63、264 个经 SHA-256 核对的 Tina 显示输入、板级补丁及 PowerVR 24.2 DDK，生成 `linux-image-6.18.63-t736-media-v30`、DTB 和对应 vermagic 的 `pvrsrvkm.ko`。 |
-| 视频 | FFmpeg 7.1.5、Cedar 服务及板级 OMX 补丁，生成 `atlasa1-player_0.1-5~resolute1_arm64.deb`。播放器自带配套 FFmpeg 库，保留 Ubuntu 的系统 FFmpeg。 |
+| 内核和 GPU | Linux v6.18.63、264 个经 SHA-256 核对的 Tina 显示输入、板级补丁及 PowerVR 24.2 DDK，GNOME 选项生成 `linux-image-6.18.63-t736-gnome-v47`、DTB 和对应 vermagic 的 `pvrsrvkm.ko`。 |
+| 视频 | FFmpeg 7.1.5、Cedar 服务及板级 OMX 补丁，生成 `atlasa1-player_0.1-6~resolute1_arm64.deb`。播放器自带配套 FFmpeg 库，保留 Ubuntu 的系统 FFmpeg。 |
 | 浏览器 | 主分支从 Ubuntu 源码包构建 FFmpeg 8 Cedar 解码库，并随镜像安装 `atlasa1-firefox-cedar`。打包前以桌面用户检查应用菜单入口、FFmpeg ABI 和 H.264、HEVC 的默认解码器。 |
 | 系统 | 官方 `compile.sh rootfs`、`armbian-bsp-cli` 和 `armbian-base-files`，生成 Ubuntu 26.04 桌面根文件系统，再安装板级包、初始化镜像和桌面配置。 |
 | 镜像 | 板级打包器核对 GPT 分区、SPL、启动包、第四分区 ext4，并从镜像内回读 kernel、initrd 和 DTB。镜像同目录含 `.manifest.json` 及压缩文件的 `SHA256SUMS`。 |
@@ -65,7 +65,7 @@ bash "$recipe/prepare_atlasa1_sdl_sysroot.sh" /srv/atlas-sdl2-arm64
 ```sh
 cd /srv/atlas-output
 sha256sum -c SHA256SUMS
-xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img.xz
+xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_arm64.img.xz
 ```
 
 本次 RC1 的文件摘要如下。第 4 分区中普通用户可用 3,671,642,112 字节，系统软件包清单共 1,402 项。[镜像内核、DTB、启动包与 GPT 校验](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json) · [软件包明细](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv)
@@ -90,16 +90,16 @@ python3 userpatches/atlasa1-release/tools/extract_atlasa1_fes_loader.py \
 
 ```powershell
 openixcli scan --detailed
-openixcli raw t736-tina-fes-loader.img Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img --mode command --device-location "<USB位置>" --post-action none
+openixcli raw t736-tina-fes-loader.img Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_arm64.img --mode command --device-location "<USB位置>" --post-action none
 ```
 
 OpenixSuit / LYNX 对应选项为 raw、command、开启校验，loader 和 raw 固件分别选择上述两个文件。`eMMC boot0 from image` 保持关闭，扇区偏移由工具处理。等待写入和校验成功后再断电重启。这个写入流程此前已在本板完整写入并校验 8 GiB，新版 Ubuntu 的冷启动状态以该版 Release 记录为准。
 
 较大容量的 eMMC 也按这个固定布局启动。第 4 分区后面还有两个分区，用户区 LBA 40960 保存 GPT 副本，因此本版关闭了 Armbian 的通用首次启动自动扩容。
 
-## 桌面与硬件状态
+## 早期 RC1 桌面与硬件记录
 
-默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。Xorg 配置优先选择 HDMI 1920×1080，会话启动时关闭 X11 屏保与 DPMS。本次 arm64 根文件系统实测包含 Xfce 4.20、GNOME Shell 50.1、原生 Firefox 160 和系统 FFmpeg 8.0.1。[根文件系统构建与软件版本](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json)
+早期 RC1 默认进入 LightDM 的 **AtlasA1 Xfce（X11）** 会话，使用与 Tina PowerVR 用户态库配套的 X11 路径。Xorg 配置优先选择 HDMI 1920×1080，会话启动时关闭 X11 屏保与 DPMS。本次 arm64 根文件系统实测包含 Xfce 4.20、GNOME Shell 50.1、原生 Firefox 160 和系统 FFmpeg 8.0.1。[根文件系统构建与软件版本](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu-resolute-rootfs-20261118.json)
 
 从应用菜单选择 **Firefox (AtlasA1 Cedar)** 可启用浏览器硬解。主分支的镜像构建默认安装此入口，原始 RC1 镜像可安装 Release 中的同名配套 deb。该入口和解码器已在 Ubuntu 26.04 成品根文件系统中以 `t736` 用户核验。浏览器在 1080p60 片源的独立 X11 虚拟显示测试中呈现约 38.54 fps。[浏览器接入与测试](../tools/browser/FIREFOX_RESOLUTE.md) · [镜像用户态验收](../evidence/atlasa1-firefox-image-integration-20261119.json)
 

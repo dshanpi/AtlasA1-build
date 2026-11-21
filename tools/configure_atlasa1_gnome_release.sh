@@ -38,6 +38,16 @@ idle-delay=uint32 0
 lock-enabled=false
 [org.gnome.settings-daemon.plugins.power]
 sleep-inactive-ac-type='nothing'
+[org.gnome.shell]
+favorite-apps=['atlasa1-firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Settings.desktop', 'atlasa1-player.desktop']
+EOF
+install -d "$root/etc/xdg"
+cat > "$root/etc/xdg/gnome-mimeapps.list" <<'EOF'
+[Default Applications]
+video/mp4=atlasa1-player.desktop;
+x-scheme-handler/http=atlasa1-firefox.desktop;
+x-scheme-handler/https=atlasa1-firefox.desktop;
+text/html=atlasa1-firefox.desktop;
 EOF
 chroot "$root" glib-compile-schemas /usr/share/glib-2.0/schemas
 chroot "$root" apt-get check

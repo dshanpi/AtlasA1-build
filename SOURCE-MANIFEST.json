@@ -728,8 +728,8 @@
       "path": "config/gnome-wayland/atlasa1-display-default",
       "kind": "source",
       "source": "mainline/config/gnome-wayland/atlasa1-display-default",
-      "size": 1866,
-      "sha256": "315913d144050c6f44f38b6422b084298bcca4c6c96407f483dd84a7809b3d4b"
+      "size": 3630,
+      "sha256": "0d7c7d2f12118f4269b51815ac7a413430b6e45465d21801c23ef6b673076851"
     },
     {
       "path": "config/gnome-wayland/atlasa1-display-default.desktop",
@@ -1029,8 +1029,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 15109,
-      "sha256": "e0c089e4acf0047708eb30febafa8cd235148c12986dd96bffcccffc131f5aad"
+      "size": 15151,
+      "sha256": "dab9c1f30ae83c55ec09ce5a95077884ec5403be5f34ef14060d72f713c6d202"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -2615,6 +2615,41 @@
       "sha256": "0f3d4efd461057712a9a5d3b2d6457c048f0cf709915635eda563c55fd0bc910"
     },
     {
+      "path": "evidence/gnome-release-20261121/component-build.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/component-build.json",
+      "size": 2587,
+      "sha256": "eece8dccde2dbf9a7046b0036a6806f688fcbfa2ee8c13ee1c048967c573511b"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/image-build-manifest.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/image-build-manifest.json",
+      "size": 1785,
+      "sha256": "a40b051346000e056bc61ae17da002fa511ec3fa1f92172600cfe638f7358d61"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/installed-packages.tsv",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/installed-packages.tsv",
+      "size": 45746,
+      "sha256": "c7ad4d60efee4a7e14782bc994d4b7f1be0441b19352b3e640d69fb2ad261a57"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/offline-assembly.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/offline-assembly.log",
+      "size": 12056,
+      "sha256": "12fdcb8f9f1ddafec11c3b14197c7f962de240b32600acc80920231367d066a7"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/offline-checks.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/offline-checks.json",
+      "size": 809,
+      "sha256": "810e215505efe1b879897f134726efc4624a5143ddadd5fe6fde659cc9acbd9f"
+    },
+    {
       "path": "evidence/gnome-wayland-20261119/app-gpu-maps.txt",
       "kind": "source",
       "source": "mainline/evidence/gnome-wayland-20261119/app-gpu-maps.txt",
@@ -2940,8 +2975,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8223520,
-      "sha256": "cf94f7776441fc1962b74d21c485cb49471cd4115d5349642651f20801acc48b"
+      "size": 8230102,
+      "sha256": "6024f8d48f719b1db4f2851d141bfdf6098eba3065c32297dbcfd7f81109de5a"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5016,6 +5051,13 @@
       "sha256": "2ff64d5f49b6cf62dabc63a851df921c414ba9a7de658291d49de0d45fe51446"
     },
     {
+      "path": "tests/test_gnome_display_default.py",
+      "kind": "source",
+      "source": "mainline/tests/test_gnome_display_default.py",
+      "size": 3523,
+      "sha256": "89d2a2845c5ec1870e25a6ec8b840e5138257fa0a6a05121c1ba9c9b0a60b7ce"
+    },
+    {
       "path": "tests/test_live_evidence.py",
       "kind": "source",
       "source": "mainline/tests/test_live_evidence.py",
@@ -5691,8 +5733,8 @@
       "path": "tools/build_gnome_media_candidate.sh",
       "kind": "source",
       "source": "mainline/tools/build_gnome_media_candidate.sh",
-      "size": 6613,
-      "sha256": "2eb8cac1ee3b4913c21a4b89b55210458d4483fa31a49df3ecd0105e1de9f9c4"
+      "size": 6600,
+      "sha256": "ee2dd1b7926198a873fd5952525a209bae8d5240c3eef7d58ea8ae7eab1de205"
     },
     {
       "path": "tools/build_gnome_media_probes.sh",
@@ -6286,8 +6328,8 @@
       "path": "tools/configure_atlasa1_gnome_release.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_gnome_release.sh",
-      "size": 1872,
-      "sha256": "08d3d1b39cc685bce30864bd3c93488a4bfe91aff8b41517a92c2cd9f2527b5c"
+      "size": 2286,
+      "sha256": "3b84e58a6ee663d031792d3bdfdb1dfc15965ab9da018dfc2609db4edfb48b6a"
     },
     {
       "path": "tools/configure_atlasa1_resolute.sh",
@@ -6300,15 +6342,15 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 33134,
-      "sha256": "50ac672ff155055cbcfdc691e91ec4a58609699c0897120ec182b3747d2f7c5e"
+      "size": 33711,
+      "sha256": "c002ae6a0537143515bd1ce95161bfb7ad7f5a012c28562d0fe279afe99c01c0"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 8779,
-      "sha256": "b3ad1d7dad9469264bac8c40208c68898cc934976baf493101b9266809a7219f"
+      "size": 8822,
+      "sha256": "da0b9068aa94d28ce3a0bba05dbd52d021d1866723e8eebb45c8bb5f451f1bed"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -6601,8 +6643,8 @@
       "path": "tools/prepare_t736_resolute_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/prepare_t736_resolute_rootfs.sh",
-      "size": 5723,
-      "sha256": "3a08608ed2ec4f20c3a6009aa2b05f7bb4ad621be3298cb38e372b281070d45d"
+      "size": 5750,
+      "sha256": "93a5f489508c387d31e1aa776414704ab572f9338eb26124f77804ea39c5cf1b"
     },
     {
       "path": "tools/repack_storage_v18_topology.py",
@@ -6685,8 +6727,8 @@
       "path": "tools/validation/atlasa1_resolute_live.py",
       "kind": "source",
       "source": "mainline/tools/validation/atlasa1_resolute_live.py",
-      "size": 5886,
-      "sha256": "145baf436d00a07aee4c066e6993746a2f1330ef98b8598720396601a515629b"
+      "size": 6150,
+      "sha256": "dd2068cc1adeb889ca8b4f61aad327e54aa2b3cc3c036879c659b27a596d0887"
     },
     {
       "path": "tools/validation/atlasa1_sdl_gles_smoke.c",
@@ -6867,8 +6909,8 @@
       "path": "tools/verify_atlasa1_resolute.sh",
       "kind": "source",
       "source": "mainline/tools/verify_atlasa1_resolute.sh",
-      "size": 4613,
-      "sha256": "590491cdc8c69fec8a4f6312390b8610f2534c452f1cb3f9f4725dd2930478ef"
+      "size": 4698,
+      "sha256": "255f1db3be22fb9efce4901fd3600aa33384005c3b2fddb9abdb4ee800fa5322"
     },
     {
       "path": "tools/verify_atlasa1_resolute_media.sh",

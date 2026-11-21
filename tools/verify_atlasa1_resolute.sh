@@ -54,6 +54,7 @@ if [[ $release == 6.18.63-t736-gnome-v47 ]]; then
     test -r "$root/opt/atlasa1-img-wayland/runtime-gles/libEGL.so.1"
     test -x "$root/usr/libexec/mutter-x11-frames.atlasa1-real"
     test -r "$root/opt/atlasa1-firefox/lib/browser-panel-enabled"
+    grep -qx 'video/mp4=atlasa1-player.desktop;' "$root/etc/xdg/gnome-mimeapps.list"
 else
     [[ $(basename "$(readlink "$root/etc/systemd/system/display-manager.service")") == lightdm.service ]]
 fi

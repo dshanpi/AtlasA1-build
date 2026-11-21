@@ -1,0 +1,20 @@
+{
+  "scope": "Offline rootfs under QEMU; hardware validation remains pending",
+  "userspace_verification": "passed",
+  "gpt": "passed",
+  "ext4_fsck": "passed",
+  "boot_files_extracted_and_hashed": "passed",
+  "first_login_display_tests": 4,
+  "native_player_tests": 6,
+  "firefox_panel_tests": 2,
+  "raw_image_sha256": "dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd",
+  "image_display_helper_sha256": "0d7c7d2f12118f4269b51815ac7a413430b6e45465d21801c23ef6b673076851",
+  "single_patch_replay": {
+    "upstream_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+    "git_apply_check": "passed",
+    "git_apply": "passed",
+    "shell_syntax": "passed",
+    "display_tests_from_applied_patch": 4,
+    "patch_sha256": "e87830ddf6dfb80f471e2b22e397344f9468d314d6a0a32d47c06adf62f160ab"
+  }
+}

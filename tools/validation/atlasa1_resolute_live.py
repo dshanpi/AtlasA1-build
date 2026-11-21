@@ -65,15 +65,18 @@ def main():
     if partuuid.lower() != manifest['root_partuuid']:
         parser.error('root PARTUUID does not match the supplied manifest')
     kernel = os.uname().release
-    images = [name.removeprefix('boot/vmlinuz-') for name in manifest['boot_files']
+    images = [name.removeprefix('boot/vmlinuz-').removesuffix('.atlasa1.gz') for name in manifest['boot_files']
               if name.startswith('boot/vmlinuz-')]
     if len(images) != 1:
         parser.error('expected one versioned Linux image in the manifest')
     boots = {name: digest(Path('/')/name) == checksum
              for name, checksum in manifest['boot_files'].items()}
     storage = emmc_readback(manifest)
+    display_manager = Path('/etc/systemd/system/display-manager.service').resolve().name
+    if display_manager not in ('gdm.service', 'lightdm.service'):
+        parser.error('unsupported display manager')
     units = {unit: run('systemctl', 'is-active', unit, check=False) for unit in
-             ('serial-getty@ttyS0.service', 'lightdm.service', 'NetworkManager.service',
+             ('serial-getty@ttyS0.service', display_manager, 'NetworkManager.service',
               'systemd-udevd.service', 't736-cedar.socket', 'ssh.service')}
     hdmi = {}
     for connector in Path('/sys/class/drm').glob('card*-HDMI-*'):
@@ -95,7 +98,7 @@ def main():
                   desktop_sessions=run('loginctl', 'list-sessions', '--no-legend').splitlines(),
                   alsa_cards=Path('/proc/asound/cards').read_text().strip()
                   if Path('/proc/asound/cards').exists() else '',
-                  package_audit=run('dpkg', '--audit'))
+                  display_manager=display_manager, package_audit=run('dpkg', '--audit'))
     record['checks'] = dict(ubuntu_resolute='VERSION_CODENAME=resolute' in os_release,
                             released_kernel=kernel == images[0],
                             boot_files=all(boots.values()), raw_boot_stages=all(storage.values()),
@@ -103,7 +106,7 @@ def main():
                             emmc_file_fsync_readback=filesystem_test(),
                             initialized_identity=len(Path('/etc/machine-id').read_text().strip()) == 32,
                             generated_ssh_host_keys=bool(hosts),
-                            display_manager=units['lightdm.service'] == 'active',
+                            display_manager=units[display_manager] == 'active',
                             hdmi_connector_enabled=any(s.get('status') == 'connected' and
                                                        s.get('enabled') == 'enabled' for s in hdmi.values()),
                             cedar_socket=units['t736-cedar.socket'] == 'active',

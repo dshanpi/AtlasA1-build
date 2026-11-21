@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-21",
+  "source_build": true,
+  "kernel_release": "6.18.63-t736-gnome-v47",
+  "armbian_commit": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "wireless_diagnostic_kernel": false,
+  "files": {
+    "kernel/boot-candidate/boot/Image-6.18.63-t736-gnome-v47": {
+      "bytes": 14125064,
+      "sha256": "de8905754f5f780d7ffd51dce5c94fd2a4bb75b293c2315f274c8d64ac25f1a8"
+    },
+    "kernel/boot-candidate/boot/t736-gnome-v47.dtb": {
+      "bytes": 16696,
+      "sha256": "a2018f5d02947ea2995829d8333ba72cc04b1293df6b7df0542414050e8b5a6d"
+    },
+    "kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko": {
+      "bytes": 2163592,
+      "sha256": "d33d2fff289329ec3657470eac91a2f2ea1ec72186e5b14f93962b4bbde67178"
+    },
+    "kernel/linux-image-6.18.63-t736-gnome-v47_6.18.63-47_arm64.deb": {
+      "bytes": 5075980,
+      "sha256": "3067f253b0960d39370a178d2707574caab59ae44c17ce1e6d4d694522d9ffa2"
+    },
+    "boot/payload/emmc-spl.bin": {
+      "bytes": 221184,
+      "sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea"
+    },
+    "boot/payload/boot-package.bin": {
+      "bytes": 325632,
+      "sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e"
+    },
+    "wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb": {
+      "bytes": 30983106,
+      "sha256": "5cdd003a0f56f8544a50e4efda00aeda58db000214e15b6be62fd58aec0dc4dd"
+    },
+    "player/atlasa1-player_0.1-6~resolute1_arm64.deb": {
+      "bytes": 6256376,
+      "sha256": "ebe463f9ac6f57b718166035e4ffb14d2eea58cfb750e4e8974520e4f5fa11ec"
+    },
+    "firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb": {
+      "bytes": 4857316,
+      "sha256": "38c6f691391487dd6a432602bf8a69a1a6fd4acaa7db6fd94e07b284dc9159cc"
+    },
+    "service/cedar-broker": {
+      "bytes": 30256,
+      "sha256": "2a2790b05dd55a7463e8b11f6eed165cb4f2d904906c5ae8957527054de04f98"
+    },
+    "service/libcedar_backend.so": {
+      "bytes": 38280,
+      "sha256": "2185f2019b4aea60933c34d387d290e808848e420f8899b0b401783293145583"
+    },
+    "omx/libOmxVdec.so": {
+      "bytes": 286576,
+      "sha256": "2f5cf44fe7eb2bfd0eaeed8acda91cf5b3f6188f8d9ba789fb7f8a059bd29f3c"
+    }
+  },
+  "comparison_with_installed_v47": {
+    "method": "Read installed default kernel via SSH, decompress gzip and hash; hash installed default DTB",
+    "kernel_identical": true,
+    "dtb_identical": true,
+    "whole_new_image_hardware_tested": false,
+    "boot_package_identical": true,
+    "boot_package_readback": "Read 325632 bytes from eMMC user LBA24576; SHA256 equals freshly built boot package"
+  }
+}
