@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Rebuild AtlasA1 eMMC media on an Armbian-supported Linux build host.
 set -euo pipefail
-if [[ $# != 2 && $# != 3 ]] || [[ $# == 3 && ${3-} != --pcie-v34 ]]; then
-    echo "Usage: $0 OFFICIAL_ARMBIAN_CHECKOUT NEW_OUTPUT_DIRECTORY [--pcie-v34]" >&2
+if [[ $# != 2 && $# != 3 ]] || [[ $# == 3 && ${3-} != --pcie-v34 && ${3-} != --gnome-v47 ]]; then
+    echo "Usage: $0 OFFICIAL_ARMBIAN_CHECKOUT NEW_OUTPUT_DIRECTORY [--pcie-v34|--gnome-v47]" >&2
     echo "Set ATLAS_TINA_SDK to the configured T736 Tina SDK (see docs/UBUNTU_26_04.md)." >&2
     exit 2
 fi
@@ -17,6 +17,10 @@ check_file() { printf '%s  %s\n' "$1" "$2" | sha256sum --check --status; }
 check_file 5361d148fa097ccc14e15a173523783d0eb1a71969bc76d57eb8e1229ddc6d90 "$ddr"
 if [[ -n ${ATLAS_FIREFOX_DEB:-} ]]; then
     firefox=$(realpath -e "$ATLAS_FIREFOX_DEB")
+    if [[ ${3-} == --gnome-v47 ]]; then
+        echo 'GNOME release rebuilds its matching Firefox panel package; unset ATLAS_FIREFOX_DEB.' >&2
+        exit 2
+    fi
     check_file 0e360b0c309f61a6b6562387026ea8bfe3fb7f3248672972dbc7c9781c1c29cb "$firefox"
 fi
 mkdir -- "$out"
@@ -48,11 +52,20 @@ python3 "$tools/build_atlasa1_release_boot.py" --work "$out/boot" \
 git clone --depth=1 --branch v6.18.63 https://github.com/gregkh/linux.git linux
 release=6.18.63-t736-media-v30
 version=6.18.63-30
-if [[ $# == 3 ]]; then
+if [[ ${3-} == --pcie-v34 ]]; then
     release=6.18.63-t736-hw-v34
     version=6.18.63-34
 fi
-bash "$tools/build_atlasa1_release_kernel.sh" "$out/sources/linux" "$tina" "$out/kernel" "${@:3}"
+if [[ ${3-} == --gnome-v47 ]]; then
+    release=6.18.63-t736-gnome-v47
+    version=6.18.63-47
+    bash "$tools/build_gnome_media_candidate.sh" "$out/sources/linux" "$tina" "$out/kernel" --boot-fast
+    python3 "$tools/package_atlasa1_gnome_kernel.py" "$out/kernel" "$out/kernel/linux-image-${release}_${version}_arm64.deb"
+    python3 "$tools/build_gpu_userspace.py" --tina "$tina" --platform wayland --work "$out/wayland"
+    export ATLAS_FIREFOX_PANEL_CANDIDATE=1
+else
+    bash "$tools/build_atlasa1_release_kernel.sh" "$out/sources/linux" "$tina" "$out/kernel" "${@:3}"
+fi
 kernel="$out/kernel/linux-image-${release}_${version}_arm64.deb"
 pvr="$out/kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko"
 
@@ -75,8 +88,13 @@ bash "$tools/stage_atlasa1_resolute_x11.sh" "$out/media"
 bash "$tools/build_atlasa1_resolute_rootfs.sh" "$framework" "$out/ubuntu"
 root="$out/ubuntu/rootfs"
 sudo bash "$tools/configure_atlasa1_resolute.sh" "$root" "$kernel" "$pvr" "$out/media" "$gpu" "$player" "$firefox"
+if [[ ${3-} == --gnome-v47 ]]; then
+    sudo bash "$tools/configure_atlasa1_gnome_release.sh" "$root" "$out/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb"
+fi
 sudo bash "$tools/verify_atlasa1_resolute.sh" "$root" "$release" --require-firefox-cedar
-image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_Desktop_arm64.img"
+desktop=Desktop
+if [[ ${3-} == --gnome-v47 ]]; then desktop=GNOME; fi
+image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_${desktop}_arm64.img"
 sudo python3 "$tools/pack_atlasa1_resolute.py" --rootfs "$root" --boot "$out/boot/payload" --output "$image"
 # xz preserves file ownership and returns a warning status for a root-owned input.
 sudo chown --reference="$out" -- "$image" "${image%.img}.manifest.json"

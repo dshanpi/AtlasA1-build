@@ -18,10 +18,14 @@ git apply --whitespace=nowarn --check /tmp/atlasa1-resolute-armbian.patch
 git apply --whitespace=nowarn /tmp/atlasa1-resolute-armbian.patch
 
 export ATLAS_TINA_SDK=/srv/tina
-bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output
+bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output --gnome-v47
 ```
 
-默认构建使用 v30 内核和双格式 Cedar 服务。在最后一条命令末尾追加 `--pcie-v34`，并指定新的输出目录，即可选用 v34 内核、DTB、PowerVR 模块、initrd 和启动别名。v34 已在 J58 空槽的实板上冷启动，内建驱动枚举出根端口并完成重扫。板载 Wi-Fi 已有 SDIO 主控，仍未枚举无线芯片，蓝牙 UART 也尚未收到 HCI 响应。[v34 干净构建](../evidence/atlasa1-hw-v34-kernel-replay-20261118.json) · [PCIe 实测](../evidence/atlasa1-pcie-v34-coldboot-20261118.json) · [无线实测](../evidence/atlasa1-wireless-v33-hardware-20261118.json)
+上面的 `--gnome-v47` 构建 GNOME Wayland / GDM 镜像，使用 v47 内核、配套 PowerVR Wayland 包、Firefox panel2 和原生播放器 0.1-6。内核包含 CPU、eMMC、显示、Cedar 和 PCIe 修复。首次登录的新账户优先使用显示器支持的 1080p60；已有显示配置予以保留。账户 `t736` 的密码为 `1234`，不启用自动登录。root 初始密码同为 `1234`，保留首次登录改密机制。
+
+Wi-Fi / 蓝牙目前仍未通过：AW869C 即 AIC8800D80，SDIO 未枚举芯片，不能宣称驱动已可用。PMIC 和原理图排查记录见 [无线诊断](../evidence/wireless-path-20261120/RUNTIME-TRIALS-20261121.md)。诊断用寄存器实验不进入发行内核。Chromium 仅接通 GPU 绘制，尚未接通 Cedar 视频解码。Firefox 的 4K HEVC 路径缩放到 1080p 显示，不能作为原生 4K HDMI 验收。每个成品镜像的实测范围以 Release 附件为准。
+
+不带选项时保留 v30 / Xfce 旧配方；`--pcie-v34` 是早期 Xfce 硬件预览。以下 RC1 / v34 记录属于历史版本。
 
 11 月 19 日的 v34 硬件预览复用 RC1 根文件系统，在可写叠加层安装 v34 内核、配套 PowerVR 模块、双格式 Cedar 服务和 Firefox 160 的 Cedar 硬解入口。8 GiB 原始镜像的 SHA-256 为 `80975eb72bf80e53e549e7d4351600719cdc2d09113e30790a03df24e1636622`。离线检查通过了 GPT、ext4 和启动文件回读，并以普通用户核对了 Firefox 入口及 H.264、HEVC 解码器。该预览整盘仍待 FES 重刷和冷启动验证。已通过 FES 整盘烧录的是 RC1，v34 内核的冷启动使用该板 eMMC 上的独立启动文件。[最终预览镜像记录](../evidence/atlasa1-v34-firefox-image-20261119.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
 

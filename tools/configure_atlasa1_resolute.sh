@@ -16,7 +16,7 @@ board_debs=("$kernel" "$gpu" "$player")
 if [[ $# == 7 ]]; then
     firefox=$(realpath -e "$7")
     [[ $(dpkg-deb -f "$firefox" Package) == atlasa1-firefox-cedar ]]
-    [[ $(dpkg-deb -f "$firefox" Version) == '8.0.1-1~resolute1' ]]
+    case $(dpkg-deb -f "$firefox" Version) in 8.0.1-1~resolute1|8.0.1-1~resolute1+panel2) ;; *) exit 2 ;; esac
     board_debs+=("$firefox")
 fi
 [[ "$root" != / && "$overlay" != / && "$root" != "$overlay" ]]
@@ -31,7 +31,7 @@ grep -q t736-mainline "$root/etc/armbian-release"
 package=$(dpkg-deb -f "$kernel" Package)
 case "$package" in
     linux-image-6.18.63-t736-media-v30) board_dtb=t736-gpu-candidate.dtb ;;
-    linux-image-6.18.63-t736-hw-v34) board_dtb=t736-pcie-v32.dtb ;;
+    linux-image-6.18.63-t736-hw-v34|linux-image-6.18.63-t736-gnome-v47) board_dtb=t736-pcie-v32.dtb ;;
     *) echo "Unsupported AtlasA1 kernel package: $package" >&2; exit 2 ;;
 esac
 release=${package#linux-image-}

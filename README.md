@@ -1,6 +1,6 @@
 # AtlasA1-build
 
-AtlasA1 / T736 的 Armbian Ubuntu 26.04 LTS（arm64）eMMC 镜像。默认桌面是 LightDM + Xfce X11，另含 GNOME / GDM。原生播放器使用 Cedar 解码和 PowerVR GLES。镜像下载、校验和与本版验收范围见 [Releases](https://github.com/dshanpi/AtlasA1-build/releases)。
+AtlasA1 / T736 的 Armbian Ubuntu 26.04 LTS（arm64）eMMC 镜像。使用 `--gnome-v47` 构建 GNOME Wayland / GDM 版本，包含 PowerVR、Cedar、Firefox 硬解入口和原生播放器。旧版 Xfce 配方保留。镜像下载、校验和与逐项验收范围见 [Releases](https://github.com/dshanpi/AtlasA1-build/releases)。
 
 从官方 Armbian 源码重建时，应用一份发行版补丁，指定已配置的 T736 Tina SDK，然后执行总入口。它会从 SDK 中准备 IMG/Cedar 运行库，获取公开交叉编译依赖，构建固定 LPDDR4x 启动链、Linux 与 PowerVR 内核模块、播放器及 Ubuntu 根文件系统，并打包成完整磁盘镜像。[Ubuntu 26.04 构建步骤](docs/UBUNTU_26_04.md) · [单文件补丁](patches/atlasa1-resolute-armbian.patch)
 
