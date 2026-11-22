@@ -1,0 +1,6 @@
+{
+  "coldboot": true,
+  "off_ms": 5000,
+  "seconds_from_cycle_request_to_serial_login": 48.915,
+  "serial_login_prompt": true
+}

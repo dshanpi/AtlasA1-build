@@ -1,0 +1,10 @@
+{
+  "before_backup_lba": 16777215,
+  "after_backup_lba": 122142719,
+  "disk_last_lba": 122142719,
+  "primary_and_backup_crc_valid": true,
+  "vendor_mirror_matches": true,
+  "partition_entries_unchanged": true,
+  "changed": true,
+  "partition_array_sha256": "750938222976776900b49d1782ee976c52db16fc42f1ab04ceeaffb3aaa4125f"
+}

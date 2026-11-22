@@ -1,0 +1,588 @@
+{
+  "schema": 1,
+  "date_local": "2026-11-22",
+  "timezone": "Asia/Shanghai",
+  "release": "https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.21-ubuntu26.04-gnome-v47-rc1",
+  "image_artifact_unchanged": true,
+  "image_raw_sha256": "dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd",
+  "image_xz_sha256": "09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54",
+  "flash": {
+    "method": "U-Boot one-shot RAM initramfs; compressed release embedded in RAM; no disk filesystem mounted",
+    "emmc_cid": "ec290041333159354330982b37b69ccd",
+    "bytes_written_and_readback": 8589934592,
+    "sha256": "dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd",
+    "complete_readback_match": true,
+    "elapsed_seconds": 509.679,
+    "nvme_written": false
+  },
+  "coldboot": {
+    "coldboot": true,
+    "off_ms": 5000,
+    "seconds_from_cycle_request_to_serial_login": 48.915,
+    "serial_login_prompt": true
+  },
+  "fes": {
+    "status": "failed_before_disk_write",
+    "reason": "RAM loader USB reconnect failed twice",
+    "successful_write_method": "one-shot U-Boot RAM initramfs"
+  },
+  "unmodified_image_live_checks": {
+    "ubuntu_resolute": true,
+    "released_kernel": true,
+    "boot_files": true,
+    "raw_boot_stages": true,
+    "rootfs_uuid": true,
+    "emmc_file_fsync_readback": true,
+    "initialized_identity": true,
+    "generated_ssh_host_keys": true,
+    "display_manager": true,
+    "hdmi_connector_enabled": true,
+    "cedar_socket": true,
+    "powervr_render_node": true,
+    "package_db_clean": true
+  },
+  "gpt_finalization": {
+    "before_backup_lba": 16777215,
+    "after_backup_lba": 122142719,
+    "disk_last_lba": 122142719,
+    "primary_and_backup_crc_valid": true,
+    "vendor_mirror_matches": true,
+    "partition_entries_unchanged": true,
+    "changed": true,
+    "partition_array_sha256": "750938222976776900b49d1782ee976c52db16fc42f1ab04ceeaffb3aaa4125f"
+  },
+  "post_install_fixes": {
+    "included_in_published_image": false,
+    "original_issues": [
+      "GNOME 50 skips legacy X-GNOME-Autostart-Phase; fresh greeter and desktop used 1440p60",
+      "no time-sync service installed; clock initially incorrect"
+    ],
+    "applied": [
+      "removed legacy desktop autostart phase",
+      "GDM-specific ExecStartPost invokes existing EDID-aware helper",
+      "installed/enabled systemd-timesyncd and its APT dependencies"
+    ],
+    "verified": {
+      "desktop_1080p60": true,
+      "greeter_1080p60": true,
+      "ntp_synchronized": true
+    },
+    "package_delta_record": "hardware-20261122/apt-timesync-retry.log"
+  },
+  "gpu": {
+    "session_type": "wayland",
+    "complete": true,
+    "graphics_pass": true,
+    "animation_metric": "requestAnimationFrame callbacks, not HDMI frames",
+    "startup_seconds": 4.499230084999965,
+    "session": {
+      "sessionId": "f2d958ca-1f0a-4ef2-ad85-3f15c8778273",
+      "capabilities": {
+        "acceptInsecureCerts": false,
+        "browserName": "firefox",
+        "browserVersion": "160.0.1",
+        "platformName": "linux",
+        "setWindowRect": true,
+        "unhandledPromptBehavior": "dismiss and notify",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:160.0) Gecko/20100101 Firefox/160.0",
+        "moz:buildID": "20261116130455",
+        "moz:headless": false,
+        "moz:platformVersion": "6.18.63-t736-gnome-v47",
+        "moz:processID": 8309,
+        "moz:profile": "/tmp/atlas-wayland-firefox-qo1am5z0",
+        "moz:shutdownTimeout": 73000,
+        "pageLoadStrategy": "normal",
+        "timeouts": {
+          "implicit": 0,
+          "pageLoad": 300000,
+          "script": 30000
+        },
+        "strictFileInteractability": false,
+        "moz:accessibilityChecks": false,
+        "moz:webdriverClick": true,
+        "moz:windowless": false,
+        "proxy": {}
+      }
+    },
+    "graphics": {
+      "features": {
+        "compositor": "webrender",
+        "hwCompositing": {
+          "status": "available"
+        },
+        "gpuProcess": {
+          "status": "unused"
+        },
+        "webrender": {
+          "status": "available"
+        },
+        "wrCompositor": {
+          "status": "blocklisted:FEATURE_FAILURE_WEBRENDER_COMPOSITOR_DISABLED"
+        },
+        "openglCompositing": {
+          "status": "available"
+        }
+      },
+      "renderer": "PowerVR B-Series BXM-4-64"
+    },
+    "animation": {
+      "callbacks": 532,
+      "visible": "visible",
+      "fps": 52.40200528954328,
+      "maxGapMs": 116.92000000000007,
+      "gapsOver25ms": 48
+    }
+  },
+  "native_playback": {
+    "native-1080p60": {
+      "status": "not_verified",
+      "fixture": {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "duration": "25.000000",
+        "nb_frames": "1500",
+        "sha256": "20f379b942fa6521cb71b673ae68cdcdc1cdd1360b0d2696fe13dc2b41ec8274"
+      },
+      "wall_seconds": 27.466,
+      "irq_delta": 1500,
+      "frames_at_player_filter": 1500,
+      "player_drops": 0,
+      "sdl_present": {
+        "frames": 1500,
+        "span_ms": 24700.267,
+        "gap_p95_ms": 19.242,
+        "gap_max_ms": 77.447
+      },
+      "wp_presentation": {
+        "requested": 1500,
+        "shown": 1456,
+        "discarded": 44,
+        "span_ms": 24670.487,
+        "fps": 58.977,
+        "max_gap_ms": 100.425,
+        "gaps_over_25ms": 9,
+        "gaps_over_40ms": 4,
+        "flags": 7
+      },
+      "checks": {
+        "exited_cleanly": true,
+        "all_frames": true,
+        "full_dimensions": true,
+        "zero_player_drops": true,
+        "clock_reached_end": true,
+        "realtime_wall": false,
+        "decoder_path": true,
+        "pvr_loaded": true,
+        "audio_video_sync": true,
+        "presented_every_frame": true,
+        "p95_presentation_gap": true,
+        "wayland_feedback_received": true,
+        "wayland_every_frame": false,
+        "wayland_hw_timing": true
+      },
+      "audio_device": "dummy"
+    },
+    "native-4k30": {
+      "status": "not_verified",
+      "fixture": {
+        "codec_name": "hevc",
+        "width": 3840,
+        "height": 2160,
+        "duration": "25.000000",
+        "nb_frames": "750",
+        "sha256": "c8d45acc4599d9593c61803ba65bb2acf369de34ab973e8d5e394806110ea314"
+      },
+      "wall_seconds": 26.792,
+      "irq_delta": 750,
+      "frames_at_player_filter": 750,
+      "player_drops": 0,
+      "sdl_present": {
+        "frames": 750,
+        "span_ms": 24730.869,
+        "gap_p95_ms": 34.73,
+        "gap_max_ms": 46.413
+      },
+      "wp_presentation": {
+        "requested": 750,
+        "shown": 749,
+        "discarded": 1,
+        "span_ms": 24703.966,
+        "fps": 30.279,
+        "max_gap_ms": 83.694,
+        "gaps_over_25ms": 704,
+        "gaps_over_40ms": 21,
+        "flags": 7
+      },
+      "checks": {
+        "exited_cleanly": true,
+        "all_frames": true,
+        "zero_player_drops": true,
+        "clock_reached_end": true,
+        "realtime_wall": false,
+        "decoder_path": true,
+        "pvr_loaded": true,
+        "full_source_session": true,
+        "omx_fit_geometry": true,
+        "audio_video_sync": true,
+        "presented_every_frame": true,
+        "p95_presentation_gap": true,
+        "wayland_feedback_received": true,
+        "wayland_every_frame": false,
+        "wayland_hw_timing": true
+      },
+      "audio_device": "dummy"
+    }
+  },
+  "firefox": {
+    "firefox-1080p60": {
+      "status": "not_verified",
+      "checks": {
+        "window_completed": true,
+        "dimensions": true,
+        "normal_speed": true,
+        "browser_frame_rate": false,
+        "hardware_irq_rate": true,
+        "matching_hardware_session": true,
+        "rdd_seccomp_filter": true,
+        "rdd_hardware_output": true,
+        "no_fallback_logged": true
+      },
+      "decoded_size": [
+        1920,
+        1080
+      ],
+      "output_mode": "original-size",
+      "wall_seconds": 19.83,
+      "media_seconds": 19.813504,
+      "total_delta": 1196,
+      "dropped_delta": 344,
+      "presented_delta": 852,
+      "browser_retained_fps": 42.96520423600605,
+      "irq_delta": 1131,
+      "broker_sessions": [
+        [
+          "4",
+          "1",
+          "1920",
+          "1080"
+        ]
+      ],
+      "broker_frame_markers": [
+        [
+          "2400",
+          "4",
+          "1920",
+          "1080"
+        ],
+        [
+          "2700",
+          "4",
+          "1920",
+          "1080"
+        ],
+        [
+          "3000",
+          "4",
+          "1920",
+          "1080"
+        ],
+        [
+          "3300",
+          "4",
+          "1920",
+          "1080"
+        ]
+      ]
+    },
+    "firefox-4k30": {
+      "status": "not_verified",
+      "checks": {
+        "window_completed": true,
+        "dimensions": true,
+        "normal_speed": true,
+        "browser_frame_rate": false,
+        "hardware_irq_rate": true,
+        "matching_hardware_session": true,
+        "rdd_seccomp_filter": true,
+        "rdd_hardware_output": true,
+        "no_fallback_logged": true,
+        "explicit_hardware_scale": true
+      },
+      "decoded_size": [
+        1920,
+        1080
+      ],
+      "output_mode": "hardware-scaled-to-1080p",
+      "wall_seconds": 19.651,
+      "media_seconds": 19.646631,
+      "total_delta": 589,
+      "dropped_delta": 1,
+      "presented_delta": 588,
+      "browser_retained_fps": 29.92214136685156,
+      "irq_delta": 609,
+      "broker_sessions": [
+        [
+          "5",
+          "2",
+          "3840",
+          "2160"
+        ]
+      ],
+      "broker_frame_markers": [
+        [
+          "3600",
+          "5",
+          "1920",
+          "1080"
+        ],
+        [
+          "3900",
+          "5",
+          "1920",
+          "1080"
+        ],
+        [
+          "4200",
+          "5",
+          "1920",
+          "1080"
+        ]
+      ]
+    },
+    "firefox-1080p60-idle": {
+      "status": "not_verified",
+      "checks": {
+        "window_completed": true,
+        "dimensions": true,
+        "normal_speed": true,
+        "browser_frame_rate": false,
+        "hardware_irq_rate": true,
+        "matching_hardware_session": false,
+        "rdd_seccomp_filter": true,
+        "rdd_hardware_output": true,
+        "no_fallback_logged": true
+      },
+      "decoded_size": [
+        1920,
+        1080
+      ],
+      "output_mode": "original-size",
+      "wall_seconds": 19.918,
+      "media_seconds": 19.895643999999997,
+      "total_delta": 1195,
+      "dropped_delta": 12,
+      "presented_delta": 1183,
+      "browser_retained_fps": 59.39351340496034,
+      "irq_delta": 1200,
+      "broker_sessions": [
+        [
+          "6",
+          "1",
+          "1920",
+          "1080"
+        ],
+        [
+          "7",
+          "1",
+          "1920",
+          "1080"
+        ]
+      ],
+      "broker_frame_markers": [
+        [
+          "4500",
+          "7",
+          "1920",
+          "1080"
+        ],
+        [
+          "4800",
+          "7",
+          "1920",
+          "1080"
+        ],
+        [
+          "5100",
+          "7",
+          "1920",
+          "1080"
+        ],
+        [
+          "5400",
+          "7",
+          "1920",
+          "1080"
+        ]
+      ]
+    }
+  },
+  "measurement_limits": [
+    "Native tests and the first browser tests overlapped background APT work; not an isolated performance benchmark.",
+    "1080p idle retest ran after package work with 8-second browser warmup; 12 dropped frames and multiple broker sessions still fail strict criteria.",
+    "wp_presentation is compositor feedback, not an external HDMI capture.",
+    "4K HEVC hardware output is scaled to 1920x1080.",
+    "Audio tests used SDL dummy output; no ALSA cards enumerated.",
+    "Board timestamps before clock correction are incorrect; retained as raw evidence."
+  ],
+  "final_state": {
+    "gdm_greeter": true,
+    "automatic_login": false,
+    "display": "1920x1080@60",
+    "udisks2_runtime_mask_removed": true,
+    "nvme_mounted": false,
+    "nvme_written": false,
+    "failed_system_services": [],
+    "live_checks": {
+      "ubuntu_resolute": true,
+      "released_kernel": true,
+      "boot_files": true,
+      "raw_boot_stages": true,
+      "rootfs_uuid": true,
+      "emmc_file_fsync_readback": true,
+      "initialized_identity": true,
+      "generated_ssh_host_keys": true,
+      "display_manager": true,
+      "hdmi_connector_enabled": true,
+      "cedar_socket": true,
+      "powervr_render_node": true,
+      "package_db_clean": true
+    }
+  },
+  "unresolved": [
+    "AW869C/AIC8800D80 Wi-Fi and Bluetooth not working",
+    "Chromium Cedar hardware video decode not integrated",
+    "Strict zero-drop 1080p60 and 4K playback acceptance not passed",
+    "Physical audio output not working/verified: no ALSA cards",
+    "Native 4K HDMI, encoder, full zero-copy and long stress not verified",
+    "NVMe Gen1 x1 read-only validation only; no write testing",
+    "Cedar retired DMA buffers can require reboot"
+  ],
+  "evidence_files": {
+    "apt-timesync-retry.log": {
+      "bytes": 5454,
+      "sha256": "99ff2a73a27fe2f6059999f8c4909d0acdd6daca371a082c21d7d281ff9ea7a8"
+    },
+    "apt-timesync.log": {
+      "bytes": 157,
+      "sha256": "90449875b842aec5bc84feb19535661818e1c09f5c4762b06f4ca8b675f0ef0b"
+    },
+    "browser-renderer.json": {
+      "bytes": 1802,
+      "sha256": "7c203a546a46a4f19eb60721c63982c116e9664ee2c83fd68740d321e200bbe2"
+    },
+    "browser-renderer.log": {
+      "bytes": 4819,
+      "sha256": "eef248df71d850e2fbdba7824c63d5703c9ba36b5d60a394a1ce4aa73a0cce9f"
+    },
+    "coldboot-result.json": {
+      "bytes": 128,
+      "sha256": "d53e998c65305b96ad704b137c61e4eac43a3e128fc1e19d1ece41ea40f54653"
+    },
+    "desktop-display-fixed.json": {
+      "bytes": 5147,
+      "sha256": "c472e71d64d6e03ffd1ef697f6bd218ef64588e970a52f4dc5d27d116a5d75e5"
+    },
+    "emmc-write-readback.log": {
+      "bytes": 403,
+      "sha256": "6f1ef942a692d81cc8b6fb25e2814bea89fdf268f39e3e81ce45d13e5488ade8"
+    },
+    "final-greeter-state.json": {
+      "bytes": 7291,
+      "sha256": "30c59394b282e4579bb28f8d0a724df82eb20dc5fc28708a5a8d4d368c150721"
+    },
+    "firefox-1080p60-idle.json": {
+      "bytes": 34182,
+      "sha256": "02af86e8263f4242981b4dab218e6b952ce71071d96cdbed309a7b9a9f9a59e2"
+    },
+    "firefox-1080p60.json": {
+      "bytes": 25492,
+      "sha256": "d0a23a61b415864c54dacc49fbd26f90af6d4927f23531750f44df9f140d126d"
+    },
+    "firefox-4k30.json": {
+      "bytes": 26391,
+      "sha256": "39661f7c2d6a3a1db7797278a6f76d9f95009c39167eb5c526ca6b60ff85186b"
+    },
+    "flash-attempt1-status.json": {
+      "bytes": 4851,
+      "sha256": "de4a1f3e2e25834e12b4e749c41862a20088eb23a1a23612e19e04239bf364cc"
+    },
+    "flash-attempt2-status.json": {
+      "bytes": 4851,
+      "sha256": "8d1b29b969dec06f1203a3ccde6311816a2999a533744468ed9c5e72fed14da7"
+    },
+    "flash-result.json": {
+      "bytes": 376,
+      "sha256": "f675b94badb9a5e5489b48c1ecf7e0e926bdc311ede08b15ace7e707a3232bba"
+    },
+    "gpt-finalized.json": {
+      "bytes": 326,
+      "sha256": "4f9635c41c615ed0ac1db622c93ca9397ecbb41a77063f4a53a8506dd78edf35"
+    },
+    "live-final.json": {
+      "bytes": 2148,
+      "sha256": "d2d5721cc42927304743182a3b9bffeeea700217ebc98c99656e9191a3570ace"
+    },
+    "live-greeter.json": {
+      "bytes": 2134,
+      "sha256": "6b4764c2a06229bd3177207e1256be9ac47fa33272b162118a119c76cce11ab9"
+    },
+    "native-1080p60.json": {
+      "bytes": 2905,
+      "sha256": "3d7443bf816c9110321244792c3155695eb9c9596de4463406b548e248f2b2c6"
+    },
+    "native-1080p60.log": {
+      "bytes": 483581,
+      "sha256": "cdda3996f8c0e0eb1038ab51f928ef04d6184a5ee3e4cd4b06b4b1d4c1533843"
+    },
+    "native-4k30.json": {
+      "bytes": 2778,
+      "sha256": "b9c0867490f151be1b846fbd792af509da35cc5614a1d107f46ca298a0e37208"
+    },
+    "native-4k30.log": {
+      "bytes": 275969,
+      "sha256": "f7043a90829bcb302d3997f335e70109318063cc6a33ad6f825ea9d66ed9ba20"
+    },
+    "new-image-first-coldboot.log": {
+      "bytes": 9342,
+      "sha256": "25d248e4c91a9641e37cb243781d1cda1aaeb3e06f5c5953e01592399d8732c7"
+    },
+    "packages-after-validation.tsv": {
+      "bytes": 45781,
+      "sha256": "98dbc3ba8ea00eea4c5e0445f5afaedee5d97ba610374f937be3ec4bea2a422c"
+    },
+    "ram-rescue-flash-emmc.txt": {
+      "bytes": 1849,
+      "sha256": "fc917a140f6a0117868b143dac983c91e4a0be9989f72d77cf83ae37c4ec1d03"
+    },
+    "ram-rescue-init.txt": {
+      "bytes": 496,
+      "sha256": "3c17074fa792b8f43fceed1784a537b1a4374d27b7930cec44daf449ced820c8"
+    },
+    "runtime-fixes.json": {
+      "bytes": 5505,
+      "sha256": "aeaa9bfe60a0d54088344edbf72cf9e6b522db02dec338d79fa7e032601969b0"
+    },
+    "source-fix-validation.json": {
+      "bytes": 406,
+      "sha256": "63a95370c092a8e67de707a70d783f554f6d0f6317a8ead2e9e1d74f4280583f"
+    },
+    "time-status.txt": {
+      "bytes": 284,
+      "sha256": "13ed3d44ac15e15c897708c56b5c53ca1b9364d73b8d021201ba673b8fa39ebe"
+    }
+  },
+  "source_fix_validation": {
+    "armbian_base": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+    "patch_sha256": "77a20eceffd073b56cdba7b04b0220f7a6f154faed81833be982bce3633da034",
+    "clean_archive_git_apply_check": true,
+    "applied_to_clean_archive": true,
+    "shell_syntax": [
+      "stage_atlasa1_gnome_wayland.sh",
+      "prepare_t736_resolute_rootfs.sh"
+    ],
+    "display_helper_tests_passed": 4,
+    "new_image_rebuilt_with_fixes": false
+  },
+  "evidence_line_endings": "UTF-8 text CRLF normalized to LF for Git and evidence archive; original capture retained locally"
+}

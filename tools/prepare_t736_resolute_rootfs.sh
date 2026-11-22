@@ -62,7 +62,7 @@ run apt-get -o Acquire::Retries=3 -y --allow-downgrades --no-install-recommends 
 printf '%s\n' 'gdm3 shared/default-x-display-manager select lightdm' 'lightdm shared/default-x-display-manager select lightdm' |
     run debconf-set-selections
 run apt-get -o Acquire::Retries=3 -y --no-install-recommends install \
-    "$inside/bsp.deb" armbian-config openssh-server network-manager netplan.io systemd-resolved \
+    "$inside/bsp.deb" armbian-config openssh-server network-manager netplan.io systemd-resolved systemd-timesyncd \
     gdm3 gnome-session gnome-shell gnome-control-center nautilus \
     rtkit at-spi2-core evolution-data-server python3-gi libxcb-dri2-0 \
     lightdm lightdm-gtk-greeter xfce4-session xfce4-panel xfwm4 xfdesktop4 thunar \
@@ -73,7 +73,7 @@ test -x "$root/usr/sbin/lightdm"
 printf '/usr/sbin/lightdm\n' > "$root/etc/X11/default-display-manager"
 install -d "$root/etc/lightdm/lightdm.conf.d"
 printf '[Seat:*]\nuser-session=xfce\ngreeter-session=lightdm-gtk-greeter\n' > "$root/etc/lightdm/lightdm.conf.d/50-atlasa1-session.conf"
-run systemctl --no-reload enable --force lightdm.service NetworkManager.service systemd-resolved.service serial-getty@ttyS0.service armbian-firstrun.service ssl-cert.service
+run systemctl --no-reload enable --force lightdm.service NetworkManager.service systemd-resolved.service systemd-timesyncd.service serial-getty@ttyS0.service armbian-firstrun.service ssl-cert.service
 run systemctl --no-reload set-default graphical.target
 # The board uses a fixed fourth partition and a vendor GPT copy at LBA 40960.
 run systemctl --no-reload mask armbian-resize-filesystem.service

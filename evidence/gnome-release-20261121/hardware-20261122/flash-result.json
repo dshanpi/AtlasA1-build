@@ -1,0 +1,9 @@
+{
+  "method": "U-Boot one-shot RAM initramfs; compressed release embedded in RAM; no disk filesystem mounted",
+  "emmc_cid": "ec290041333159354330982b37b69ccd",
+  "bytes_written_and_readback": 8589934592,
+  "sha256": "dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd",
+  "complete_readback_match": true,
+  "elapsed_seconds": 509.679,
+  "nvme_written": false
+}

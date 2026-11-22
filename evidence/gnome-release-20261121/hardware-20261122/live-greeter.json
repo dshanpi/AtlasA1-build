@@ -1,0 +1,61 @@
+{
+  "kernel": "6.18.63-t736-gnome-v47",
+  "root_device": "/dev/mmcblk0p4",
+  "root_partuuid": "a0085546-4166-744a-a353-fca9272b8e48",
+  "rootfs_uuid": "344cbdbf-b410-406b-a863-b54799a907fb",
+  "kernel_command_line": "earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID=a0085546-4166-744a-a353-fca9272b8e48 rootwait rw clk_ignore_unused t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 t736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 t736_cedar_wc.heap_limit_mib=256",
+  "release_files": {
+    "boot/vmlinuz-6.18.63-t736-gnome-v47.atlasa1.gz": true,
+    "boot/initrd.img-6.18.63-t736-gnome-v47": true,
+    "boot/dtb/allwinner/t736-mainline-bringup.dtb": true
+  },
+  "emmc_boot_components": {
+    "24577": true,
+    "24587": true,
+    "24693": true,
+    "spl": true
+  },
+  "services": {
+    "serial-getty@ttyS0.service": "active",
+    "gdm.service": "active",
+    "NetworkManager.service": "active",
+    "systemd-udevd.service": "active",
+    "t736-cedar.socket": "active",
+    "ssh.service": "active"
+  },
+  "failed_units": [],
+  "hdmi": {
+    "card0-HDMI-A-1": {
+      "status": "connected",
+      "enabled": "enabled"
+    }
+  },
+  "active_drm_modes": [
+    "\"2560x1440\": 60 241500 2560 2608 2640 2720 1440 1443 1448 1481 0x48 0x9"
+  ],
+  "desktop_sessions": [
+    "c1 60578 gdm-greeter seat0 1063 greeter       tty1  no -",
+    "c2 60578 gdm-greeter -     1145 manager-early -     no -",
+    "c3  1000 t736        -     2798 user          ttyS0 no -",
+    "c4  1000 t736        -     3994 manager       -     no -",
+    "c7  1000 t736        -     5455 user          -     no -"
+  ],
+  "alsa_cards": "",
+  "display_manager": "gdm.service",
+  "package_audit": "",
+  "checks": {
+    "ubuntu_resolute": true,
+    "released_kernel": true,
+    "boot_files": true,
+    "raw_boot_stages": true,
+    "rootfs_uuid": true,
+    "emmc_file_fsync_readback": true,
+    "initialized_identity": true,
+    "generated_ssh_host_keys": true,
+    "display_manager": true,
+    "hdmi_connector_enabled": true,
+    "cedar_socket": true,
+    "powervr_render_node": true,
+    "package_db_clean": true
+  }
+}

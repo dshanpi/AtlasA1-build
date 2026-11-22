@@ -42,9 +42,21 @@ Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS
 - 原始镜像 SHA-256：`dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd`
 - `.img.xz` SHA-256：`09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54`
 
-**新镜像整盘 FES 烧录和首次冷启动仍未验证。** 当前 T736 SDK 绑定的烧录 USB 位置未枚举设备，专用 FEL 转换因此在写入前停止；另外发现的 FEL 设备在目标板断电后仍存在，未对其操作。旧板卡已恢复原有 v47 系统。新构建的 kernel、DTB 和启动包与原有实板文件的 SHA-256 相同，但这不能替代完整新根文件系统的启动验收。
+**2026-11-22 已完成新镜像整盘写入、完整 8 GiB SHA-256 回读及断电启动。** 本轮 FES 在 RAM loader 的 USB 重连阶段两次失败，尚未写入磁盘；随后通过 U-Boot 一次性启动 RAM 维护系统，将原始 Release 镜像写入 eMMC，写入和回读共 509.679 秒。断电 5 秒后，48.915 秒内到达新系统串口登录界面。13 项在线检查通过，启动组件、内核、initrd、DTB、根分区标识与 manifest 一致。NVMe 未挂载、未写入。备份 GPT 已迁至物理 eMMC 末端，六个分区条目保持不变。
 
-镜像内的首次显示初始化脚本已在旧系统的 GDM Wayland 会话实际运行：HDMI 从 2560×1440 切到 1920×1080 60 Hz，配置 XML 保存成功，一分钟后未自动回退。该测试使用隔离配置目录，脚本哈希与镜像内文件一致。[本版验收范围](../evidence/gnome-release-20261121/release-validation.json) · [构建组件](../evidence/gnome-release-20261121/component-build.json) · [安装包清单](../evidence/gnome-release-20261121/installed-packages.tsv)
+新镜像实际启动暴露了两项配置缺陷：GNOME 50 跳过带旧式 `X-GNOME-Autostart-Phase` 的显示自启动项，首次桌面与登录界面仍为 1440p；镜像缺少自动校时服务。主分支已修复，实板修复后用户桌面与 GDM 均为 1080p60，NTP 已同步。**原始 RC1 下载文件保持不变，不包含这些安装后修复。** 主分支重新构建会包含修复。已安装 RC1 可在板上克隆本仓库后执行以下命令，保存工作后重启：
+
+```sh
+sudo bash tools/stage_atlasa1_gnome_wayland.sh /
+sudo apt-get update
+sudo apt-get install systemd-timesyncd
+sudo systemctl enable --now systemd-timesyncd
+sudo reboot
+```
+
+PowerVR WebRender 已确认。本地播放器硬解 1080p60 的 1500 帧、4K30 的 750 帧，播放器零丢帧，但 Wayland 合成器分别显示 1456 和 749 帧，严格验收未通过。Firefox 空闲预热后 1080p60 约 59.39 fps、丢 12 帧；4K HEVC 硬件缩放到 1080p 约 29.92 fps、丢 1 帧，同样未达到零丢帧标准。前几轮测试与后台 APT 有重叠，不作为隔离性能基准。未枚举 ALSA 声卡，测试使用虚拟音频。
+
+[11 月 22 日整盘与多媒体验收](../evidence/gnome-release-20261121/gnome-hardware-validation-20261122.json) · [原始日志](../evidence/gnome-release-20261121/hardware-20261122/) · [打包时历史验收范围](../evidence/gnome-release-20261121/release-validation.json) · [构建组件](../evidence/gnome-release-20261121/component-build.json) · [安装包清单](../evidence/gnome-release-20261121/installed-packages.tsv)。原始 manifest 的 `hardware_boot=unverified` 是打包时状态，最新启动结论见日期标注的新增记录。
 
 ## 厂家输入和公开编译依赖
 

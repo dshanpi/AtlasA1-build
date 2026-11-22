@@ -1,0 +1,69 @@
+Get:1 http://mirrors.nju.edu.cn/armbian resolute InRelease [39.9 kB]
+Get:2 http://mirrors.nju.edu.cn/armbian resolute/resolute-utils all Packages [4,684 B]
+Get:3 http://mirrors.nju.edu.cn/armbian resolute/resolute-utils arm64 Packages [20.2 kB]
+Get:4 http://mirrors.nju.edu.cn/armbian resolute/resolute-desktop arm64 Packages [73.4 kB]
+Get:5 http://mirrors.nju.edu.cn/armbian resolute/resolute-desktop all Packages [8,125 B]
+Get:6 https://github.armbian.com/configng stable InRelease [6,225 B]
+Get:7 https://github.armbian.com/configng stable/main arm64 Packages [490 B]
+Get:8 http://ports.ubuntu.com resolute InRelease [136 kB]
+Get:9 http://ports.ubuntu.com resolute-security InRelease [137 kB]
+Get:10 http://ports.ubuntu.com resolute-updates InRelease [137 kB]
+Get:11 http://ports.ubuntu.com resolute-backports InRelease [137 kB]
+Get:12 http://ports.ubuntu.com resolute/main arm64 Packages [1,860 kB]
+Get:13 http://ports.ubuntu.com resolute/main arm64 Components [534 kB]
+Get:14 http://ports.ubuntu.com resolute arm64 Contents (deb) [57.3 MB]
+Get:15 http://ports.ubuntu.com resolute/restricted arm64 Packages [231 kB]
+Get:16 http://ports.ubuntu.com resolute/restricted arm64 Components [144 B]
+Get:17 http://ports.ubuntu.com resolute/universe arm64 Packages [19.9 MB]
+Get:18 http://ports.ubuntu.com resolute/universe arm64 Components [6,076 kB]
+Get:19 http://ports.ubuntu.com resolute/multiverse arm64 Packages [298 kB]
+Get:20 http://ports.ubuntu.com resolute/multiverse arm64 Components [52.2 kB]
+Get:21 http://ports.ubuntu.com resolute-security/main arm64 Packages [934 kB]
+Get:22 http://ports.ubuntu.com resolute-security/main arm64 Components [57.3 kB]
+Get:23 http://ports.ubuntu.com resolute-security arm64 Contents (deb) [40.5 MB]
+Get:24 http://ports.ubuntu.com resolute-security/restricted arm64 Packages [969 kB]
+Get:25 http://ports.ubuntu.com resolute-security/restricted arm64 Components [157 B]
+Get:26 http://ports.ubuntu.com resolute-security/universe arm64 Packages [265 kB]
+Get:27 http://ports.ubuntu.com resolute-security/universe arm64 Components [79.6 kB]
+Get:28 http://ports.ubuntu.com resolute-security/multiverse arm64 Packages [24.5 kB]
+Get:29 http://ports.ubuntu.com resolute-security/multiverse arm64 Components [159 B]
+Get:30 http://ports.ubuntu.com resolute-updates/main arm64 Packages [1,152 kB]
+Get:31 http://ports.ubuntu.com resolute-updates/main arm64 Components [144 kB]
+Get:32 http://ports.ubuntu.com resolute-updates arm64 Contents (deb) [44.5 MB]
+Get:33 http://ports.ubuntu.com resolute-updates/restricted arm64 Packages [1,025 kB]
+Get:34 http://ports.ubuntu.com resolute-updates/restricted arm64 Components [160 B]
+Get:35 http://ports.ubuntu.com resolute-updates/universe arm64 Packages [483 kB]
+Get:36 http://ports.ubuntu.com resolute-updates/universe arm64 Components [238 kB]
+Get:37 http://ports.ubuntu.com resolute-updates/multiverse arm64 Packages [26.3 kB]
+Get:38 http://ports.ubuntu.com resolute-updates/multiverse arm64 Components [161 B]
+Get:39 http://ports.ubuntu.com resolute-backports/main arm64 Components [159 B]
+Get:40 http://ports.ubuntu.com resolute-backports arm64 Contents (deb) [9,313 B]
+Get:41 http://ports.ubuntu.com resolute-backports/restricted arm64 Components [161 B]
+Get:42 http://ports.ubuntu.com resolute-backports/universe arm64 Packages [3,309 B]
+Get:43 http://ports.ubuntu.com resolute-backports/universe arm64 Components [1,009 B]
+Get:44 http://ports.ubuntu.com resolute-backports/multiverse arm64 Components [162 B]
+Fetched 158 MB in 1min 44s (1,519 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following NEW packages will be installed:
+  systemd-timesyncd
+0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.
+Need to get 40.2 kB of archives.
+After this operation, 249 kB of additional disk space will be used.
+Get:1 http://ports.ubuntu.com resolute-updates/main arm64 systemd-timesyncd arm64 259.9-0ubuntu0.1 [40.2 kB]
+Fetched 40.2 kB in 5s (7,332 B/s)
+Selecting previously unselected package systemd-timesyncd.
+(Reading database… (Reading database… 5%(Reading database… 10%(Reading database… 15%(Reading database… 20%(Reading database… 25%(Reading database… 30%(Reading database… 35%(Reading database… 40%(Reading database… 45%(Reading database… 50%(Reading database… 55%(Reading database… 60%(Reading database… 65%(Reading database… 70%(Reading database… 75%(Reading database… 80%(Reading database… 85%(Reading database… 90%(Reading database… 95%(Reading database… 100%(Reading database… 98029 files and directories currently installed.)
+Preparing to unpack …/systemd-timesyncd_259.9-0ubuntu0.1_arm64.deb…
+Unpacking systemd-timesyncd (259.9-0ubuntu0.1)…
+Setting up systemd-timesyncd (259.9-0ubuntu0.1)…
+Creating group 'systemd-timesync' with GID 974.
+Creating user 'systemd-timesync' (systemd Time Synchronization) with UID 974 and GID 974.
+Created symlink '/etc/systemd/system/dbus-org.freedesktop.timesync1.service' → '/usr/lib/systemd/system/systemd-timesyncd.service'.
+Created symlink '/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service' → '/usr/lib/systemd/system/systemd-timesyncd.service'.
+systemd-time-wait-sync.service is a disabled or a static unit, not starting it.
+Processing triggers for dbus (1.16.2-2ubuntu4)…
+Processing triggers for man-db (2.13.1-1build1)…

@@ -8900,6 +8900,16 @@ index 0000000000000000000000000000000000000000..24cf46eb78f20235790e270bfeadca74
 +# sunxi-drm vblank queries can block. Submit without the KMS deadline timer.
 +Environment=MUTTER_DEBUG_KMS_SCHEDULING_PRIORITY=normal
 +ExecStartPre=/usr/bin/dbus-update-activation-environment --systemd LD_LIBRARY_PATH LIBGL_DRIVERS_PATH COGL_DRIVER GDK_BACKEND GSK_RENDERER GDK_DISABLE
+diff --git a/userpatches/atlasa1-release/config/gnome-wayland/60-atlasa1-greeter-display.conf b/userpatches/atlasa1-release/config/gnome-wayland/60-atlasa1-greeter-display.conf
+new file mode 100644
+index 0000000000000000000000000000000000000000..7180c906933f115e6fdc5289f33adcb1bf9c952b
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/gnome-wayland/60-atlasa1-greeter-display.conf
+@@ -0,0 +1,4 @@
++[Service]
++# The greeter does not start the desktop XDG autostart target on GNOME 50.
++# Type=notify means Mutter is ready before the helper queries DisplayConfig.
++ExecStartPost=-/usr/local/libexec/atlasa1-display-default
 diff --git a/userpatches/atlasa1-release/config/gnome-wayland/61-atlasa1-gnome.rules b/userpatches/atlasa1-release/config/gnome-wayland/61-atlasa1-gnome.rules
 new file mode 100644
 index 0000000000000000000000000000000000000000..57e3fa1eb1bd26c7d8ef8d3f6ad6e8fbbca49cf6
@@ -9008,17 +9018,16 @@ index 0000000000000000000000000000000000000000..8aa1cf300d3ce0bd2ae51927491e4b33
 +    main()
 diff --git a/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-display-default.desktop b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-display-default.desktop
 new file mode 100644
-index 0000000000000000000000000000000000000000..791cc0feec66d3dd14006a945e83b99d45e67891
+index 0000000000000000000000000000000000000000..df4a5db2e93a3e4d7fedff7202a6df177814c5ce
 --- /dev/null
 +++ b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-display-default.desktop
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,6 @@
 +[Desktop Entry]
 +Type=Application
 +Name=AtlasA1 display default
 +Exec=/usr/local/libexec/atlasa1-display-default
 +OnlyShowIn=GNOME;
 +NoDisplay=true
-+X-GNOME-Autostart-Phase=Applications
 diff --git a/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome-session b/userpatches/atlasa1-release/config/gnome-wayland/atlasa1-gnome-session
 new file mode 100755
 index 0000000000000000000000000000000000000000..5dd5610f734c4419d7beba2291f5103d2417d753
@@ -11164,11 +11173,13 @@ index 0000000000000000000000000000000000000000..6d29f70c87ec73e3078ce20c4011efd4
 +默认 eMMC 冷启动 v45 已通过，NVMe 复测 32 次比对一致，读取约 201MB/s，当前停留在 GNOME 登录界面。另修复已安装旧 broker 包的播放器精确依赖：`atlasa1-cedar-format-switch 1.0-2~resolute1` 使用已有源码中的 `>= 0.1-5~resolute1`，broker 二进制不变，`apt-get check` 通过。
 diff --git a/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md b/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..662b7b8fe977344560a937c031119dd215a526fd
+index 0000000000000000000000000000000000000000..f2a573bffa95cb621180aa24a3e2a49c8c029df0
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/GNOME_WAYLAND.md
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,75 @@
 +# AtlasA1 GNOME 50 / Wayland candidate
++
++2026-11-22 更新：v47 GNOME 整盘镜像已发布，并完成 eMMC 写入、完整 8 GiB 回读和断电启动。首次显示默认值与自动校时的问题已在主分支和板上修复，原始 RC1 镜像未改写。浏览器 1080p60 空闲复测约 59.39 fps、丢 12 帧；4K HEVC 缩放至 1080p 约 29.92 fps、丢 1 帧，严格零丢帧仍未通过。[最新发行验收和安装后修复](https://github.com/dshanpi/AtlasA1-build/blob/main/docs/UBUNTU_26_04.md#2026-11-21-gnome-v47-构建)。以下为早期候选记录。
 +
 +2026-11-20 补充：Chromium 原先仍使用 llvmpipe。现已单独修复其 PowerVR
 +ANGLE GLES 渲染选择；Cedar 视频硬解尚未接入，不能沿用 Firefox 的验收结论。
@@ -11243,10 +11254,10 @@ index 0000000000000000000000000000000000000000..662b7b8fe977344560a937c031119dd2
 +该入口要求新的备份目录，保存显示管理器、GDM 和账户会话设置；不重启、不停止当前桌面、不修改内核启动别名，也不启用自动登录。需要另行确保已安装与 GPU 模块匹配并经过实板测试的内核。脚本输出桌面配置的恢复命令。
 diff --git a/userpatches/atlasa1-release/docs/UBUNTU_26_04.md b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..aa337eb3fd1e9a89a74d5dc44c00ecf4f86130c1
+index 0000000000000000000000000000000000000000..b862a576267641a7578f88792eac6775159e4a84
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,155 @@
 +# AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 +
 +本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
@@ -11283,6 +11294,29 @@ index 0000000000000000000000000000000000000000..aa337eb3fd1e9a89a74d5dc44c00ecf4
 +`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output --gnome-v47`。这两种方式调用同一套脚本。
 +
 +Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
++
++## 2026-11-21 GNOME v47 构建
++
++已从新建的官方 Armbian / Ubuntu 26.04 根文件系统生成 GNOME Wayland 完整镜像，未复制旧板卡根文件系统。原始镜像 8,589,934,592 字节，压缩包 1,041,712,836 字节。离线 rootfs 配置、GPT、ext4 fsck、启动文件回读哈希和 XZ 完整性检查均通过。
++
++- 原始镜像 SHA-256：`dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd`
++- `.img.xz` SHA-256：`09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54`
++
++**2026-11-22 已完成新镜像整盘写入、完整 8 GiB SHA-256 回读及断电启动。** 本轮 FES 在 RAM loader 的 USB 重连阶段两次失败，尚未写入磁盘；随后通过 U-Boot 一次性启动 RAM 维护系统，将原始 Release 镜像写入 eMMC，写入和回读共 509.679 秒。断电 5 秒后，48.915 秒内到达新系统串口登录界面。13 项在线检查通过，启动组件、内核、initrd、DTB、根分区标识与 manifest 一致。NVMe 未挂载、未写入。备份 GPT 已迁至物理 eMMC 末端，六个分区条目保持不变。
++
++新镜像实际启动暴露了两项配置缺陷：GNOME 50 跳过带旧式 `X-GNOME-Autostart-Phase` 的显示自启动项，首次桌面与登录界面仍为 1440p；镜像缺少自动校时服务。主分支已修复，实板修复后用户桌面与 GDM 均为 1080p60，NTP 已同步。**原始 RC1 下载文件保持不变，不包含这些安装后修复。** 主分支重新构建会包含修复。已安装 RC1 可在板上克隆本仓库后执行以下命令，保存工作后重启：
++
++```sh
++sudo bash tools/stage_atlasa1_gnome_wayland.sh /
++sudo apt-get update
++sudo apt-get install systemd-timesyncd
++sudo systemctl enable --now systemd-timesyncd
++sudo reboot
++```
++
++PowerVR WebRender 已确认。本地播放器硬解 1080p60 的 1500 帧、4K30 的 750 帧，播放器零丢帧，但 Wayland 合成器分别显示 1456 和 749 帧，严格验收未通过。Firefox 空闲预热后 1080p60 约 59.39 fps、丢 12 帧；4K HEVC 硬件缩放到 1080p 约 29.92 fps、丢 1 帧，同样未达到零丢帧标准。前几轮测试与后台 APT 有重叠，不作为隔离性能基准。未枚举 ALSA 声卡，测试使用虚拟音频。
++
++[11 月 22 日整盘与多媒体验收](../evidence/gnome-release-20261121/gnome-hardware-validation-20261122.json) · [原始日志](../evidence/gnome-release-20261121/hardware-20261122/) · [打包时历史验收范围](../evidence/gnome-release-20261121/release-validation.json) · [构建组件](../evidence/gnome-release-20261121/component-build.json) · [安装包清单](../evidence/gnome-release-20261121/installed-packages.tsv)。原始 manifest 的 `hardware_boot=unverified` 是打包时状态，最新启动结论见日期标注的新增记录。
 +
 +## 厂家输入和公开编译依赖
 +
@@ -169390,7 +169424,7 @@ index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f
 +readelf -d abi-test | grep -F 'Shared library: [libSDL2-2.0.so.0]'
 diff --git a/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..9732f014c42a330365eadca2744b397ed6c8275e
+index 0000000000000000000000000000000000000000..6bc2b21de38095edee6c7d4a2caa8fa2a200c40c
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
 @@ -0,0 +1,112 @@
@@ -169458,7 +169492,7 @@ index 0000000000000000000000000000000000000000..9732f014c42a330365eadca2744b397e
 +printf '%s\n' 'gdm3 shared/default-x-display-manager select lightdm' 'lightdm shared/default-x-display-manager select lightdm' |
 +    run debconf-set-selections
 +run apt-get -o Acquire::Retries=3 -y --no-install-recommends install \
-+    "$inside/bsp.deb" armbian-config openssh-server network-manager netplan.io systemd-resolved \
++    "$inside/bsp.deb" armbian-config openssh-server network-manager netplan.io systemd-resolved systemd-timesyncd \
 +    gdm3 gnome-session gnome-shell gnome-control-center nautilus \
 +    rtkit at-spi2-core evolution-data-server python3-gi libxcb-dri2-0 \
 +    lightdm lightdm-gtk-greeter xfce4-session xfce4-panel xfwm4 xfdesktop4 thunar \
@@ -169469,7 +169503,7 @@ index 0000000000000000000000000000000000000000..9732f014c42a330365eadca2744b397e
 +printf '/usr/sbin/lightdm\n' > "$root/etc/X11/default-display-manager"
 +install -d "$root/etc/lightdm/lightdm.conf.d"
 +printf '[Seat:*]\nuser-session=xfce\ngreeter-session=lightdm-gtk-greeter\n' > "$root/etc/lightdm/lightdm.conf.d/50-atlasa1-session.conf"
-+run systemctl --no-reload enable --force lightdm.service NetworkManager.service systemd-resolved.service serial-getty@ttyS0.service armbian-firstrun.service ssl-cert.service
++run systemctl --no-reload enable --force lightdm.service NetworkManager.service systemd-resolved.service systemd-timesyncd.service serial-getty@ttyS0.service armbian-firstrun.service ssl-cert.service
 +run systemctl --no-reload set-default graphical.target
 +# The board uses a fixed fourth partition and a vendor GPT copy at LBA 40960.
 +run systemctl --no-reload mask armbian-resize-filesystem.service
@@ -169508,10 +169542,10 @@ index 0000000000000000000000000000000000000000..9732f014c42a330365eadca2744b397e
 +run start-stop-daemon --version
 diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..bcbfc283c7a174429c3d76db87c4a7d511f073a8
+index 0000000000000000000000000000000000000000..373f364afe56e4e22aabba92d741d63675a82b68
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,35 @@
 +#!/usr/bin/env bash
 +# Install the GNOME profile into an installed or offline Ubuntu root filesystem.
 +set -euo pipefail
@@ -169526,6 +169560,7 @@ index 0000000000000000000000000000000000000000..bcbfc283c7a174429c3d76db87c4a7d5
 +test -r "$root/opt/atlasa1-img-wayland/runtime-gles/libEGL.so.1"
 +install -Dm644 "$profile/61-atlasa1-gnome.rules" "$root/etc/udev/rules.d/61-atlasa1-gnome.rules"
 +install -Dm644 "$profile/50-atlasa1-wayland.conf" "$root/etc/systemd/user/org.gnome.Shell@.service.d/50-atlasa1-wayland.conf"
++install -Dm644 "$profile/60-atlasa1-greeter-display.conf" "$root/etc/systemd/user/org.gnome.Shell@gdm.service.d/60-atlasa1-greeter-display.conf"
 +install -Dm755 "$profile/atlasa1-gnome-session" "$root/usr/local/bin/atlasa1-gnome-session"
 +install -Dm644 "$profile/atlasa1-gnome.desktop" "$root/usr/share/wayland-sessions/atlasa1-gnome.desktop"
 +install -Dm644 "$profile/90-atlasa1-pvr" "$root/etc/chromium.d/90-atlasa1-pvr"

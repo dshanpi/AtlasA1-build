@@ -1,0 +1,29 @@
+#!/rescue/bin/sh
+set -eu
+set -o pipefail
+export PATH=/rescue/bin:/usr/bin:/usr/sbin
+fail() { echo "ATLAS_RAM_FLASH_ABORT: $*"; exit 1; }
+[ "$#" -eq 1 ] && [ "$1" = 'dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd' ] || fail 'release hash argument required'
+grep -q 'atlas_ram_rescue=1' /proc/cmdline || fail 'not the one-shot rescue boot'
+grep -q 'allwinner,t736' /proc/device-tree/compatible || fail 'wrong SoC'
+[ "$(uname -r)" = '6.18.63-t736-gnome-v47' ] || fail 'wrong kernel'
+root_type=$(awk '$5=="/" {for(i=1;i<=NF;i++) if($i=="-") print $(i+1)}' /proc/self/mountinfo)
+case "$root_type" in rootfs|ramfs|tmpfs) ;; *) fail "root is not in RAM: $root_type";; esac
+if grep -Eq '/dev/(mmcblk|nvme)' /proc/mounts; then fail 'a physical disk is mounted'; fi
+[ "$(cat /sys/block/mmcblk0/device/type)" = MMC ] || fail 'not eMMC'
+[ "$(cat /sys/block/mmcblk0/device/cid)" = ec290041333159354330982b37b69ccd ] || fail 'eMMC CID mismatch'
+[ "$(cat /sys/block/mmcblk0/size)" = 122142720 ] || fail 'eMMC capacity mismatch'
+[ "$(stat -c %s /payload.img.xz)" = 1041712836 ] || fail 'payload length mismatch'
+[ ! -e /run/atlas-flash-started ] || fail 'already attempted in this boot'
+echo ATLAS_RAM_PAYLOAD_VERIFY
+printf '%s  %s\n' 09482419cae81d4fb33577d9771fa4587b99be8f3e4925ce72764d667b4b2f54 /payload.img.xz | sha256sum -c - || fail 'payload digest mismatch'
+printf started > /run/atlas-flash-started
+echo ATLAS_RAM_FLASH_WRITE_BEGIN
+unxz -c /payload.img.xz | dd of=/dev/mmcblk0 bs=4194304 conv=fsync
+sync
+blockdev --flushbufs /dev/mmcblk0
+echo ATLAS_RAM_FLASH_READBACK_BEGIN
+actual=$(head -c 8589934592 /dev/mmcblk0 | sha256sum | cut -d ' ' -f 1)
+echo "ATLAS_RAM_READBACK_SHA256=$actual"
+[ "$actual" = dcd1018a25c267d0541b7715320fcef57d5cf4d7ebe61c0ed47d8f741ca0dadd ] || fail 'full 8 GiB readback mismatch'
+echo ATLAS_RAM_FLASH_VERIFIED

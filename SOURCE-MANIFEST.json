@@ -14,8 +14,8 @@
       "path": "README.md",
       "kind": "generated",
       "source": "generated/AtlasA1-build/README.md",
-      "size": 2110,
-      "sha256": "60dbe09d403f91f6af01268ce3a56abcf2028f88c74713943c7252fe401e9e32"
+      "size": 2203,
+      "sha256": "ae7a5e9fd1af3b5e49780194fc967e9168ccffb899a68dbea49c81a4d6a71278"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/BUILD-PLAN.md",
@@ -711,6 +711,13 @@
       "sha256": "2c3ebe0ec2236f181f778a64d01e43c84375cee9934420cbc2a9d683db30d6f2"
     },
     {
+      "path": "config/gnome-wayland/60-atlasa1-greeter-display.conf",
+      "kind": "source",
+      "source": "mainline/config/gnome-wayland/60-atlasa1-greeter-display.conf",
+      "size": 220,
+      "sha256": "cc4e2345cf205ef7cf80d736a620609ca2d18d4799c0f4c10111a258a4e82373"
+    },
+    {
       "path": "config/gnome-wayland/61-atlasa1-gnome.rules",
       "kind": "source",
       "source": "mainline/config/gnome-wayland/61-atlasa1-gnome.rules",
@@ -735,8 +742,8 @@
       "path": "config/gnome-wayland/atlasa1-display-default.desktop",
       "kind": "source",
       "source": "mainline/config/gnome-wayland/atlasa1-display-default.desktop",
-      "size": 180,
-      "sha256": "1fac1e6f872505a88134116e25ba18275dff6f104ec5367960e994f7b8bbcf35"
+      "size": 143,
+      "sha256": "ecf058ecbd8665a7400baa42f6d45ca43f1ac879ace13ff0d8a1d75c3b5ddbfd"
     },
     {
       "path": "config/gnome-wayland/atlasa1-gnome-session",
@@ -1015,8 +1022,8 @@
       "path": "docs/GNOME_WAYLAND.md",
       "kind": "source",
       "source": "mainline/docs/GNOME_WAYLAND.md",
-      "size": 6713,
-      "sha256": "a8a3098ac37aaa826d615ec57f0100706aab083f7e60fc8d2a152291235177fc"
+      "size": 7250,
+      "sha256": "e7fcc86a4b39c0ef51bdac2ceaa4790a6722af8d21d54bc078a5d026fefe641c"
     },
     {
       "path": "docs/HARDWARE_MAP.md",
@@ -1029,8 +1036,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 16597,
-      "sha256": "259cf9f8dc0ec7afb48dfdfb9c36a4bf06f1da02519a49384dba154ab9bf0c09"
+      "size": 17945,
+      "sha256": "135642136b941bafc87e9df9007d645d1a17f259b2e24dbd2f992bffbea8415d"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -2622,6 +2629,209 @@
       "sha256": "eece8dccde2dbf9a7046b0036a6806f688fcbfa2ee8c13ee1c048967c573511b"
     },
     {
+      "path": "evidence/gnome-release-20261121/gnome-hardware-validation-20261122.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/gnome-hardware-validation-20261122.json",
+      "size": 17505,
+      "sha256": "0bfcd2be8eb78ead3b98d7df946fd3db2a3a43a2fabe641f568ea2ca472e2331"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/apt-timesync-retry.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/apt-timesync-retry.log",
+      "size": 5450,
+      "sha256": "dc195729bde1755bd090e57f8c641a0d99f902a7750d51904bbd24dc61f96e36"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/apt-timesync.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/apt-timesync.log",
+      "size": 157,
+      "sha256": "90449875b842aec5bc84feb19535661818e1c09f5c4762b06f4ca8b675f0ef0b"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/browser-renderer.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/browser-renderer.json",
+      "size": 1802,
+      "sha256": "7c203a546a46a4f19eb60721c63982c116e9664ee2c83fd68740d321e200bbe2"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/browser-renderer.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/browser-renderer.log",
+      "size": 4819,
+      "sha256": "eef248df71d850e2fbdba7824c63d5703c9ba36b5d60a394a1ce4aa73a0cce9f"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/coldboot-result.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/coldboot-result.json",
+      "size": 128,
+      "sha256": "d53e998c65305b96ad704b137c61e4eac43a3e128fc1e19d1ece41ea40f54653"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/desktop-display-fixed.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/desktop-display-fixed.json",
+      "size": 5147,
+      "sha256": "c472e71d64d6e03ffd1ef697f6bd218ef64588e970a52f4dc5d27d116a5d75e5"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/emmc-write-readback.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/emmc-write-readback.log",
+      "size": 392,
+      "sha256": "0bd250fa1c1feb71d6ec3f8a96f3112fc252b65e3e57082096ada6bda7df5793"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/final-greeter-state.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/final-greeter-state.json",
+      "size": 7291,
+      "sha256": "30c59394b282e4579bb28f8d0a724df82eb20dc5fc28708a5a8d4d368c150721"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/firefox-1080p60-idle.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/firefox-1080p60-idle.json",
+      "size": 34182,
+      "sha256": "02af86e8263f4242981b4dab218e6b952ce71071d96cdbed309a7b9a9f9a59e2"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/firefox-1080p60.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/firefox-1080p60.json",
+      "size": 25492,
+      "sha256": "d0a23a61b415864c54dacc49fbd26f90af6d4927f23531750f44df9f140d126d"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/firefox-4k30.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/firefox-4k30.json",
+      "size": 26391,
+      "sha256": "39661f7c2d6a3a1db7797278a6f76d9f95009c39167eb5c526ca6b60ff85186b"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/flash-attempt1-status.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/flash-attempt1-status.json",
+      "size": 4851,
+      "sha256": "de4a1f3e2e25834e12b4e749c41862a20088eb23a1a23612e19e04239bf364cc"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/flash-attempt2-status.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/flash-attempt2-status.json",
+      "size": 4851,
+      "sha256": "8d1b29b969dec06f1203a3ccde6311816a2999a533744468ed9c5e72fed14da7"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/flash-result.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/flash-result.json",
+      "size": 376,
+      "sha256": "f675b94badb9a5e5489b48c1ecf7e0e926bdc311ede08b15ace7e707a3232bba"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/gpt-finalized.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/gpt-finalized.json",
+      "size": 326,
+      "sha256": "4f9635c41c615ed0ac1db622c93ca9397ecbb41a77063f4a53a8506dd78edf35"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/live-final.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/live-final.json",
+      "size": 2148,
+      "sha256": "d2d5721cc42927304743182a3b9bffeeea700217ebc98c99656e9191a3570ace"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/live-greeter.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/live-greeter.json",
+      "size": 2134,
+      "sha256": "6b4764c2a06229bd3177207e1256be9ac47fa33272b162118a119c76cce11ab9"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/native-1080p60.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/native-1080p60.json",
+      "size": 2905,
+      "sha256": "3d7443bf816c9110321244792c3155695eb9c9596de4463406b548e248f2b2c6"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/native-1080p60.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/native-1080p60.log",
+      "size": 483581,
+      "sha256": "cdda3996f8c0e0eb1038ab51f928ef04d6184a5ee3e4cd4b06b4b1d4c1533843"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/native-4k30.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/native-4k30.json",
+      "size": 2778,
+      "sha256": "b9c0867490f151be1b846fbd792af509da35cc5614a1d107f46ca298a0e37208"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/native-4k30.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/native-4k30.log",
+      "size": 275969,
+      "sha256": "f7043a90829bcb302d3997f335e70109318063cc6a33ad6f825ea9d66ed9ba20"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/new-image-first-coldboot.log",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/new-image-first-coldboot.log",
+      "size": 9209,
+      "sha256": "cdf8feb873a82072e562dab7b650b700089f71767c1b8929f4221c8d7295650a"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/packages-after-validation.tsv",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/packages-after-validation.tsv",
+      "size": 45781,
+      "sha256": "98dbc3ba8ea00eea4c5e0445f5afaedee5d97ba610374f937be3ec4bea2a422c"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/ram-rescue-flash-emmc.txt",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/ram-rescue-flash-emmc.txt",
+      "size": 1849,
+      "sha256": "fc917a140f6a0117868b143dac983c91e4a0be9989f72d77cf83ae37c4ec1d03"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/ram-rescue-init.txt",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/ram-rescue-init.txt",
+      "size": 496,
+      "sha256": "3c17074fa792b8f43fceed1784a537b1a4374d27b7930cec44daf449ced820c8"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/runtime-fixes.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/runtime-fixes.json",
+      "size": 5505,
+      "sha256": "aeaa9bfe60a0d54088344edbf72cf9e6b522db02dec338d79fa7e032601969b0"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/source-fix-validation.json",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/source-fix-validation.json",
+      "size": 406,
+      "sha256": "63a95370c092a8e67de707a70d783f554f6d0f6317a8ead2e9e1d74f4280583f"
+    },
+    {
+      "path": "evidence/gnome-release-20261121/hardware-20261122/time-status.txt",
+      "kind": "source",
+      "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/time-status.txt",
+      "size": 284,
+      "sha256": "13ed3d44ac15e15c897708c56b5c53ca1b9364d73b8d021201ba673b8fa39ebe"
+    },
+    {
       "path": "evidence/gnome-release-20261121/image-build-manifest.json",
       "kind": "source",
       "source": "mainline/evidence/gnome-release-20261121/image-build-manifest.json",
@@ -2989,8 +3199,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8230102,
-      "sha256": "6024f8d48f719b1db4f2851d141bfdf6098eba3065c32297dbcfd7f81109de5a"
+      "size": 8234238,
+      "sha256": "b6198a479c4f7aabe05df471df3444aaa093b89052418ca69d6777b88856e632"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -6356,8 +6566,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 33711,
-      "sha256": "c002ae6a0537143515bd1ce95161bfb7ad7f5a012c28562d0fe279afe99c01c0"
+      "size": 33804,
+      "sha256": "bfed9b19a8e60ba45ffce012a0d6ffdbaf561a15a86f27b8e9b042eb6a6229fd"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
@@ -6657,8 +6867,8 @@
       "path": "tools/prepare_t736_resolute_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/prepare_t736_resolute_rootfs.sh",
-      "size": 5750,
-      "sha256": "93a5f489508c387d31e1aa776414704ab572f9338eb26124f77804ea39c5cf1b"
+      "size": 5794,
+      "sha256": "0da4a7d0e94ea478c84c37e632d32a827e869d6ce9e73742cbbd02196273c6b5"
     },
     {
       "path": "tools/repack_storage_v18_topology.py",
@@ -6678,8 +6888,8 @@
       "path": "tools/stage_atlasa1_gnome_wayland.sh",
       "kind": "source",
       "source": "mainline/tools/stage_atlasa1_gnome_wayland.sh",
-      "size": 1822,
-      "sha256": "d05d9482f7061c32107010cc78e15fbb20e44f41bee975c7a7d6ba54259f9c18"
+      "size": 1967,
+      "sha256": "d8d9b97cf0876c8b0e6bb7ea50e77c296d73f9425b42da9fd84f24134a053f53"
     },
     {
       "path": "tools/stage_atlasa1_plymouth.sh",

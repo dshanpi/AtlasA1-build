@@ -1,0 +1,64 @@
+{
+  "session_type": "wayland",
+  "complete": true,
+  "graphics_pass": true,
+  "animation_metric": "requestAnimationFrame callbacks, not HDMI frames",
+  "startup_seconds": 4.499230084999965,
+  "session": {
+    "sessionId": "f2d958ca-1f0a-4ef2-ad85-3f15c8778273",
+    "capabilities": {
+      "acceptInsecureCerts": false,
+      "browserName": "firefox",
+      "browserVersion": "160.0.1",
+      "platformName": "linux",
+      "setWindowRect": true,
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:160.0) Gecko/20100101 Firefox/160.0",
+      "moz:buildID": "20261116130455",
+      "moz:headless": false,
+      "moz:platformVersion": "6.18.63-t736-gnome-v47",
+      "moz:processID": 8309,
+      "moz:profile": "/tmp/atlas-wayland-firefox-qo1am5z0",
+      "moz:shutdownTimeout": 73000,
+      "pageLoadStrategy": "normal",
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "strictFileInteractability": false,
+      "moz:accessibilityChecks": false,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "proxy": {}
+    }
+  },
+  "graphics": {
+    "features": {
+      "compositor": "webrender",
+      "hwCompositing": {
+        "status": "available"
+      },
+      "gpuProcess": {
+        "status": "unused"
+      },
+      "webrender": {
+        "status": "available"
+      },
+      "wrCompositor": {
+        "status": "blocklisted:FEATURE_FAILURE_WEBRENDER_COMPOSITOR_DISABLED"
+      },
+      "openglCompositing": {
+        "status": "available"
+      }
+    },
+    "renderer": "PowerVR B-Series BXM-4-64"
+  },
+  "animation": {
+    "callbacks": 532,
+    "visible": "visible",
+    "fps": 52.40200528954328,
+    "maxGapMs": 116.92000000000007,
+    "gapsOver25ms": 48
+  }
+}

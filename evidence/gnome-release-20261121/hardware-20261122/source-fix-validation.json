@@ -1,0 +1,12 @@
+{
+  "armbian_base": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "patch_sha256": "77a20eceffd073b56cdba7b04b0220f7a6f154faed81833be982bce3633da034",
+  "clean_archive_git_apply_check": true,
+  "applied_to_clean_archive": true,
+  "shell_syntax": [
+    "stage_atlasa1_gnome_wayland.sh",
+    "prepare_t736_resolute_rootfs.sh"
+  ],
+  "display_helper_tests_passed": 4,
+  "new_image_rebuilt_with_fixes": false
+}
