@@ -76,7 +76,7 @@ def _copy(destination_root: Path, source: Path, relative: Path, records: dict[st
     # Git stores the public text sources with LF. Hash those same bytes on
     # every build host, including a Windows checkout with core.autocrlf.
     data = destination.read_bytes()
-    if b"\r\n" in data and b"\0" not in data:
+    if source.suffix.lower() != '.log' and b"\r\n" in data and b"\0" not in data:
         try:
             data.decode("utf-8")
         except UnicodeDecodeError:
@@ -117,6 +117,12 @@ def _file(source_base: Path, destination_root: Path, source_rel: str, destinatio
 
 
 def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, str]]) -> None:
+    # Preserve captured UART/progress bytes. Git's platform newline conversion
+    # must not invalidate the hashes of archived hardware evidence.
+    attributes = destination / '.gitattributes'
+    attributes.write_text('* text=auto eol=lf\n*.log -text\n*.gz -text\n*.xz -text\n*.zst -text\n', encoding='utf-8', newline='\n')
+    records['.gitattributes'] = (Path(f'generated:{repo}/.gitattributes'), 'generated')
+    _file(ROOT, destination, 'tools/verify_source_manifest.py', 'tools/verify_source_manifest.py', records)
     target = destination / "README.md"
     readme = GENERATED[repo]
     if repo in {'AtlasA1-build', 'AtlasA1-media'}:
@@ -168,6 +174,7 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
 
 def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
+    _file(ROOT, destination, 'docs/FRESH_HOST_BUILD.md', 'docs/FRESH_HOST_BUILD.md', records)
     _tree(ROOT, destination, 'evidence/gnome-release-20261121', 'evidence/gnome-release-20261121', records)
     _tree(ROOT, destination, 'evidence/wireless-path-20261120', 'evidence/wireless-path-20261120', records)
     _export_gnome_wayland(destination, records)

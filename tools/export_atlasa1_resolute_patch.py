@@ -9,6 +9,7 @@ BASE = Path(__file__).resolve().parents[1]
 PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
+    'docs/FRESH_HOST_BUILD.md', 'tools/verify_source_manifest.py', 'tests/test_source_manifest.py',
     'tools/configure_atlasa1_gnome_release.sh', 'tools/package_atlasa1_gnome_kernel.py',
     'tests/test_gnome_display_default.py',
     'evidence/wireless-path-20261120/*',

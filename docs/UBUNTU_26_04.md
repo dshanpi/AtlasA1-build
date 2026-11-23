@@ -1,5 +1,7 @@
 # AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 
+2026-11-23：正在将构建入口整理为无需用户准备 Tina SDK 的全新主机流程。下面的既有配方仍需要 SDK，不能视为该目标已完成。[全新主机构建验收条件及依赖缺口](FRESH_HOST_BUILD.md)。
+
 本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
 
 ## 从官方 Armbian 开始

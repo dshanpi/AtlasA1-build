@@ -4,6 +4,13 @@
   "generated_from": "workspace/mainline",
   "files": [
     {
+      "path": ".gitattributes",
+      "kind": "generated",
+      "source": "generated/AtlasA1-build/.gitattributes",
+      "size": 65,
+      "sha256": "f14219346a815eb876f13e889d6cfc638aef76e56bc630e234c6975a1b63bc6c"
+    },
+    {
       "path": ".gitignore",
       "kind": "generated",
       "source": "generated/AtlasA1-build/.gitignore",
@@ -63,8 +70,8 @@
       "path": "boards/candidates/media-v28-400mhz/dcdc2-snapshot-test.log",
       "kind": "source",
       "source": "mainline/boards/candidates/media-v28-400mhz/dcdc2-snapshot-test.log",
-      "size": 198,
-      "sha256": "6eda1967087642887b8e9f71364591d7dd70edacd8472d1ade6a4b3587428864"
+      "size": 199,
+      "sha256": "f8ccd8ca707d998073a48fcd6ff05f8c36dab1134e0d864768afbdc00c02e2ae"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/manifest.json",
@@ -1012,6 +1019,13 @@
       "sha256": "7397de434ce6efb6339df2b852f505b4db27fd08b8c5b96da0c362e430df0ca1"
     },
     {
+      "path": "docs/FRESH_HOST_BUILD.md",
+      "kind": "source",
+      "source": "mainline/docs/FRESH_HOST_BUILD.md",
+      "size": 4243,
+      "sha256": "913151c0bab5193d7f4d9ea0d5681f38dbaa8589726ddb4a5c453ead0005d083"
+    },
+    {
       "path": "docs/GNOME_MEDIA.md",
       "kind": "source",
       "source": "mainline/docs/GNOME_MEDIA.md",
@@ -1036,8 +1050,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 17945,
-      "sha256": "135642136b941bafc87e9df9007d645d1a17f259b2e24dbd2f992bffbea8415d"
+      "size": 18183,
+      "sha256": "16d6a48f270b2d3a04d4408a48d8ef478ea3e25ce2f64b71abf8ffafb5414e89"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -1540,8 +1554,8 @@
       "path": "evidence/gnome-media-20261119/default-v45-pcie-uart-20261120.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-media-20261119/default-v45-pcie-uart-20261120.log",
-      "size": 84403,
-      "sha256": "6ba6380be9723f56410d5b8f909d5d06b0c91a6f5c2727e5571b2ea774bd491e"
+      "size": 85438,
+      "sha256": "e0b19f6206ff25933c1e35c0366fec1020e4332101ef32f4830b4747fccdd56f"
     },
     {
       "path": "evidence/gnome-media-20261119/final-global-vsync-state.json",
@@ -2093,22 +2107,22 @@
       "path": "evidence/gnome-media-20261119/trial-v44-aspm-off-uart-20261120.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-media-20261119/trial-v44-aspm-off-uart-20261120.log",
-      "size": 84113,
-      "sha256": "966b197a91579122719ab15db93eab90c53689cacf89731bf7584eabf7a7500e"
+      "size": 85151,
+      "sha256": "f2d3b26010cd6c336d353a2188de0440111d46294bbcd7503296378088c5b98c"
     },
     {
       "path": "evidence/gnome-media-20261119/trial-v44-pcie-uart-20261120.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-media-20261119/trial-v44-pcie-uart-20261120.log",
-      "size": 84176,
-      "sha256": "a73b55fde6661ca2197800f41ad6e6194686103a6c543e365e4395316f395347"
+      "size": 85214,
+      "sha256": "af0d035c74ef054da68784b5e0e227b2d8a97bdd6d51350be00788ebe9f5973c"
     },
     {
       "path": "evidence/gnome-media-20261119/trial-v45-pcie-uart-20261120.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-media-20261119/trial-v45-pcie-uart-20261120.log",
-      "size": 84815,
-      "sha256": "e780e14613377013ddb33b818e59c97926f1d1141f69bcba205a2ab3f246d631"
+      "size": 85861,
+      "sha256": "d9628e1a8c60c0c17166fe02dbe56a3e3493897def44eafb83825450b9e8e2c1"
     },
     {
       "path": "evidence/gnome-media-20261119/v38-boot-oops.log",
@@ -2639,8 +2653,8 @@
       "path": "evidence/gnome-release-20261121/hardware-20261122/apt-timesync-retry.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/apt-timesync-retry.log",
-      "size": 5450,
-      "sha256": "dc195729bde1755bd090e57f8c641a0d99f902a7750d51904bbd24dc61f96e36"
+      "size": 5454,
+      "sha256": "99ff2a73a27fe2f6059999f8c4909d0acdd6daca371a082c21d7d281ff9ea7a8"
     },
     {
       "path": "evidence/gnome-release-20261121/hardware-20261122/apt-timesync.log",
@@ -2681,8 +2695,8 @@
       "path": "evidence/gnome-release-20261121/hardware-20261122/emmc-write-readback.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/emmc-write-readback.log",
-      "size": 392,
-      "sha256": "0bd250fa1c1feb71d6ec3f8a96f3112fc252b65e3e57082096ada6bda7df5793"
+      "size": 403,
+      "sha256": "6f1ef942a692d81cc8b6fb25e2814bea89fdf268f39e3e81ce45d13e5488ade8"
     },
     {
       "path": "evidence/gnome-release-20261121/hardware-20261122/final-greeter-state.json",
@@ -2786,8 +2800,8 @@
       "path": "evidence/gnome-release-20261121/hardware-20261122/new-image-first-coldboot.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-release-20261121/hardware-20261122/new-image-first-coldboot.log",
-      "size": 9209,
-      "sha256": "cdf8feb873a82072e562dab7b650b700089f71767c1b8929f4221c8d7295650a"
+      "size": 9342,
+      "sha256": "25d248e4c91a9641e37cb243781d1cda1aaeb3e06f5c5953e01592399d8732c7"
     },
     {
       "path": "evidence/gnome-release-20261121/hardware-20261122/packages-after-validation.tsv",
@@ -2849,8 +2863,8 @@
       "path": "evidence/gnome-release-20261121/offline-assembly.log",
       "kind": "source",
       "source": "mainline/evidence/gnome-release-20261121/offline-assembly.log",
-      "size": 12056,
-      "sha256": "12fdcb8f9f1ddafec11c3b14197c7f962de240b32600acc80920231367d066a7"
+      "size": 12079,
+      "sha256": "31b57b776511326ff1e3a1395e3198ad010e5865b2517af6e33514dc0e37744d"
     },
     {
       "path": "evidence/gnome-release-20261121/offline-checks.json",
@@ -3038,8 +3052,8 @@
       "path": "evidence/wireless-path-20261120/boot-wireless-restore-20261121.log",
       "kind": "source",
       "source": "mainline/evidence/wireless-path-20261120/boot-wireless-restore-20261121.log",
-      "size": 9461,
-      "sha256": "df3e852fc74410c41848ff7453028982bbb95037aa452aa79ba64ea812b8ab26"
+      "size": 9598,
+      "sha256": "2c17109dce2e48a8e75f02d5c03e899240e2263abf04cabfbcbd6ead90c89135"
     },
     {
       "path": "evidence/wireless-path-20261120/boot-wireless-restore-20261121.timing.json",
@@ -3052,8 +3066,8 @@
       "path": "evidence/wireless-path-20261120/boot-wireless-snapshot-20261121.log",
       "kind": "source",
       "source": "mainline/evidence/wireless-path-20261120/boot-wireless-snapshot-20261121.log",
-      "size": 10278,
-      "sha256": "15a9554027c9966842bcd0f799fc85ebdd438eb3553be746deca8335f29a2716"
+      "size": 10424,
+      "sha256": "93618a695ffbccef112b19f6effecad1b9e8effb9c7262d0df279c6ca4964841"
     },
     {
       "path": "evidence/wireless-path-20261120/boot-wireless-snapshot-20261121.timing.json",
@@ -3199,8 +3213,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8234238,
-      "sha256": "b6198a479c4f7aabe05df471df3444aaa093b89052418ca69d6777b88856e632"
+      "size": 8246386,
+      "sha256": "740c8c8c3c2aa4027608b21a5eb04f10ff1e52eee032d80d073c0ce4c11b1eac"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5373,6 +5387,13 @@
       "sha256": "5a17283ed2cbad98a30561f08e96903de3927c255a976ab9bf4a2d70449b7e2a"
     },
     {
+      "path": "tests/test_source_manifest.py",
+      "kind": "source",
+      "source": "mainline/tests/test_source_manifest.py",
+      "size": 2884,
+      "sha256": "1bcc70457a9298759389fd01de5b1923904d58413b4be92173f38a99f97c7381"
+    },
+    {
       "path": "tests/test_source_resume.py",
       "kind": "source",
       "source": "mainline/tests/test_source_resume.py",
@@ -6566,15 +6587,15 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 33804,
-      "sha256": "bfed9b19a8e60ba45ffce012a0d6ffdbaf561a15a86f27b8e9b042eb6a6229fd"
+      "size": 34457,
+      "sha256": "1e4053f70e67cba0d0b25b1a0adbbe86e7d009f006f607e34ebcdeb57404795f"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 8822,
-      "sha256": "da0b9068aa94d28ce3a0bba05dbd52d021d1866723e8eebb45c8bb5f451f1bed"
+      "size": 8922,
+      "sha256": "61685eac52bf8a10124d011557c0722510a89db1807d40262b3e797ec52e7470"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -7142,6 +7163,13 @@
       "source": "mainline/tools/verify_atlasa1_resolute_media.sh",
       "size": 2925,
       "sha256": "1814c4f957756c21934b0ce05487b91ddd6f151cae442345f5c08dff08af0b24"
+    },
+    {
+      "path": "tools/verify_source_manifest.py",
+      "kind": "source",
+      "source": "mainline/tools/verify_source_manifest.py",
+      "size": 3593,
+      "sha256": "6a189d8f2c86a87c3c16a4a511981316584d219c97347e58416038f3dbbec21f"
     },
     {
       "path": "tools/workspace_policy.py",
