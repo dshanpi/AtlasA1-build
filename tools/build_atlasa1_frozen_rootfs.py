@@ -69,6 +69,8 @@ def build(packages, bsp, output, recipe):
         run('gpg', '--batch', '--yes', '--dearmor', '--output', keyrings / 'armbian-archive-keyring.gpg',
             recipe / 'config/clean-build/armbian-archive-key.asc')
         shutil.copyfile(keyrings / 'armbian-archive-keyring.gpg', keyrings / 'armbian.gpg')
+        for name in ('armbian-archive-keyring.gpg', 'armbian.gpg'):
+            (keyrings / name).chmod(0o644)
         locale, timezone = defaults['locale'], defaults['timezone']
         (root / 'etc/locale.gen').write_text(locale + ' UTF-8\n')
         run('chroot', root, 'locale-gen')
@@ -78,6 +80,7 @@ def build(packages, bsp, output, recipe):
         localtime = root / 'etc/localtime'
         localtime.unlink(missing_ok=True)
         localtime.symlink_to('/usr/share/zoneinfo/' + timezone)
+        run('bash', recipe / 'tools/configure_atlasa1_frozen_desktop.sh', root, recipe)
         # The same release configuration used by the original Armbian image.
         run('bash', recipe / 'tools/prepare_t736_resolute_rootfs.sh', root, root, bsp)
     finally:

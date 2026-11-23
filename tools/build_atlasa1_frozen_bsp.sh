@@ -29,7 +29,7 @@ PY
 cd "$work"
 params=(ARCH=arm64 RELEASE=resolute BOARD=t736-mainline BRANCH=current EXPERT=yes
     BUILD_DESKTOP=no OFFLINE_WORK=yes ARTIFACT_IGNORE_CACHE=yes MANAGE_ACNG=no
-    SHARE_LOG=no SKIP_EXTERNAL_TOOLCHAINS=yes IGNORE_UPDATES=yes REVISION=26.11.0-trunk)
+    SHARE_LOG=no SKIP_EXTERNAL_TOOLCHAINS=yes IGNORE_UPDATES=yes PREFER_DOCKER=no REVISION=26.11.0-trunk)
 for package in armbian-bsp-cli armbian-base-files; do
     bash compile.sh "$package" "${params[@]}"
 done

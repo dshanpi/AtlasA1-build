@@ -1,0 +1,29 @@
+{
+  "authenticated": false,
+  "range_checks": [
+    {
+      "name": "atlasa1-build-inputs-v1.tar.zst",
+      "status": 206,
+      "content_range": "bytes 0-0/385084476",
+      "content_length": "1"
+    },
+    {
+      "name": "atlasa1-arm64-packages-v1.tar.zst",
+      "status": 206,
+      "content_range": "bytes 0-0/1010572410",
+      "content_length": "1"
+    },
+    {
+      "name": "atlasa1-upstream-sources-v2.tar.zst",
+      "status": 206,
+      "content_range": "bytes 0-0/491801080",
+      "content_length": "1"
+    },
+    {
+      "name": "atlasa1-builder-v3.tar.zst",
+      "status": 206,
+      "content_range": "bytes 0-0/423687934",
+      "content_length": "1"
+    }
+  ]
+}

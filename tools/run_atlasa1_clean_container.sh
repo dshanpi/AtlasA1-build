@@ -13,6 +13,8 @@ sudo -u ubuntu --preserve-env=ATLAS_TINA_SDK,ATLAS_SOURCE_CACHE,ATLAS_COMPONENTS
     bash /recipe/tools/build_atlasa1_resolute.sh "$ATLAS_SOURCE_CACHE/armbian" /work/build --gnome-v47
 sudo -u ubuntu bash /recipe/tools/build_atlasa1_frozen_bsp.sh "$ATLAS_SOURCE_CACHE" /work/bsp /recipe
 if ! mountpoint -q /proc/sys/fs/binfmt_misc; then mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc; fi
+# Register this image's fixed QEMU binary even if the host has an older entry.
+update-binfmts --disable qemu-aarch64
 update-binfmts --enable qemu-aarch64
 python3 /recipe/tools/build_atlasa1_frozen_rootfs.py --packages /work/packages \
     --bsp /work/bsp/output/debs --output /work/ubuntu --recipe /recipe

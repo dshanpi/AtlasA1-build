@@ -19,9 +19,9 @@ sudo -v
 while sleep 60; do sudo -n true || exit; done &
 sudo_keepalive=$!
 trap 'kill "$sudo_keepalive" 2>/dev/null || true' EXIT
-if ! command -v docker >/dev/null || ! command -v zstd >/dev/null || ! command -v curl >/dev/null || ! command -v python3 >/dev/null; then
+if ! command -v docker >/dev/null || ! command -v zstd >/dev/null || ! command -v curl >/dev/null || ! command -v python3 >/dev/null || ! command -v aria2c >/dev/null; then
     sudo apt-get update
-    sudo apt-get install -y --no-install-recommends docker.io zstd curl python3 ca-certificates
+    sudo apt-get install -y --no-install-recommends docker.io zstd curl aria2 python3 ca-certificates
 fi
 sudo systemctl start docker
 cache=${ATLAS_DOWNLOAD_CACHE:-$HOME/.cache/atlasa1}

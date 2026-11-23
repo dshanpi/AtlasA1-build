@@ -1,12 +1,12 @@
 # AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 
-2026-11-23：正在将构建入口整理为无需用户准备 Tina SDK 的全新主机流程。下面的既有配方仍需要 SDK，不能视为该目标已完成。[全新主机构建验收条件及依赖缺口](FRESH_HOST_BUILD.md)。
+2026-11-23：新主机使用自动下载、版本锁定的入口，不需要手动准备 Tina SDK。当前完整构建验收进度和适用条件见 [全新主机构建](FRESH_HOST_BUILD.md)。
 
 本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
 
 ## 从官方 Armbian 开始
 
-构建机使用大小写敏感的 Linux 文件系统。准备官方 Armbian 支持的构建环境、sudo、支持运行 arm64 chroot 的 QEMU/binfmt，以及 AArch64 和 ARM soft-float 交叉工具链。本次基准工具链为 Ubuntu 24.04 上的 GCC 13 和 binutils 2.42。源码包构建还用到 python3、git、make、patch、curl、cpio、device-tree-compiler、dpkg-dev、libssl-dev、libelf-dev、bc、bison、flex、pkg-config、patchelf、qemu-user-static、rsync、kmod、e2fsprogs、fdisk、xz-utils 和 zstd。构建与出镜像的目录需要容纳展开的 Linux、根文件系统和 8 GiB 原始镜像。
+构建机使用 Ubuntu 24.04 amd64、大小写敏感的 Linux 文件系统、sudo、网络、至少 8 GiB 内存及 35 GiB 空闲磁盘。入口自动安装主机所需工具，并加载固定的 Docker 构建环境；交叉工具链、QEMU 和发行版软件包均随校验过的输入自动取得。
 
 以下命令下载主分支的单文件补丁，并在固定的官方 Armbian 提交上应用。复现 2026-11-18 的原始 RC1 时，从该版本的 Release 页面下载同名补丁。[主分支补丁](https://github.com/dshanpi/AtlasA1-build/blob/main/patches/atlasa1-resolute-armbian.patch) · [RC1 发布页面](https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.18-ubuntu26.04-rc1)
 
@@ -19,23 +19,22 @@ curl -fL -o /tmp/atlasa1-resolute-armbian.patch \
 git apply --whitespace=nowarn --check /tmp/atlasa1-resolute-armbian.patch
 git apply --whitespace=nowarn /tmp/atlasa1-resolute-armbian.patch
 
-export ATLAS_TINA_SDK=/srv/tina
-bash userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh "$PWD" /srv/atlas-output --gnome-v47
+bash userpatches/atlasa1-release/build.sh /srv/atlas-output
 ```
 
-上面的 `--gnome-v47` 构建 GNOME Wayland / GDM 镜像，使用 v47 内核、配套 PowerVR Wayland 包、Firefox panel2 和原生播放器 0.1-6。内核包含 CPU、eMMC、显示、Cedar 和 PCIe 修复。首次登录的新账户优先使用显示器支持的 1080p60；已有显示配置予以保留。账户 `t736` 的密码为 `1234`，不启用自动登录。root 初始密码同为 `1234`，保留首次登录改密机制。
+该入口构建 GNOME Wayland / GDM 镜像，使用 v47 内核、配套 PowerVR Wayland 包、Firefox panel2 和原生播放器 0.1-6。内核包含 CPU、eMMC、显示、Cedar 和 PCIe 修复。首次登录的新账户优先使用显示器支持的 1080p60；已有显示配置予以保留。账户 `t736` 的密码为 `1234`，不启用自动登录。root 初始密码同为 `1234`，保留首次登录改密机制。
 
 Wi-Fi / 蓝牙目前仍未通过：AW869C 即 AIC8800D80，SDIO 未枚举芯片，不能宣称驱动已可用。PMIC 和原理图排查记录见 [无线诊断](../evidence/wireless-path-20261120/RUNTIME-TRIALS-20261121.md)。诊断用寄存器实验不进入发行内核。Chromium 仅接通 GPU 绘制，尚未接通 Cedar 视频解码。Firefox 的 4K HEVC 路径缩放到 1080p 显示，不能作为原生 4K HDMI 验收。每个成品镜像的实测范围以 Release 附件为准。
 
-不带选项时保留 v30 / Xfce 旧配方；`--pcie-v34` 是早期 Xfce 硬件预览。以下 RC1 / v34 记录属于历史版本。
+维护者旧脚本 `tools/build_atlasa1_resolute.sh` 仍保留 v30 / Xfce 和 `--pcie-v34` 配方，需要手工准备 SDK。新入口 `build.sh` 固定构建 GNOME。以下 RC1 / v34 记录属于历史版本。
 
 11 月 19 日的 v34 硬件预览复用 RC1 根文件系统，在可写叠加层安装 v34 内核、配套 PowerVR 模块、双格式 Cedar 服务和 Firefox 160 的 Cedar 硬解入口。8 GiB 原始镜像的 SHA-256 为 `80975eb72bf80e53e549e7d4351600719cdc2d09113e30790a03df24e1636622`。离线检查通过了 GPT、ext4 和启动文件回读，并以普通用户核对了 Firefox 入口及 H.264、HEVC 解码器。该预览整盘仍待 FES 重刷和冷启动验证。已通过 FES 整盘烧录的是 RC1，v34 内核的冷启动使用该板 eMMC 上的独立启动文件。[最终预览镜像记录](../evidence/atlasa1-v34-firefox-image-20261119.json) · [实板启动记录](../evidence/atlasa1-ubuntu26-rc1-hardware-trial-boots-20261118.json)
 
 11 月 18 日的早期 v34 整盘也通过了 GPT、ext4 和启动文件回读检查，当时镜像保留了原装 Firefox。[早期镜像记录](../evidence/atlasa1-v34-image-integration-20261118.json)
 
-`/srv/atlas-output` 是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash tools/build_atlasa1_resolute.sh /src/armbian-build /srv/atlas-output --gnome-v47`。这两种方式调用同一套脚本。
+`/srv/atlas-output` 必须是新目录。补丁在官方框架下添加板级配置和 `userpatches/atlasa1-release` 中的源代码、测试及构建工具。若已克隆对应版本的 AtlasA1-build，可直接运行 `bash build.sh /srv/atlas-output`。两种方式调用同一套固定输入脚本。
 
-Ubuntu 和 Armbian 的软件包镜像可分别通过 `CUSTOM_UBUNTU_MIRROR_PORTS` 和上游 `LOCAL_MIRROR` 选项配置。构建记录中的根文件系统由这次运行新建的 Ubuntu 基础系统生成，更换下载镜像后继续了同一轮桌面安装。
+新入口从锁定版本的 Ubuntu / Armbian 软件包新建根文件系统，不复制旧 rootfs，也不在编译阶段访问滚动更新的软件源。装入镜像的 APT 配置恢复为正常的公开软件源，便于用户安装和更新软件。
 
 ## 2026-11-21 GNOME v47 构建
 
@@ -60,7 +59,9 @@ PowerVR WebRender 已确认。本地播放器硬解 1080p60 的 1500 帧、4K30 
 
 [11 月 22 日整盘与多媒体验收](../evidence/gnome-release-20261121/gnome-hardware-validation-20261122.json) · [原始日志](../evidence/gnome-release-20261121/hardware-20261122/) · [打包时历史验收范围](../evidence/gnome-release-20261121/release-validation.json) · [构建组件](../evidence/gnome-release-20261121/component-build.json) · [安装包清单](../evidence/gnome-release-20261121/installed-packages.tsv)。原始 manifest 的 `hardware_boot=unverified` 是打包时状态，最新启动结论见日期标注的新增记录。
 
-## 厂家输入和公开编译依赖
+## 维护者旧配方与厂家输入
+
+以下仅说明历史手动构建脚本。普通用户使用上面的 `build.sh`，所需内容已经整理为公开 Release 输入并由入口自动下载、校验。
 
 | 输入 | 来源与用途 |
 | --- | --- |
@@ -68,7 +69,7 @@ PowerVR WebRender 已确认。本地播放器硬解 1080p60 的 1500 帧、4K30 
 | IMG X11 和 Cedar/OMX 运行库 | 总入口从上述 SDK 提取匹配的 GPU 固件、IMG 用户态和编解码库。若已有配套的包，可同时设置 `ATLAS_IMG_DEB` 与 `ATLAS_CEDAR_WC` 复用它们。最终叠加源码重新生成的 4K OMX 解码库和解码服务。 |
 | SDL2 开发根 | 默认从 Debian 下载 arm64 的 `libsdl2-dev` 和 `libsdl2-2.0-0` 2.32.4，校验 SHA-256 后解包，并交叉编译一个链接 SDL2 的小程序。可用 `ATLAS_SDL_SYSROOT` 指向已准备的相同开发根。 |
 
-单补丁提供板级改动和构建脚本。从官方 Armbian 源码重建完整镜像仍须提供上表的 Tina SDK，复用 IMG 和 Cedar 中间包时也一样。成品镜像经授权包含链接了 LPDDR4x 训练库的 SPL、配套 PowerVR 模块与用户态、Cedar 运行库，可直接用于烧录。Ubuntu 软件包从已配置的 APT 仓库获取，仓库更新或编译工具链不同会改变生成文件的字节和 SHA-256。需要单独复核输入时，可运行下面两项构建。
+旧脚本须提供上表的 Tina SDK；新的单补丁自动入口无需手动提供。成品镜像经授权包含链接了 LPDDR4x 训练库的 SPL、配套 PowerVR 模块与用户态、Cedar 运行库。固定输入保证软件版本一致，但时间戳、文件系统 UUID 等仍会使生成镜像的 SHA-256 不同。维护者需要重新提取输入时，可运行下面两项构建。
 
 ```sh
 recipe=$PWD/userpatches/atlasa1-release/tools
@@ -84,13 +85,13 @@ bash "$recipe/prepare_atlasa1_sdl_sysroot.sh" /srv/atlas-sdl2-arm64
 | 内核和 GPU | Linux v6.18.63、264 个经 SHA-256 核对的 Tina 显示输入、板级补丁及 PowerVR 24.2 DDK，GNOME 选项生成 `linux-image-6.18.63-t736-gnome-v47`、DTB 和对应 vermagic 的 `pvrsrvkm.ko`。 |
 | 视频 | FFmpeg 7.1.5、Cedar 服务及板级 OMX 补丁，生成 `atlasa1-player_0.1-6~resolute1_arm64.deb`。播放器自带配套 FFmpeg 库，保留 Ubuntu 的系统 FFmpeg。 |
 | 浏览器 | 主分支从 Ubuntu 源码包构建 FFmpeg 8 Cedar 解码库，并随镜像安装 `atlasa1-firefox-cedar`。打包前以桌面用户检查应用菜单入口、FFmpeg ABI 和 H.264、HEVC 的默认解码器。 |
-| 系统 | 官方 `compile.sh rootfs`、`armbian-bsp-cli` 和 `armbian-base-files`，生成 Ubuntu 26.04 桌面根文件系统，再安装板级包、初始化镜像和桌面配置。 |
+| 系统 | 固定发行版包通过 mmdebstrap 从零安装；官方 Armbian `armbian-bsp-cli` 和 `armbian-base-files` 从源码重建，再安装板级包、初始化镜像和桌面配置。软件包版本与基准系统逐项比较。 |
 | 镜像 | 板级打包器核对 GPT 分区、SPL、启动包、第四分区 ext4，并从镜像内回读 kernel、initrd 和 DTB。镜像同目录含 `.manifest.json` 及压缩文件的 `SHA256SUMS`。 |
 
 ```sh
-cd /srv/atlas-output
+cd /srv/atlas-output/image
 sha256sum -c SHA256SUMS
-xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_arm64.img.xz
+xz -t Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img.xz
 ```
 
 本次 RC1 的文件摘要如下。第 4 分区中普通用户可用 3,671,642,112 字节，系统软件包清单共 1,402 项。[镜像内核、DTB、启动包与 GPT 校验](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-image-manifest-20261118.json) · [软件包明细](https://github.com/dshanpi/AtlasA1-build/blob/v2026.11.18-ubuntu26.04-rc1/evidence/atlasa1-ubuntu26-rc1-packages-20261118.tsv)

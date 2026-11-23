@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 
 
@@ -35,9 +36,17 @@ def fetch(lock, directory):
             partial.replace(target)
             print('Recovered verified download: ' + name, flush=True)
             continue
-        subprocess.run(['curl', '--fail', '--location', '--retry', '5', '--retry-all-errors', '--retry-delay', '3',
-                        '--connect-timeout', '30', '--continue-at', '-', '--output', str(partial),
-                        item['url']], check=True)
+        if shutil.which('aria2c'):
+            subprocess.run(['aria2c', '--allow-overwrite=true', '--auto-file-renaming=false',
+                            '--continue=true', '--file-allocation=none', '--max-connection-per-server=8',
+                            '--split=8', '--min-split-size=8M', '--max-tries=5', '--retry-wait=3',
+                            '--connect-timeout=30', '--timeout=60', '--console-log-level=warn',
+                            '--summary-interval=30', '--dir=' + str(directory), '--out=' + partial.name,
+                            item['url']], check=True)
+        else:
+            subprocess.run(['curl', '--fail', '--location', '--retry', '5', '--retry-all-errors', '--retry-delay', '3',
+                            '--connect-timeout', '30', '--continue-at', '-', '--output', str(partial),
+                            item['url']], check=True)
         if not valid(partial):
             raise RuntimeError('Downloaded input hash/size mismatch: ' + name)
         partial.replace(target)

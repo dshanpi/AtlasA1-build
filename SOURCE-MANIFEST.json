@@ -658,8 +658,8 @@
       "path": "build.sh",
       "kind": "source",
       "source": "mainline/build.sh",
-      "size": 2767,
-      "sha256": "f7e0adb2c84c02728f7983ced2b950ba2671d322aa2c7e5d073e325685b81d52"
+      "size": 2807,
+      "sha256": "ce4b5f483a08530214260c98ff9b9ec184beab441d133840c16c18068201f303"
     },
     {
       "path": "config/atlasa1-resolute-vendor-files.json",
@@ -695,6 +695,13 @@
       "source": "mainline/config/clean-build/armbian-archive-key.asc",
       "size": 3191,
       "sha256": "c86db754ae38d13aa254e59672d8bb6c0ed9a0eeee9b5440cde69afef995da7a"
+    },
+    {
+      "path": "config/clean-build/gnome.packages",
+      "kind": "source",
+      "source": "mainline/config/clean-build/gnome.packages",
+      "size": 12031,
+      "sha256": "b8f1c0d8ae992f9522b8a051f9ca5aa0034d44fb125e06f0941e720a33c499ca"
     },
     {
       "path": "config/clean-build/inputs.lock.json",
@@ -1092,8 +1099,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 18183,
-      "sha256": "16d6a48f270b2d3a04d4408a48d8ef478ea3e25ce2f64b71abf8ffafb5414e89"
+      "size": 17890,
+      "sha256": "d80f63211bcabac6823a46fa1b2e2944a446804556b1e21738ae5111d0259a00"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -1528,6 +1535,13 @@
       "source": "mainline/evidence/clean-build-20261123/omx-source-build.json",
       "size": 28364,
       "sha256": "71fad9cf9e92be6c3674ec4a72e817eeb80121f1b7759833636aadec552a42db"
+    },
+    {
+      "path": "evidence/clean-build-20261123/public-input-downloads.json",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/public-input-downloads.json",
+      "size": 683,
+      "sha256": "d6c4f182b21d1842e439e656f5aee6fbab72a8334e761542ed61578843e5fab8"
     },
     {
       "path": "evidence/clean-build-20261123/source-components.json",
@@ -3290,8 +3304,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8373114,
-      "sha256": "1966f4555ac9b48db2e08030d12077af1e5fe9e82deb0086eacd3c19ffbd349c"
+      "size": 8390712,
+      "sha256": "f2e67f3c378afc54eefa79d3546860c6e5d1d423b060b99e217d0d0d1004096a"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5880,15 +5894,15 @@
       "path": "tools/build_atlasa1_frozen_bsp.sh",
       "kind": "source",
       "source": "mainline/tools/build_atlasa1_frozen_bsp.sh",
-      "size": 1674,
-      "sha256": "001848fadbaf995a5971cebbadbae9001ce2c4987c83186c5d9b1367b0b6da32"
+      "size": 1691,
+      "sha256": "aa59942822cec28de74c2abeb33565491fcc00f4fc5b57a2b49a6c821c6f373c"
     },
     {
       "path": "tools/build_atlasa1_frozen_rootfs.py",
       "kind": "source",
       "source": "mainline/tools/build_atlasa1_frozen_rootfs.py",
-      "size": 4853,
-      "sha256": "f456336b77da14e42fe0e1377da991d45d2c679d2dd80fc0a66d2e3c78812449"
+      "size": 5052,
+      "sha256": "5ce3e3d3da3e4c755203edd2a9226f457488229a41494ff99d44331c6aba22e9"
     },
     {
       "path": "tools/build_atlasa1_player.py",
@@ -6675,6 +6689,13 @@
       "sha256": "be3a2839db93f1e274676cbc4040802052fd2c7ed4236399d4da6ef80bea50a7"
     },
     {
+      "path": "tools/configure_atlasa1_frozen_desktop.sh",
+      "kind": "source",
+      "source": "mainline/tools/configure_atlasa1_frozen_desktop.sh",
+      "size": 2153,
+      "sha256": "12045cc8ca1b82d8a984948dc801289c5ea6e633b72a5a81979cad0e826ab2a9"
+    },
+    {
       "path": "tools/configure_atlasa1_gnome_release.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_gnome_release.sh",
@@ -6699,8 +6720,8 @@
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 9359,
-      "sha256": "8b1dac28f7c829487161db436edd43aa86f13ad6ec2727d496bb785ab1551791"
+      "size": 9408,
+      "sha256": "48556164ab213b072be5e071d83ca322a566eaec9145688f675e3132c92651cc"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -6727,8 +6748,8 @@
       "path": "tools/fetch_atlasa1_inputs.py",
       "kind": "source",
       "source": "mainline/tools/fetch_atlasa1_inputs.py",
-      "size": 1950,
-      "sha256": "6957c221b309cc5e65de24e7e3f94fd76da16462e1a433a9979368224571cff6"
+      "size": 2579,
+      "sha256": "eeeaf97eddc3340927323914852a5a91f268b2aa3ea67cf1a5918a8d87b21381"
     },
     {
       "path": "tools/finalize_t736_media_rootfs.py",
@@ -7035,8 +7056,8 @@
       "path": "tools/run_atlasa1_clean_container.sh",
       "kind": "source",
       "source": "mainline/tools/run_atlasa1_clean_container.sh",
-      "size": 1418,
-      "sha256": "488d463865916e5fcd7e55e43f2183ab4e482d0537806f7c8cd1a0c5e45b09d7"
+      "size": 1535,
+      "sha256": "f7933bc3d9a91a8ab555efe93aa691815df0705cb1cda1ea4fe8784555137d9d"
     },
     {
       "path": "tools/sdk_preflight.sh",

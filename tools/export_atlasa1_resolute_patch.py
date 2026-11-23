@@ -13,6 +13,7 @@ INPUTS = (
     'build.sh', 'tools/fetch_atlasa1_inputs.py', 'tools/build_atlasa1_frozen_bsp.sh', 'tests/test_frozen_inputs.py',
     'tools/build_atlasa1_frozen_rootfs.py', 'tools/assemble_atlasa1_frozen_image.sh',
     'tools/run_atlasa1_clean_container.sh',
+    'tools/configure_atlasa1_frozen_desktop.sh',
     'config/clean-build/*', 'tools/package_atlasa1_build_inputs.py',
     'tools/relocate_atlasa1_build_inputs.py', 'tools/freeze_atlasa1_apt.py',
     'docs/FRESH_HOST_BUILD.md', 'tools/verify_source_manifest.py', 'tests/test_source_manifest.py',
