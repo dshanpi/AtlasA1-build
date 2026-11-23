@@ -11,7 +11,11 @@ import threading
 
 
 def run(*args, **kwargs):
-    subprocess.run(list(map(str, args)), check=True, **kwargs)
+    result = subprocess.run(list(map(str, args)), **kwargs)
+    if result.returncode:
+        if result.stderr:
+            print(result.stderr.decode(errors='replace') if isinstance(result.stderr, bytes) else result.stderr)
+        raise RuntimeError(f'{args[0]} failed with status {result.returncode}; see preceding build output')
 
 
 def build(packages, bsp, output, recipe):
@@ -60,6 +64,20 @@ def build(packages, bsp, output, recipe):
             '--aptopt=APT::Install-Recommends "false"',
             '--aptopt=Acquire::Languages "none"', '--include=' + ','.join(includes),
             'resolute', root, 'deb [trusted=yes] http://127.0.0.1:18765 ./')
+        defaults = json.loads((recipe / 'config/clean-build/system-defaults.json').read_text())
+        keyrings = root / 'usr/share/keyrings'
+        run('gpg', '--batch', '--yes', '--dearmor', '--output', keyrings / 'armbian-archive-keyring.gpg',
+            recipe / 'config/clean-build/armbian-archive-key.asc')
+        shutil.copyfile(keyrings / 'armbian-archive-keyring.gpg', keyrings / 'armbian.gpg')
+        locale, timezone = defaults['locale'], defaults['timezone']
+        (root / 'etc/locale.gen').write_text(locale + ' UTF-8\n')
+        run('chroot', root, 'locale-gen')
+        run('chroot', root, 'update-locale', 'LANG=' + locale,
+            'LC_MESSAGES=' + locale, 'LANGUAGE=' + locale)
+        (root / 'etc/timezone').write_text(timezone + '\n')
+        localtime = root / 'etc/localtime'
+        localtime.unlink(missing_ok=True)
+        localtime.symlink_to('/usr/share/zoneinfo/' + timezone)
         # The same release configuration used by the original Armbian image.
         run('bash', recipe / 'tools/prepare_t736_resolute_rootfs.sh', root, root, bsp)
     finally:

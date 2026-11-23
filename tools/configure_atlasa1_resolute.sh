@@ -118,8 +118,8 @@ python3 "$(dirname "$0")/prepare_atlasa1_boot_kernel.py" \
 ln -sfn "vmlinuz-$release.atlasa1.gz" "$root/boot/vmlinuz-6.18.63-t736-armbian"
 [[ -s "$root/boot/initrd.img-$release" ]]
 ln -sfn "initrd.img-$release" "$root/boot/initrd.img-6.18.63-t736-armbian"
-systemctl --root="$root" enable t736-cedar.socket serial-getty@ttyS0.service
-systemctl --root="$root" is-enabled t736-cedar.socket
+target systemctl --no-reload enable t736-cedar.socket serial-getty@ttyS0.service
+target systemctl is-enabled t736-cedar.socket
 # eMMC does not expose SMART. Keep the daemon available for add-on drives.
 install -d "$root/etc/systemd/system/smartmontools.service.d" "$root/etc/systemd/system/run-rpc_pipefs.mount.d"
 printf '[Service]\nExecStart=\nExecStart=/usr/sbin/smartd -n --quit=never $smartd_opts\n' \

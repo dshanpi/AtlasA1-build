@@ -1,0 +1,5 @@
+{
+  "locale": "en_US.UTF-8",
+  "timezone": "America/New_York",
+  "note": "Defaults of the reference GNOME image; explicitly pinned instead of inherited from the build host."
+}

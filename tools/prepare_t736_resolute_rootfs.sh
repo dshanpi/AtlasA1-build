@@ -56,7 +56,18 @@ chmod 0755 "$root/usr/sbin/policy-rc.d" "$scratch"
 cp "${bsp[0]}" "$scratch/bsp.deb"
 cp "${base[0]}" "$scratch/base.deb"
 inside=${scratch#"$root"}
-run() { chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C "$@"; }
+run() {
+    # The locked bootstrap has one local repository. Packages such as
+    # armbian-config also install their public update sources; ignore those
+    # during this offline build, while retaining them for the finished image.
+    if [[ $1 == apt-get ]] && grep -Fxq 'deb [trusted=yes] http://127.0.0.1:18765 ./' "$root/etc/apt/sources.list"; then
+        shift
+        chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C \
+            apt-get -o Dir::Etc::sourceparts=- "$@"
+    else
+        chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C "$@"
+    fi
+}
 run apt-get -o Acquire::Retries=3 -o Acquire::Languages=none \
     -o Acquire::IndexTargets::deb::Contents-deb::DefaultEnabled=false \
     -o Acquire::IndexTargets::deb::Contents-deb-legacy::DefaultEnabled=false update

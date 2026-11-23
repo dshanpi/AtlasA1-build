@@ -73,7 +73,7 @@ if source[:2] == b'\x1f\x8b':
 assert source[56:60] == b'ARM\x64'
 assert gzip.decompress(Path(sys.argv[2]).read_bytes()) == source
 PY
-lsinitramfs "$root/boot/initrd.img-6.18.63-t736-armbian" | grep -x init
+target lsinitramfs /boot/initrd.img-6.18.63-t736-armbian | grep -x init
 relocations=$(target env LD_LIBRARY_PATH="$libs" ldd -r "$player" 2>&1)
 if grep -Ei 'not found|undefined symbol' <<<"$relocations"; then exit 1; fi
 target env LD_LIBRARY_PATH="$libs" "$player" -hide_banner -h full 2>&1 | grep -F -- '-wait_video_start'

@@ -14,6 +14,11 @@ source /etc/os-release
 out=$(realpath -m "${1:-$repo/output/clean-gnome}")
 [[ ! -e $out ]] || { echo "Output already exists: $out; choose a new directory" >&2; exit 2; }
 sudo -v
+# A slow asset download must not turn an unattended build into a second sudo
+# password prompt. Keep this invocation's sudo timestamp alive, then stop it.
+while sleep 60; do sudo -n true || exit; done &
+sudo_keepalive=$!
+trap 'kill "$sudo_keepalive" 2>/dev/null || true' EXIT
 if ! command -v docker >/dev/null || ! command -v zstd >/dev/null || ! command -v curl >/dev/null || ! command -v python3 >/dev/null; then
     sudo apt-get update
     sudo apt-get install -y --no-install-recommends docker.io zstd curl python3 ca-certificates

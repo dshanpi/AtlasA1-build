@@ -18,6 +18,14 @@ bash build.sh
 
 所需输入的版本、大小、下载地址和 SHA-256 都在 `config/clean-build/inputs.lock.json`。入口自动获取约 2.3 GB 输入；缓存位置为 `~/.cache/atlasa1`，可用 `ATLAS_DOWNLOAD_CACHE` 更改。预先准备好校验一致的输入缓存后，编译本身不访问网络。首次安装主机依赖仍需 Ubuntu 软件源。
 
+也可保留“官方 Armbian 源码加一份补丁”的操作方式。使用官方提交 `2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736`，应用本仓库的 `patches/atlasa1-resolute-armbian.patch` 后，在官方源码目录执行：
+
+```sh
+bash userpatches/atlasa1-release/build.sh /absolute/path/new-output
+```
+
+两种入口使用相同的固定输入与构建配方。补丁包含自动构建入口和板级源码；体积较大的第三方输入由入口自动下载、校验，不需要另行手动配置 SDK。不要把任意未来的 Armbian 提交当作已验证基线。
+
 | 输入 | 内容 |
 | --- | --- |
 | build-inputs | 固定 LPDDR4x DDR 库、264 个显示源码、PowerVR 内核源码及用户态、Cedar 原始源码和运行库、最小 sysroot 与 SDK 交叉工具链 |

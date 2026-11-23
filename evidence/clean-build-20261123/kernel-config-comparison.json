@@ -1,0 +1,11 @@
+{
+  "functional_kernel_config_equal": true,
+  "excluded_disabled_rust_host_metadata": [
+    "CONFIG_RUSTC_VERSION=",
+    "CONFIG_RUSTC_LLVM_VERSION="
+  ],
+  "rust_kernel_enabled": false,
+  "old_sha256": "b1f6faa1797667a273dc1ba9071a55413a0bf928b1698d711701f4a8f98982ad",
+  "new_sha256": "463d987b501fabd1cc5545ba22284d9b234b0b0a8c6ad329d542fcf75e0c6ac7",
+  "binary_identical": false
+}

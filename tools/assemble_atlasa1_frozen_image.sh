@@ -27,6 +27,14 @@ Suites: resolute resolute-updates resolute-security resolute-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
+test -s "$root/usr/share/keyrings/armbian-archive-keyring.gpg"
+cat > "$root/etc/apt/sources.list.d/armbian.sources" <<'EOF'
+Types: deb
+URIs: https://apt.armbian.com
+Suites: resolute
+Components: resolute-utils resolute-desktop
+Signed-By: /usr/share/keyrings/armbian-archive-keyring.gpg
+EOF
 if grep -R -E '127\.0\.0\.1:18765|/work/|/repo/' "$root/etc/apt/sources.list.d"; then
     echo 'Build-only APT source leaked into rootfs' >&2; exit 1
 fi
