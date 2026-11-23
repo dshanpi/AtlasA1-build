@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "profile": "AtlasA1 Ubuntu 26.04 GNOME v47",
+  "builder_image_id": "sha256:013979e8c4b28fd8fd26369bba0019335c28caf607fa8f01de4a0216520693f5",
+  "sources": {
+    "armbian": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+    "linux": "1cdda838e8475edf89b73ff0cc952005dd0b1fa7",
+    "u-boot": "5508406582f6f7120dce0c4b3059819a41788db2",
+    "tf-a": "7d322909068fc4bb4ee35e9e43c78ed68d98619b"
+  },
+  "assets": [
+    {
+      "name": "atlasa1-build-inputs-v1.tar.zst",
+      "size": 385084476,
+      "sha256": "dd5222298761418c6b5677a66553c6e264caf4b63ba471a8cb2828aa6d93482f",
+      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-build-inputs-v1.tar.zst"
+    },
+    {
+      "name": "atlasa1-arm64-packages-v1.tar.zst",
+      "size": 1010572410,
+      "sha256": "74326d5320c77a3d1155162ac0ae2f6b8d4158fc852d85040c65c6e2cb6fc59f",
+      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-arm64-packages-v1.tar.zst"
+    },
+    {
+      "name": "atlasa1-upstream-sources-v2.tar.zst",
+      "size": 491801080,
+      "sha256": "48c78a820c48474f757e3dece1422fd0ea81c79c4443fa622eadef2f0571d38f",
+      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-upstream-sources-v2.tar.zst"
+    },
+    {
+      "name": "atlasa1-builder-v3.tar.zst",
+      "size": 423687934,
+      "sha256": "f9000c3bfb9bbd749b69fded087f23cfb061f52e4d070721b90e795ed4aaa1a6",
+      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-builder-v3.tar.zst"
+    }
+  ]
+}

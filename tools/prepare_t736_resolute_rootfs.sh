@@ -17,8 +17,12 @@ shopt -s nullglob
 bsp=("$debs"/armbian-bsp-cli-t736-mainline-current_*_arm64__*.deb)
 base=("$debs"/extra/resolute-utils/base-files_*resolute_arm64__*.deb)
 [[ ${#bsp[@]} == 1 && ${#base[@]} == 1 ]] || { echo "Expected one BSP and one Resolute base-files package" >&2; exit 1; }
-mkdir -- "$root"
-tar --xattrs --acls --numeric-owner -I zstd -xf "$archive" -C "$root"
+if [[ -d $archive ]]; then
+    [[ $archive == "$root" ]] || { echo 'Directory input must be the target rootfs' >&2; exit 2; }
+else
+    mkdir -- "$root"
+    tar --xattrs --acls --numeric-owner -I zstd -xf "$archive" -C "$root"
+fi
 grep -q '^VERSION_CODENAME=resolute$' "$root/usr/lib/os-release"
 [[ $(chroot "$root" dpkg --print-architecture) == arm64 ]]
 mount -t proc proc "$root/proc"

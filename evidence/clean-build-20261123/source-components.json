@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-23",
+  "network": "none",
+  "old_sdk_mounted": false,
+  "prebuilt_image_used": false,
+  "source_component_build": "passed",
+  "armbian_bsp_and_base_files_offline_build": "passed",
+  "complete_image_build": "pending",
+  "new_image_hardware_acceptance": "pending",
+  "artifacts": [
+    {
+      "path": "boot/payload/bl31.bin",
+      "size": 53924,
+      "sha256": "81f53c1d1f571c74bd907317d813a5ed56c64382479caa75edd3cec43ada6dc6"
+    },
+    {
+      "path": "boot/payload/boot-manifest.json",
+      "size": 987,
+      "sha256": "b6dc438ce6eb42c05e7c374fb72c3736640b6c7a411aa8a6646a07992c7e000e"
+    },
+    {
+      "path": "boot/payload/boot-package.bin",
+      "size": 325632,
+      "sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e"
+    },
+    {
+      "path": "boot/payload/emmc-spl.bin",
+      "size": 221184,
+      "sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea"
+    },
+    {
+      "path": "boot/payload/stage64.bin",
+      "size": 5040,
+      "sha256": "44aeb8e56f64f2ccd80a1cd286460eda6d0232f9cc1e82618866826b23298535"
+    },
+    {
+      "path": "boot/payload/u-boot.bin",
+      "size": 265640,
+      "sha256": "fd3ffd3d5584642ad0eb0be645941b671591d47d1e2fc575c8a30d3b539c00c3"
+    },
+    {
+      "path": "kernel/linux-image-6.18.63-t736-gnome-v47_6.18.63-47_arm64.deb",
+      "size": 5073672,
+      "sha256": "b8ad6d1603e90a761621095569d3deb9df2a804ea13e3a50fe5ebba818be739e"
+    },
+    {
+      "path": "kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko",
+      "size": 2163504,
+      "sha256": "7ccf73c0823fa62034a70cbeb63d0e292d206f0a2e3128c337355fa872088a47"
+    },
+    {
+      "path": "player/atlasa1-player_0.1-6~resolute1_arm64.deb",
+      "size": 6256012,
+      "sha256": "e565cd5fff65eb9ec1be21e4793820b641eaa9dda1384154db7679e85d95f8e1"
+    },
+    {
+      "path": "firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb",
+      "size": 4860780,
+      "sha256": "245fa1984a8047d3d09595cbbfcbfdea421b612439c544173653c95c5970e551"
+    },
+    {
+      "path": "omx/libOmxVdec.so",
+      "size": 279016,
+      "sha256": "d371dc443d99306b21e85ab5ba9caf59df5b0132f01c7bfecae070d097b73747"
+    }
+  ]
+}

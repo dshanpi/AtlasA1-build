@@ -8731,6 +8731,57 @@ index 0000000000000000000000000000000000000000..c0e8243384edf0627ecae663bd03eb22
 +CONFIG_BT_HCIUART=m
 +CONFIG_BT_HCIUART_H4=y
 +CONFIG_CFG80211=m
+diff --git a/userpatches/atlasa1-release/build.sh b/userpatches/atlasa1-release/build.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..51c881ce1d7ed3967c66c80856ef54a8993f2812
+--- /dev/null
++++ b/userpatches/atlasa1-release/build.sh
+@@ -0,0 +1,45 @@
++#!/usr/bin/env bash
++# One entry point for a fresh Ubuntu 24.04 amd64 host. No Tina SDK required.
++set -euo pipefail
++repo=$(cd "$(dirname "$0")" && pwd -P)
++if [[ ${1:-} == --help ]]; then
++    echo 'Usage: bash build.sh [NEW_OUTPUT_DIRECTORY]'
++    echo 'Requires Ubuntu 24.04 amd64, sudo, Internet, 8 GiB RAM and 35 GiB free disk.'
++    echo 'Inputs are SHA-256 locked; compilation runs in an offline container.'
++    exit 0
++fi
++[[ $# -le 1 && $(uname -m) == x86_64 ]] || { echo 'Use an x86_64 Linux host' >&2; exit 2; }
++source /etc/os-release
++[[ $ID == ubuntu && $VERSION_ID == 24.04 ]] || { echo 'Supported host: Ubuntu 24.04 amd64' >&2; exit 2; }
++out=$(realpath -m "${1:-$repo/output/clean-gnome}")
++[[ ! -e $out ]] || { echo "Output already exists: $out; choose a new directory" >&2; exit 2; }
++sudo -v
++if ! command -v docker >/dev/null || ! command -v zstd >/dev/null || ! command -v curl >/dev/null || ! command -v python3 >/dev/null; then
++    sudo apt-get update
++    sudo apt-get install -y --no-install-recommends docker.io zstd curl python3 ca-certificates
++fi
++sudo systemctl start docker
++cache=${ATLAS_DOWNLOAD_CACHE:-$HOME/.cache/atlasa1}
++mkdir -p "$cache" "$(dirname "$out")"
++exec 9>"$cache/.download.lock"
++flock 9
++python3 "$repo/tools/fetch_atlasa1_inputs.py" "$repo/config/clean-build/inputs.lock.json" "$cache"
++builder=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["builder_image_id"])' "$repo/config/clean-build/inputs.lock.json")
++if ! sudo docker image inspect "$builder" >/dev/null 2>&1; then
++    zstd -dc "$cache/atlasa1-builder-v3.tar.zst" | sudo docker load
++fi
++sudo docker image inspect "$builder" >/dev/null
++flock -u 9
++available=$(df --output=avail -B1 "$(dirname "$out")" | tail -1)
++(( available >= 35 * 1024 * 1024 * 1024 )) || { echo 'Need at least 35 GiB free for a fresh build' >&2; exit 1; }
++mkdir -- "$out"
++cp "$repo/config/clean-build/inputs.lock.json" "$out/"
++git -C "$repo" rev-parse HEAD > "$out/recipe-commit.txt" 2>/dev/null || printf 'patch export\n' > "$out/recipe-commit.txt"
++sudo docker run --rm --privileged --network none --hostname atlas-builder \
++    --mount "type=bind,src=$(realpath "$cache"),dst=/assets,readonly" \
++    --mount "type=bind,src=$repo,dst=/recipe,readonly" \
++    --mount "type=bind,src=$out,dst=/work" \
++    -e "JOBS=${JOBS:-6}" "$builder" bash /recipe/tools/run_atlasa1_clean_container.sh \
++    2>&1 | tee "$out/build.log"
++sudo chown -R "$(id -u):$(id -g)" "$out/image"
++printf '\nImage and checksums: %s/image\n' "$out"
 diff --git a/userpatches/atlasa1-release/config/atlasa1-resolute-vendor-files.json b/userpatches/atlasa1-release/config/atlasa1-resolute-vendor-files.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..e7de31e8a54772bf1d906af4f26dd5423225a9d2
@@ -8884,6 +8935,1492 @@ index 0000000000000000000000000000000000000000..e7de31e8a54772bf1d906af4f26dd542
 +    "opt/t736-img-ddk-24.2-x11/lib/libvulkan.so.1.3.280": "f91ccd196bfa9fef3ecf7ec4b8da74174b476cc196345f96e9c0f49b3816c0ba"
 +  }
 +}
+diff --git a/userpatches/atlasa1-release/config/clean-build/Dockerfile b/userpatches/atlasa1-release/config/clean-build/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..d13672a3e85dd633c904c304afb649f34877c9eb
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/clean-build/Dockerfile
+@@ -0,0 +1,20 @@
++FROM scratch
++# Official Ubuntu 24.04 amd64 OCI filesystem; download and SHA-256 verification
++# are handled by the entry script, so Docker Hub access is not required.
++ADD ubuntu-24.04-amd64-rootfs.tar.gz /
++ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 TZ=UTC
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    build-essential gcc-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-arm-linux-gnueabi \
++    binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi python3 python3-venv \
++    python3-setuptools git curl wget ca-certificates sudo rsync file patch xz-utils \
++    zstd gzip pigz cpio tar unzip zip bc bison flex device-tree-compiler libssl-dev \
++    libelf-dev dwarves pkg-config patchelf cmake meson ninja-build autoconf automake \
++    libtool libtool-bin gawk gettext jq fakeroot dpkg-dev qemu-user-static \
++    binfmt-support arch-test debootstrap mmdebstrap e2fsprogs dosfstools fdisk parted util-linux \
++    uuid-runtime locales whiptail dialog apt-utils gnupg psmisc debian-archive-keyring \
++    ubuntu-keyring kmod lz4 tree expect pv aria2 openssh-client acl attr \
++    && rm -rf /var/lib/apt/lists/*
++RUN id ubuntu >/dev/null 2>&1 || useradd -m -s /bin/bash -u 1000 ubuntu
++RUN printf 'ubuntu ALL=(ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/atlas-builder \
++    && chmod 0440 /etc/sudoers.d/atlas-builder
++WORKDIR /work
+diff --git a/userpatches/atlasa1-release/config/clean-build/inputs.lock.json b/userpatches/atlasa1-release/config/clean-build/inputs.lock.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..6d7d6c807118dbe89c707da6206e3cb8531329ad
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/clean-build/inputs.lock.json
+@@ -0,0 +1,37 @@
++{
++  "schema": 1,
++  "profile": "AtlasA1 Ubuntu 26.04 GNOME v47",
++  "builder_image_id": "sha256:013979e8c4b28fd8fd26369bba0019335c28caf607fa8f01de4a0216520693f5",
++  "sources": {
++    "armbian": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
++    "linux": "1cdda838e8475edf89b73ff0cc952005dd0b1fa7",
++    "u-boot": "5508406582f6f7120dce0c4b3059819a41788db2",
++    "tf-a": "7d322909068fc4bb4ee35e9e43c78ed68d98619b"
++  },
++  "assets": [
++    {
++      "name": "atlasa1-build-inputs-v1.tar.zst",
++      "size": 385084476,
++      "sha256": "dd5222298761418c6b5677a66553c6e264caf4b63ba471a8cb2828aa6d93482f",
++      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-build-inputs-v1.tar.zst"
++    },
++    {
++      "name": "atlasa1-arm64-packages-v1.tar.zst",
++      "size": 1010572410,
++      "sha256": "74326d5320c77a3d1155162ac0ae2f6b8d4158fc852d85040c65c6e2cb6fc59f",
++      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-arm64-packages-v1.tar.zst"
++    },
++    {
++      "name": "atlasa1-upstream-sources-v2.tar.zst",
++      "size": 491801080,
++      "sha256": "48c78a820c48474f757e3dece1422fd0ea81c79c4443fa622eadef2f0571d38f",
++      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-upstream-sources-v2.tar.zst"
++    },
++    {
++      "name": "atlasa1-builder-v3.tar.zst",
++      "size": 423687934,
++      "sha256": "f9000c3bfb9bbd749b69fded087f23cfb061f52e4d070721b90e795ed4aaa1a6",
++      "url": "https://github.com/dshanpi/AtlasA1-build/releases/download/build-inputs-20261123-v1/atlasa1-builder-v3.tar.zst"
++    }
++  ]
++}
+diff --git a/userpatches/atlasa1-release/config/clean-build/packages-arm64.tsv b/userpatches/atlasa1-release/config/clean-build/packages-arm64.tsv
+new file mode 100644
+index 0000000000000000000000000000000000000000..d80cdd3477fcc42217f16000383d47ae4050e65a
+--- /dev/null
++++ b/userpatches/atlasa1-release/config/clean-build/packages-arm64.tsv
+@@ -0,0 +1,1411 @@
++3cpio	0.14.0-1ubuntu1
++accountsservice	23.13.9-8ubuntu5.2
++acl	2.3.2-2
++adduser	3.153ubuntu1
++adwaita-icon-theme	50.0-1
++alsa-ucm-conf	1.2.15.3-1ubuntu1.7
++alsa-utils	1.2.15.2-1ubuntu1
++appstream	1.1.2-1
++apt	3.2.1ubuntu0.1
++apt-file	3.3ubuntu2
++apt-utils	3.2.1ubuntu0.1
++aptdaemon	2.0.2build1
++aptdaemon-data	2.0.2build1
++aptitude	0.8.13-7ubuntu5
++aptitude-common	0.8.13-7ubuntu5
++armbian-bsp-cli-t736-mainline-current	26.11.0-trunk
++armbian-config	26.8.0-trunk.426.1120.024927
++armbian-firstrun-gui	0.1.4+armbian1~resolute
++armbian-imager	2.5.1
++at-spi2-common	2.60.4-0ubuntu0.1
++at-spi2-core	2.60.4-0ubuntu0.1
++atlasa1-firefox-cedar	8.0.1-1~resolute1+panel2
++atlasa1-img-wayland	24.2.6603887-3
++atlasa1-player	0.1-6~resolute1
++autoconf	2.72-3.1ubuntu2
++automake	1:1.18.1-3build1
++autotools-dev	20240727.1build1
++avahi-autoipd	0.8-18ubuntu1.1
++baobab	49.1-2
++base-files	26.11.0-trunk-14ubuntu6-resolute
++base-passwd	3.6.8
++bash	5.3-2ubuntu1
++bash-completion	1:2.16.0-8build1
++bc	1.07.1-4build1
++binutils	2.46-3ubuntu2
++binutils-aarch64-linux-gnu	2.46-3ubuntu2
++binutils-common:arm64	2.46-3ubuntu2
++bison	2:3.8.2+dfsg-1ubuntu0.26.04.1
++bluez	5.85-4ubuntu0.4
++bluez-obexd	5.85-4ubuntu0.4
++bsdextrautils	2.41.3-3ubuntu2.2
++bsdutils	1:2.41.3-3ubuntu2.2
++btrfs-progs	6.17.1-1build1
++bubblewrap	0.11.1-1ubuntu0.3
++build-essential	12.12ubuntu2.26.04.2
++busybox-initramfs	1:1.37.0-7ubuntu1
++bzip2	1.0.8-6ubuntu0.1
++ca-certificates	20260816ubuntu0.26.04.2
++chromium	156.0.8078.73-1xtradeb1.2604.1
++chromium-common	156.0.8078.73-1xtradeb1.2604.1
++colord	1.4.8-3
++colord-data	1.4.8-3
++console-setup	1.237ubuntu3.1
++console-setup-linux	1.237ubuntu3.1
++coreutils	9.5-1ubuntu2+0.0.0~ubuntu25
++coreutils-from-uutils	0.0.0~ubuntu25
++cpp	4:15.2.0-5ubuntu1
++cpp-15	15.2.0-16ubuntu1
++cpp-15-aarch64-linux-gnu	15.2.0-16ubuntu1
++cpp-aarch64-linux-gnu	4:15.2.0-5ubuntu1
++cracklib-runtime	2.9.6-5.2build3
++cron	3.0pl1-200ubuntu1
++cron-daemon-common	3.0pl1-200ubuntu1
++cups	2.4.16-1ubuntu1.3
++cups-client	2.4.16-1ubuntu1.3
++cups-common	2.4.16-1ubuntu1.3
++cups-core-drivers	2.4.16-1ubuntu1.3
++cups-daemon	2.4.16-1ubuntu1.3
++cups-filters	2.0.1-0ubuntu4.1
++cups-filters-core-drivers	2.0.1-0ubuntu4.1
++cups-ipp-utils	2.4.16-1ubuntu1.3
++cups-pk-helper	0.2.6-2.1build1
++cups-ppdc	2.4.16-1ubuntu1.3
++cups-server-common	2.4.16-1ubuntu1.3
++curl	8.18.0-1ubuntu2.8
++dash	0.5.12-12ubuntu3
++dbus	1.16.2-2ubuntu4
++dbus-bin	1.16.2-2ubuntu4
++dbus-daemon	1.16.2-2ubuntu4
++dbus-session-bus-common	1.16.2-2ubuntu4
++dbus-system-bus-common	1.16.2-2ubuntu4
++dbus-user-session	1.16.2-2ubuntu4
++dbus-x11	1.16.2-2ubuntu4
++dconf-cli	0.49.0-4
++dconf-gsettings-backend:arm64	0.49.0-4
++dconf-service	0.49.0-4
++debconf	1.5.92
++debconf-utils	1.5.92
++debianutils	5.23.2build1
++debsums	3.0.2.3
++desktop-file-utils	0.28-1build1
++device-tree-compiler	1.7.2-2ubuntu1
++dhcpcd-base	1:10.3.0-7
++dialog	1.3-20260107-1
++dictionaries-common	1.31.4
++diffutils	1:3.12-1ubuntu0.1
++dirmngr	2.4.8-4ubuntu3.1
++distro-info-data	2026.10.12-0ubuntu0.26.04.1
++dkms	3.2.2-1ubuntu1
++dmidecode	3.6-2ubuntu1
++dosfstools	4.2-1.2build1
++dpkg	1.23.7ubuntu1
++dpkg-dev	1.23.7ubuntu1
++dracut-install	110-11ubuntu0.1
++e2fsprogs	1.47.2-3ubuntu4
++eject	2.41.3-3ubuntu2.2
++emacsen-common	3.0.8build1
++ethtool	1:6.19-1
++evolution-data-server	3.56.2-8
++evolution-data-server-common	3.56.2-8
++evtest	1:1.36-1
++exo-utils	4.20.0-1build1
++expect	5.45.4-4build1
++f2fs-tools	1.16.0-2build1
++f3	9.0-1build1
++fake-hwclock	0.14build1
++fbset	2.1-35
++fdisk	2.41.3-3ubuntu2.2
++ffmpeg	7:8.0.1-3ubuntu2
++ffmpegthumbnailer	2.3.0-1
++figlet	2.2.5-3.1
++file	1:5.46-5build2
++file-roller	44.6-3
++findutils	4.10.0-3build2
++firefox	9:160.0.1+build1-0ubuntu0.26.04.1~mt1armbian1
++flatpak	1.16.6-1
++flex	2.6.4-8.2build2
++fontconfig	2.17.1-3ubuntu1
++fontconfig-config	2.17.1-3ubuntu1
++fonts-adwaita	49.0+dfsg-2
++fonts-adwaita-sans	49.0+dfsg-2
++fonts-dejavu-core	2.37-8build1
++fonts-dejavu-mono	2.37-8build1
++fonts-noto-cjk	1:20240730+repack1-1build1
++fonts-noto-color-emoji	2.051-1build1
++fonts-ubuntu	0.869+git20240321-0ubuntu2
++fonts-urw-base35	20200910-8build1
++fping	5.1-1build1
++fprintd	1.94.5-4
++fuse-overlayfs	1.14-1build2
++fuse3	3.18.2-1
++fwupd	2.1.6-3ubuntu4~26.04.1
++g++	4:15.2.0-5ubuntu1
++g++-15	15.2.0-16ubuntu1
++g++-15-aarch64-linux-gnu	15.2.0-16ubuntu1
++g++-aarch64-linux-gnu	4:15.2.0-5ubuntu1
++gcc	4:15.2.0-5ubuntu1
++gcc-15	15.2.0-16ubuntu1
++gcc-15-aarch64-linux-gnu	15.2.0-16ubuntu1
++gcc-15-base:arm64	15.2.0-16ubuntu1
++gcc-16-base:arm64	16-20260322-1ubuntu1
++gcc-aarch64-linux-gnu	4:15.2.0-5ubuntu1
++gcr	3.41.2-6
++gcr4	4.4.0.1-8
++gdm3	50.1-0ubuntu0.1
++geoclue-2.0	2.7.2-2ubuntu3
++geocode-glib-common	3.26.4-3
++ghostscript	10.06.0~dfsg-3ubuntu1.2
++gir1.2-accountsservice-1.0:arm64	23.13.9-8ubuntu5.2
++gir1.2-adw-1:arm64	1.9.1-0ubuntu0.2
++gir1.2-atk-1.0:arm64	2.60.4-0ubuntu0.1
++gir1.2-atspi-2.0:arm64	2.60.4-0ubuntu0.1
++gir1.2-freedesktop:arm64	1.86.0-6build1
++gir1.2-gck-2:arm64	4.4.0.1-8
++gir1.2-gcr-4:arm64	4.4.0.1-8
++gir1.2-gdesktopenums-3.0:arm64	50.0-1ubuntu2
++gir1.2-gdkpixbuf-2.0:arm64	2.44.5+dfsg-4ubuntu1
++gir1.2-gdm-1.0	50.1-0ubuntu0.1
++gir1.2-geoclue-2.0:arm64	2.7.2-2ubuntu3
++gir1.2-girepository-3.0:arm64	2.88.0-1ubuntu0.1
++gir1.2-glib-2.0:arm64	2.88.0-1ubuntu0.1
++gir1.2-gnomeautoar-0.1:arm64	0.4.5-5
++gir1.2-gnomebg-4.0:arm64	44.5-1ubuntu1
++gir1.2-gnomebluetooth-3.0:arm64	47.1-5
++gir1.2-gnomedesktop-3.0:arm64	44.5-1ubuntu1
++gir1.2-gnomedesktop-4.0:arm64	44.5-1ubuntu1
++gir1.2-gnomeqr-4.0:arm64	44.5-1ubuntu1
++gir1.2-graphene-1.0:arm64	1.10.8-5build1
++gir1.2-gstreamer-1.0:arm64	1.28.2-1ubuntu0.1
++gir1.2-gtk-3.0:arm64	3.24.52-0ubuntu1
++gir1.2-gtk-4.0:arm64	4.22.4+ds-0ubuntu0.2
++gir1.2-gudev-1.0:arm64	1:238-7build1
++gir1.2-gweather-4.0:arm64	4.4.4-4
++gir1.2-harfbuzz-0.0:arm64	12.3.2-2
++gir1.2-ibus-1.0:arm64	1.5.34~rc2-1
++gir1.2-mutter-18:arm64	50.1-0ubuntu2.5
++gir1.2-nm-1.0:arm64	1.54.3-2ubuntu3.1
++gir1.2-nma4-1.0:arm64	1.10.6-7
++gir1.2-notify-0.7:arm64	0.8.8-1
++gir1.2-packagekitglib-1.0	1.3.4-3ubuntu1.2
++gir1.2-pango-1.0:arm64	1.57.0-1
++gir1.2-polkit-1.0:arm64	127-2ubuntu1.1
++gir1.2-rsvg-2.0:arm64	2.61.3+dfsg-3ubuntu0.1
++gir1.2-snapd-2:arm64	1.72-0ubuntu3
++gir1.2-soup-3.0:arm64	3.6.6-1ubuntu0.3
++gir1.2-upowerglib-1.0:arm64	1.91.1-1
++gir1.2-vte-2.91:arm64	0.84.0-2
++girepository-tools:arm64	2.88.0-1ubuntu0.1
++git	1:2.53.0-1ubuntu1.1
++git-man	1:2.53.0-1ubuntu1.1
++gjs	1.88.0-1
++glib-networking:arm64	2.80.1-1build2
++glib-networking-common	2.80.1-1build2
++glib-networking-services	2.80.1-1build2
++glmark2-data	2023.01+dfsg-3
++glmark2-es2-wayland	2023.01+dfsg-3
++glmark2-es2-x11	2023.01+dfsg-3
++glmark2-wayland	2023.01+dfsg-3
++glmark2-x11	2023.01+dfsg-3
++glycin-loaders	2.1.5+ds-0ubuntu0.2
++glycin-thumbnailers	2.1.5+ds-0ubuntu0.2
++gnome-bluetooth-3-common	47.1-5
++gnome-bluetooth-sendto	47.1-5
++gnome-calculator	1:50.0-1ubuntu1
++gnome-characters	50.0-1
++gnome-control-center	1:50.3-0ubuntu0.2
++gnome-control-center-data	1:50.3-0ubuntu0.2
++gnome-desktop3-data	44.5-1ubuntu1
++gnome-disk-utility	46.1-2ubuntu2
++gnome-font-viewer	49.0-1
++gnome-keyring	50.0-1
++gnome-logs	49.0-1
++gnome-online-accounts	3.58.0-1
++gnome-remote-desktop	50.2-0ubuntu0.1
++gnome-session	50.1-0ubuntu0.1
++gnome-session-bin	50.1-0ubuntu0.1
++gnome-session-common	50.1-0ubuntu0.1
++gnome-settings-daemon	50.0-1ubuntu1
++gnome-settings-daemon-common	50.0-1ubuntu1
++gnome-shell	50.1-0ubuntu1.5
++gnome-shell-common	50.1-0ubuntu1.5
++gnome-shell-ubuntu-extensions	50.26.04.8ubuntu
++gnome-software	50.0-1
++gnome-software-common	50.0-1
++gnome-software-plugin-flatpak	50.0-1
++gnome-software-plugin-fwupd	50.0-1
++gnome-system-monitor	49.1-2
++gnome-text-editor	50.1-0ubuntu0.1
++gnome-tweaks	49.0-1
++gnu-coreutils	9.7-3ubuntu2.1
++gnupg	2.4.8-4ubuntu3.1
++gnupg2	2.4.8-4ubuntu3.1
++gpg	2.4.8-4ubuntu3.1
++gpg-agent	2.4.8-4ubuntu3.1
++gpgconf	2.4.8-4ubuntu3.1
++gpgsm	2.4.8-4ubuntu3.1
++gpgv	2.4.8-4ubuntu3.1
++gpiod	2.2.1-3build1
++grep	3.12-1
++groff-base	1.23.0-10
++gsettings-desktop-schemas	50.0-1ubuntu2
++gstreamer1.0-libav:arm64	1.28.2-1
++gstreamer1.0-libcamera:arm64	0.7.0-1ubuntu2
++gstreamer1.0-pipewire:arm64	1.6.2-1ubuntu1.2
++gstreamer1.0-plugins-bad:arm64	1.28.2-1ubuntu1.2
++gstreamer1.0-plugins-base:arm64	1.28.2-1ubuntu0.3
++gstreamer1.0-plugins-extra:arm64	1.28.2-1ubuntu1.2
++gstreamer1.0-plugins-good:arm64	1.28.2-2ubuntu0.4
++gstreamer1.0-tools	1.28.2-1ubuntu0.1
++gtk-update-icon-cache	4.22.4+ds-0ubuntu0.2
++gvfs:arm64	1.60.0-1ubuntu0.2
++gvfs-backends	1.60.0-1ubuntu0.2
++gvfs-common	1.60.0-1ubuntu0.2
++gvfs-daemons	1.60.0-1ubuntu0.2
++gvfs-libs:arm64	1.60.0-1ubuntu0.2
++gzip	1.14-1~exp2ubuntu1.1
++hdparm	9.65+ds-1.1build1
++heif-gdk-pixbuf:arm64	1.21.2-3ubuntu0.7
++heif-thumbnailer	1.21.2-3ubuntu0.7
++hicolor-icon-theme	0.18-2build1
++hostname	3.25build1
++html2text	2.4.0-1
++htop	3.4.1-5build2
++hunspell-en-us	1:2020.12.07-4build1
++i2c-tools	4.4-2build3
++ibus	1.5.34~rc2-1
++ibus-data	1.5.34~rc2-1
++iio-sensor-proxy	3.8-1
++init	1.69
++init-system-helpers	1.69
++initramfs-tools	0.151ubuntu1
++initramfs-tools-bin	0.151ubuntu1
++initramfs-tools-core	0.151ubuntu1
++iotop	0.6-42-ga14256a-0.3build4
++iozone3	508-1
++iperf3	3.20-2
++iproute2	6.19.0-1ubuntu1.1
++iptables	1.8.11-2ubuntu3
++iputils-ping	3:20250605-1ubuntu1
++iso-codes	4.20.1-1
++iw	6.17-1
++jq	1.8.1-4ubuntu2
++kbd	2.7.1-2ubuntu2
++keyboard-configuration	1.237ubuntu3.1
++keyutils	1.6.3-6ubuntu3
++klibc-utils	2.0.14-1ubuntu2
++kmod	34.2-2ubuntu2
++language-selector-common	0.228build1
++language-selector-gnome	0.228build1
++less	668-1build1
++libaa1:arm64	1.4p5-51.1build1
++libabsl20260107:arm64	20260107.0-4
++libaccountsservice0:arm64	23.13.9-8ubuntu5.2
++libacl1:arm64	2.3.2-2
++libadwaita-1-0:arm64	1.9.1-0ubuntu0.2
++libaom3:arm64	3.13.1-2ubuntu0.1
++libapparmor1:arm64	5.0.2-0ubuntu1~26.04.1
++libappstream5:arm64	1.1.2-1
++libapt-pkg-perl	0.1.43
++libapt-pkg7.0:arm64	3.2.1ubuntu0.1
++libarchive13t64:arm64	3.8.5-1ubuntu2.3
++libaribb24-0t64:arm64	1.0.3-3
++libasan8:arm64	16-20260322-1ubuntu1
++libasound2-data	1.2.15.3-1ubuntu1.1
++libasound2t64:arm64	1.2.15.3-1ubuntu1.1
++libaspell15:arm64	0.60.8.2-3
++libass9:arm64	1:0.17.4-2
++libassuan9:arm64	3.0.2-2build1
++libasyncns0:arm64	0.8-7
++libatasmart4:arm64	0.19-6
++libatk-bridge2.0-0t64:arm64	2.60.4-0ubuntu0.1
++libatk1.0-0t64:arm64	2.60.4-0ubuntu0.1
++libatomic1:arm64	16-20260322-1ubuntu1
++libatopology2t64:arm64	1.2.15.3-1ubuntu1.1
++libatspi2.0-0t64:arm64	2.60.4-0ubuntu0.1
++libattr1:arm64	1:2.5.2-4ubuntu0.1
++libaudit-common	1:4.1.2-1ubuntu0.1
++libaudit1:arm64	1:4.1.2-1ubuntu0.1
++libavahi-client3:arm64	0.8-18ubuntu1.1
++libavahi-common-data:arm64	0.8-18ubuntu1.1
++libavahi-common3:arm64	0.8-18ubuntu1.1
++libavahi-glib1:arm64	0.8-18ubuntu1.1
++libavc1394-0:arm64	0.5.4-5build4
++libavcodec62:arm64	7:8.0.1-3ubuntu2
++libavdevice62:arm64	7:8.0.1-3ubuntu2
++libavfilter11:arm64	7:8.0.1-3ubuntu2
++libavformat62:arm64	7:8.0.1-3ubuntu2
++libavtp0:arm64	0.2.0-2build1
++libavutil60:arm64	7:8.0.1-3ubuntu2
++libayatana-appindicator3-1	0.5.94-1build1
++libayatana-ido3-0.4-0:arm64	0.10.4-1build1
++libayatana-indicator3-7:arm64	0.9.4-2
++libbinutils:arm64	2.46-3ubuntu2
++libblkid-dev:arm64	2.41.3-3ubuntu2.2
++libblkid1:arm64	2.41.3-3ubuntu2.2
++libblockdev-crypto3:arm64	3.4.0-1
++libblockdev-fs3:arm64	3.4.0-1
++libblockdev-loop3:arm64	3.4.0-1
++libblockdev-mdraid3:arm64	3.4.0-1
++libblockdev-nvme3:arm64	3.4.0-1
++libblockdev-part3:arm64	3.4.0-1
++libblockdev-smart3:arm64	3.4.0-1
++libblockdev-swap3:arm64	3.4.0-1
++libblockdev-utils3:arm64	3.4.0-1
++libblockdev3:arm64	3.4.0-1
++libbluetooth3:arm64	5.85-4ubuntu0.4
++libbluray3:arm64	1:1.4.1-1
++libboost-filesystem1.90.0:arm64	1.90.0-6ubuntu1
++libboost-iostreams1.90.0:arm64	1.90.0-6ubuntu1
++libboost-log1.90.0	1.90.0-6ubuntu1
++libboost-thread1.90.0:arm64	1.90.0-6ubuntu1
++libbpf1:arm64	1:1.6.3-1ubuntu1
++libbrotli1:arm64	1.2.0-3ubuntu0.1
++libbs2b0:arm64	3.1.0+dfsg-8build1
++libbsd0:arm64	0.12.2-2build2
++libbytesize-common	2.12-1
++libbytesize1:arm64	2.12-1
++libbz2-1.0:arm64	1.0.8-6ubuntu0.1
++libc-bin	2.43-2ubuntu2.7
++libc-dev-bin	2.43-2ubuntu2.7
++libc-gconv-modules-extra:arm64	2.43-2ubuntu2.7
++libc6:arm64	2.43-2ubuntu2.7
++libc6-dev:arm64	2.43-2ubuntu2.7
++libcaca0:arm64	0.99.beta20-6ubuntu2.1
++libcairo-gobject-perl	1.005-4build4
++libcairo-gobject2:arm64	1.18.4-3
++libcairo-perl	1.109-5build1
++libcairo-script-interpreter2:arm64	1.18.4-3
++libcairo2:arm64	1.18.4-3
++libcairomm-1.16-1:arm64	1.18.0-3
++libcamel-1.2-64t64:arm64	3.56.2-8
++libcamera0.7:arm64	0.7.0-1ubuntu2
++libcanberra-gtk3-0:arm64	0.30-18ubuntu3
++libcanberra0:arm64	0.30-18ubuntu3
++libcap-ng0:arm64	0.8.5-4build5
++libcap2:arm64	1:2.75-10ubuntu2
++libcap2-bin	1:2.75-10ubuntu2
++libcbor0.10:arm64	0.10.2-2ubuntu3
++libcc1-0:arm64	16-20260322-1ubuntu1
++libcddb2	1.3.2-7.1fakesync1build1
++libcdio-cdda2t64:arm64	10.2+2.0.2-2
++libcdio-paranoia2t64:arm64	10.2+2.0.2-2
++libcdio19t64:arm64	2.2.0-4build1
++libcdparanoia0:arm64	3.10.2+debian-14ubuntu2
++libchromaprint1:arm64	1.6.0-2build1
++libcjson1:arm64	1.7.19-2
++libcodec2-1.2:arm64	1.2.0-4
++libcolord-gtk4-1t64:arm64	0.3.1-2
++libcolord2:arm64	1.4.8-3
++libcolorhug2:arm64	1.4.8-3
++libcom-err2:arm64	1.47.2-3ubuntu4
++libcomposefs1:arm64	1.0.8-3
++libcpuinfo0:arm64	0.0~git20250905.877328f-1
++libcrack2:arm64	2.9.6-5.2build3
++libcrypt-dev:arm64	1:4.5.1-1
++libcrypt1:arm64	1:4.5.1-1
++libcryptsetup12:arm64	2:2.8.4-1ubuntu4
++libctf-nobfd0:arm64	2.46-3ubuntu2
++libctf0:arm64	2.46-3ubuntu2
++libcue2:arm64	2.2.1-4.2
++libcups2t64:arm64	2.4.16-1ubuntu1.3
++libcupsfilters2-common	2.1.1-0ubuntu5
++libcupsfilters2t64:arm64	2.1.1-0ubuntu5
++libcurl3t64-gnutls:arm64	8.18.0-1ubuntu2.8
++libcurl4t64:arm64	8.18.0-1ubuntu2.8
++libcwidget4:arm64	0.5.18-6build2
++libdaemon0:arm64	0.14-7.1ubuntu5
++libdatrie1:arm64	0.2.14-1
++libdav1d7:arm64	1.5.3-1
++libdb5.3t64:arm64	5.3.28+dfsg2-10ubuntu1
++libdbus-1-3:arm64	1.16.2-2ubuntu4
++libdbusmenu-glib4:arm64	18.10.20180917~bzr492+repack1-4build1
++libdbusmenu-gtk3-4:arm64	18.10.20180917~bzr492+repack1-4build1
++libdc1394-25:arm64	2.2.6-6
++libdca0:arm64	0.0.7-2build2
++libdconf1:arm64	0.49.0-4
++libde265-0:arm64	1.0.16-1build1
++libdebconfclient0:arm64	0.280ubuntu1
++libdecor-0-0:arm64	0.2.5-1
++libdee-1.0-4:arm64	1.2.7+17.10.20170616-8build1
++libdeflate0:arm64	1.23-2ubuntu1
++libdevmapper1.02.1:arm64	2:1.02.205-2ubuntu3
++libdialog15:arm64	1.3-20260107-1
++libdigest-sha-perl	6.04-1build4
++libdisplay-info3:arm64	0.3.0-1
++libdjvulibre-text	3.5.29-1
++libdjvulibre21:arm64	3.5.29-1
++libdnnl3.6:arm64	3.9.1+ds-2
++libdouble-conversion3:arm64	3.4.0-1
++libdpkg-perl	1.23.7ubuntu1
++libdrm-amdgpu1:arm64	2.4.131-1
++libdrm-common	2.4.131-1
++libdrm2:arm64	2.4.131-1
++libduktape207:arm64	2.7.0+tests-0ubuntu4
++libdv4t64:arm64	1.0.0-17.1build2
++libdvbpsi10:arm64	1.3.3-1build2
++libdvdnav4:arm64	7.0.0-2
++libdvdread8t64:arm64	7.0.1-1
++libdw1t64:arm64	0.194-4
++libdwarves1:arm64	1.31-2ubuntu1
++libebackend-1.2-11t64:arm64	3.56.2-8
++libebml5:arm64	1.4.5-2
++libebook-1.2-21t64:arm64	3.56.2-8
++libebook-contacts-1.2-4t64:arm64	3.56.2-8
++libecal-2.0-3:arm64	3.56.2-8
++libedata-book-1.2-27t64:arm64	3.56.2-8
++libedata-cal-2.0-2t64:arm64	3.56.2-8
++libedataserver-1.2-27t64:arm64	3.56.2-8
++libedataserverui-1.2-4t64:arm64	3.56.2-8
++libedit2:arm64	3.1-20251016-1
++libeditorconfig0:arm64	0.12.10+~0.17.1-3ubuntu0.1
++libefivar1t64:arm64	39-2
++libegl-mesa0:arm64	26.0.8-1ubuntu0.3
++libegl1:arm64	1.7.0-3
++libei1:arm64	1.5.0-3
++libeis1:arm64	1.5.0-3
++libelf1t64:arm64	0.194-4
++libenchant-2-2:arm64	2.8.2+dfsg1-3build1
++libepoxy0:arm64	1.5.10-2build1
++liberror-perl	0.17030-1
++libestr0:arm64	0.1.11-2build1
++libevdev2:arm64	1.13.6+dfsg-1
++libevent-core-2.1-7t64:arm64	2.1.12-stable-10ubuntu0.2
++libexempi8:arm64	2.6.6-2build1
++libexif12:arm64	0.6.25-2ubuntu0.1
++libexiv2-28:arm64	0.28.8+dfsg-1
++libexiv2-data	0.28.8+dfsg-1
++libexo-2-0:arm64	4.20.0-1build1
++libexo-common	4.20.0-1build1
++libexpat1:arm64	2.7.4-1ubuntu0.2
++libext2fs2t64:arm64	1.47.2-3ubuntu4
++libextutils-depends-perl	0.8002-1
++libfaad2:arm64	2.11.2-1build1
++libfarmhash0:arm64	0~git20190513.0d859a8-4
++libfastjson4:arm64	1.2304.0-2build1
++libfdisk1:arm64	2.41.3-3ubuntu2.2
++libfdt1:arm64	1.7.2-2ubuntu1
++libffi-dev:arm64	3.5.2-4
++libffi8:arm64	3.5.2-4
++libffmpegthumbnailer4v5:arm64	2.3.0-1
++libfftw3-double3:arm64	3.3.10-2fakesync1build3
++libfftw3-single3:arm64	3.3.10-2fakesync1build3
++libfido2-1:arm64	1.16.0-2build1
++libfile-fnmatch-perl	0.02-3build5
++libflac14:arm64	1.5.0+ds-5
++libflatpak0:arm64	1.16.6-1
++libflite1:arm64	2.2-7build1
++libfluidsynth3:arm64	2.4.8+dfsg-1
++libfontconfig1:arm64	2.17.1-3ubuntu1
++libfontenc1:arm64	1:1.1.8-1build2
++libfprint-2-2	1:1.95.1+tod1-0ubuntu2
++libfprint-2-tod1:arm64	1:1.95.1+tod1-0ubuntu2
++libfreeaptx0:arm64	0.2.2-1build1
++libfreerdp-server3-3:arm64	3.32.2+dfsg-0ubuntu0.26.04.1
++libfreerdp3-3:arm64	3.32.2+dfsg-0ubuntu0.26.04.1
++libfreetype6:arm64	2.14.2+dfsg-1ubuntu0.2
++libfribidi0:arm64	1.0.16-5
++libfuse2t64:arm64	2.9.9-9build1
++libfuse3-4:arm64	3.18.2-1
++libfwupd3:arm64	2.1.6-3ubuntu4~26.04.1
++libfyaml0:arm64	0.9.4-1
++libgarcon-1-0:arm64	4.20.0-1build1
++libgarcon-common	4.20.0-1build1
++libgarcon-gtk3-1-0:arm64	4.20.0-1build1
++libgbm1:arm64	26.0.8-1ubuntu0.3
++libgcc-15-dev:arm64	15.2.0-16ubuntu1
++libgcc-s1:arm64	16-20260322-1ubuntu1
++libgck-1-0:arm64	3.41.2-6
++libgck-2-2:arm64	4.4.0.1-8
++libgcr-4-4:arm64	4.4.0.1-8
++libgcr-base-3-1:arm64	3.41.2-6
++libgcr-ui-3-1:arm64	3.41.2-6
++libgcrypt20:arm64	1.12.0-2ubuntu1.1
++libgd3:arm64	2.3.3-13ubuntu2
++libgdbm-compat4t64:arm64	1.26-1build1
++libgdbm6t64:arm64	1.26-1build1
++libgdk-pixbuf-2.0-0:arm64	2.44.5+dfsg-4ubuntu1
++libgdk-pixbuf2.0-common	2.44.5+dfsg-4ubuntu1
++libgdm1	50.1-0ubuntu0.1
++libgeoclue-2-0:arm64	2.7.2-2ubuntu3
++libgeocode-glib-2-0:arm64	3.26.4-3
++libgexiv2-2:arm64	0.14.6-2
++libgif7:arm64	5.2.2-1ubuntu3.2
++libgio-2.0-dev:arm64	2.88.0-1ubuntu0.1
++libgio-2.0-dev-bin	2.88.0-1ubuntu0.1
++libgirepository-1.0-1:arm64	1.86.0-6build1
++libgirepository-2.0-0:arm64	2.88.0-1ubuntu0.1
++libgjs0:arm64	1.88.0-1
++libgl1:arm64	1.7.0-3
++libgl1-mesa-dri:arm64	26.0.8-1ubuntu0.3
++libgles2:arm64	1.7.0-3
++libglib-object-introspection-perl	0.052-1
++libglib-perl:arm64	3:1.329.4-1
++libglib2.0-0t64:arm64	2.88.0-1ubuntu0.1
++libglib2.0-bin	2.88.0-1ubuntu0.1
++libglib2.0-data	2.88.0-1ubuntu0.1
++libglib2.0-dev:arm64	2.88.0-1ubuntu0.1
++libglib2.0-dev-bin	2.88.0-1ubuntu0.1
++libglibmm-2.68-1t64:arm64	2.86.0-7
++libglvnd0:arm64	1.7.0-3
++libglx-mesa0:arm64	26.0.8-1ubuntu0.3
++libglx0:arm64	1.7.0-3
++libglycin-2-0:arm64	2.1.5+ds-0ubuntu0.2
++libglycin-gtk4-2-0:arm64	2.1.5+ds-0ubuntu0.2
++libgme0:arm64	0.6.4-1
++libgmp10:arm64	2:6.3.0+dfsg-5ubuntu2
++libgnome-autoar-0-0:arm64	0.4.5-5
++libgnome-bg-4-2t64:arm64	44.5-1ubuntu1
++libgnome-bluetooth-3.0-13:arm64	47.1-5
++libgnome-bluetooth-ui-3.0-13:arm64	47.1-5
++libgnome-desktop-3-20t64:arm64	44.5-1ubuntu1
++libgnome-desktop-4-2t64:arm64	44.5-1ubuntu1
++libgnome-qr-4-0:arm64	44.5-1ubuntu1
++libgnutls30t64:arm64	3.8.12-2ubuntu1.1
++libgoa-1.0-0b:arm64	3.58.0-1
++libgoa-1.0-common	3.58.0-1
++libgoa-backend-1.0-2:arm64	3.58.0-1
++libgomp1:arm64	16-20260322-1ubuntu1
++libgpg-error0:arm64	1.58-2
++libgpgme45:arm64	2.0.1-2build1
++libgpgmepp7:arm64	2.0.0-2
++libgphoto2-6t64:arm64	2.5.33-1ubuntu1.2
++libgphoto2-port12t64:arm64	2.5.33-1ubuntu1.2
++libgpiod3:arm64	2.2.1-3build1
++libgpm2:arm64	1.20.7-12build1
++libgprofng0:arm64	2.46-3ubuntu2
++libgraphene-1.0-0:arm64	1.10.8-5build1
++libgraphite2-3:arm64	1.3.14-11ubuntu1.1
++libgs-common	10.06.0~dfsg-3ubuntu1.2
++libgs10:arm64	10.06.0~dfsg-3ubuntu1.2
++libgs10-common	10.06.0~dfsg-3ubuntu1.2
++libgsf-1-114:arm64	1.14.53-1.1
++libgsf-1-common	1.14.53-1.1
++libgsm1:arm64	1.0.23-2
++libgsound0t64:arm64	1.0.3-4
++libgssapi-krb5-2:arm64	1.22.1-2ubuntu4.1
++libgssdp-1.6-0:arm64	1.6.4-5
++libgstreamer-gl1.0-0:arm64	1.28.2-1ubuntu0.3
++libgstreamer-plugins-bad1.0-0:arm64	1.28.2-1ubuntu1.2
++libgstreamer-plugins-base1.0-0:arm64	1.28.2-1ubuntu0.3
++libgstreamer-plugins-extra1.0-0:arm64	1.28.2-1ubuntu1.2
++libgstreamer1.0-0:arm64	1.28.2-1ubuntu0.1
++libgtk-3-0t64:arm64	3.24.52-0ubuntu1
++libgtk-3-common	3.24.52-0ubuntu1
++libgtk-4-1:arm64	4.22.4+ds-0ubuntu0.2
++libgtk-4-common	4.22.4+ds-0ubuntu0.2
++libgtk-layer-shell0:arm64	0.10.0-1
++libgtk2.0-0t64:arm64	2.24.33-10
++libgtk2.0-bin	2.24.33-10
++libgtk2.0-common	2.24.33-10
++libgtk3-perl	0.038-3
++libgtkmm-4.0-0:arm64	4.20.0-1build1
++libgtksourceview-5-0:arm64	5.18.0-3
++libgtksourceview-5-common	5.18.0-3
++libgtop-2.0-11:arm64	2.41.3-2ubuntu1
++libgtop2-common	2.41.3-2ubuntu1
++libgudev-1.0-0:arm64	1:238-7build1
++libgupnp-1.6-0:arm64	1.6.9-4
++libgupnp-igd-1.6-0:arm64	1.6.0-5
++libgusb2a:arm64	0.4.9-7
++libgweather-4-0t64:arm64	4.4.4-4
++libgweather-4-common	4.4.4-4
++libgxps2t64:arm64	0.3.2-6
++libhandy-1-0:arm64	1.8.3-3build1
++libharfbuzz-gobject0:arm64	12.3.2-2
++libharfbuzz-icu0:arm64	12.3.2-2
++libharfbuzz-subset0:arm64	12.3.2-2
++libharfbuzz0b:arm64	12.3.2-2
++libheif-plugin-aomdec:arm64	1.21.2-3ubuntu0.7
++libheif1:arm64	1.21.2-3ubuntu0.7
++libhogweed6t64:arm64	3.10.2-1
++libhunspell-1.7-0:arm64	1.7.2+really1.7.2-11
++libhwasan0:arm64	16-20260322-1ubuntu1
++libhwy1t64:arm64	1.3.0-2
++libhyphen0:arm64	2.8.8-7build4
++libi2c0:arm64	4.4-2build3
++libibus-1.0-5:arm64	1.5.34~rc2-1
++libical3t64:arm64	3.0.20-2build1
++libice6:arm64	2:1.1.1-1build1
++libicu78:arm64	78.2-2ubuntu1
++libidn12:arm64	1.43-2ubuntu0.26.04.1
++libidn2-0:arm64	2.3.8-4build1
++libiec61883-0:arm64	1.2.0-8
++libieee1284-3t64:arm64	0.2.11-14.1build2
++libijs-0.35:arm64	0.35-16
++libimagequant0:arm64	4.4.1-1
++libimath-3-1-29t64:arm64	3.1.12-1ubuntu5
++libimobiledevice-1.0-6:arm64	1.4.0-1build1
++libimobiledevice-glue-1.0-0	1.3.2-2build1
++libinih1:arm64	61-1ubuntu1
++libiniparser4:arm64	4.2.6-1build1
++libinireader0:arm64	61-1ubuntu1
++libinput-bin	1.31.1-1ubuntu1.2
++libinput10:arm64	1.31.1-1ubuntu1.2
++libinsights0:arm64	0.9.3ubuntu0.1
++libinstpatch-1.0-2:arm64	1.1.7-1.1
++libip4tc2:arm64	1.8.11-2ubuntu3
++libip6tc2:arm64	1.8.11-2ubuntu3
++libiperf0:arm64	3.20-2
++libisl23:arm64	0.27-1build1
++libitm1:arm64	16-20260322-1ubuntu1
++libixml11t64:arm64	1:1.14.25-1ubuntu1
++libjack-jackd2-0:arm64	1.9.22~dfsg-5build1
++libjansson4:arm64	2.14-2build4
++libjavascriptcoregtk-4.1-0:arm64	2.52.6-0ubuntu0.26.04.2
++libjbig0:arm64	2.1-6.1ubuntu3
++libjbig2dec0:arm64	0.20-1ubuntu0.26.04.1
++libjpeg-turbo8:arm64	2.1.5-4ubuntu4
++libjpeg8:arm64	8c-2ubuntu12
++libjq1:arm64	1.8.1-4ubuntu2
++libjson-c5:arm64	0.18+ds-3
++libjson-glib-1.0-0:arm64	1.10.8+ds-2
++libjson-glib-1.0-common	1.10.8+ds-2
++libjxl-gdk-pixbuf:arm64	0.11.1-6ubuntu4.2
++libjxl0.11:arm64	0.11.1-6ubuntu4.2
++libk5crypto3:arm64	1.22.1-2ubuntu4.1
++libkate1:arm64	0.4.1-12
++libkeyutils1:arm64	1.6.3-6ubuntu3
++libklibc:arm64	2.0.14-1ubuntu2
++libkmod2:arm64	34.2-2ubuntu2
++libkrb5-3:arm64	1.22.1-2ubuntu4.1
++libkrb5support0:arm64	1.22.1-2ubuntu4.1
++libksba8:arm64	1.6.7-2build1
++liblc3-1:arm64	1.1.3+dfsg-1build1
++liblcms2-2:arm64	2.17-1ubuntu0.2
++libldacbt-abr2:arm64	2.0.2.3+git20200429+ed310a0-5build1
++libldacbt-enc2:arm64	2.0.2.3+git20200429+ed310a0-5build1
++libldap-common	2.6.10+dfsg-1ubuntu5
++libldap2:arm64	2.6.10+dfsg-1ubuntu5
++libldb2:arm64	2:2.11.0+samba4.23.6+dfsg-1ubuntu2.2
++liblerc4:arm64	4.0.0+ds-5ubuntu2
++liblightdm-gobject-1-0:arm64	1.32.0-6ubuntu4
++liblilv-0-0:arm64	0.26.2-1
++liblirc-client0t64:arm64	0.10.2-0.10ubuntu1
++libllvm21:arm64	1:21.1.8-6ubuntu1
++liblmdb0:arm64	0.9.31-1build2
++liblocale-gettext-perl	1.07-8
++liblrdf0:arm64	0.6.1-5
++liblsan0:arm64	16-20260322-1ubuntu1
++liblsof0	4.99.4+dfsg-2build2
++libltc11:arm64	1.3.2-1build2
++libltdl7:arm64	2.5.4-9
++liblttng-ust-common1t64:arm64	2.14.0-1.1
++liblttng-ust-ctl6:arm64	2.14.0-1.1
++liblttng-ust1t64:arm64	2.14.0-1.1
++liblua5.4-0:arm64	5.4.8-1build1
++liblz4-1:arm64	1.10.0-8
++liblzma5:arm64	5.8.3-1ubuntu0.1
++liblzo2-2:arm64	2.10-3build2
++libmagic-mgc	1:5.46-5build2
++libmagic1t64:arm64	1:5.46-5build2
++libmalcontent-0-0:arm64	0.14.0-0ubuntu1.2
++libmalcontent-common	0.14.0-0ubuntu1.2
++libmatroska7:arm64	1.7.1-2
++libmbedcrypto16:arm64	3.6.5-0.1ubuntu2
++libmbim-glib4:arm64	1.32.0-2ubuntu1
++libmbim-proxy	1.32.0-2ubuntu1
++libmd0:arm64	1.1.0-2build4
++libmd4c0:arm64	0.5.2-2build1
++libminizip1t64:arm64	1:1.3.dfsg+really1.3.1-1ubuntu3.2
++libmjpegutils-2.2-0:arm64	1:2.2.1-3
++libmm-glib0:arm64	1.25.95-1ubuntu1
++libmnl0:arm64	1.0.5-3build1
++libmodplug1:arm64	1:0.8.9.0-3build2
++libmount-dev:arm64	2.41.3-3ubuntu2.2
++libmount1:arm64	2.41.3-3ubuntu2.2
++libmozjs-140-0:arm64	140.8.0-4
++libmp3lame0:arm64	3.101~svn6525+dfsg-2ubuntu0.1
++libmpc3:arm64	1.3.1-3
++libmpcdec6:arm64	2:0.1~r495-3build1
++libmpeg2encpp-2.2-0:arm64	1:2.2.1-3
++libmpfr6:arm64	4.2.2-3
++libmpg123-0t64:arm64	1.33.3-2
++libmplex2-2.2-0:arm64	1:2.2.1-3
++libmsgraph-1-1:arm64	0.3.3-3build1
++libmtdev1t64:arm64	1.1.7-1build1
++libmtp-common	1.1.22-1ubuntu1
++libmtp-runtime	1.1.22-1ubuntu1
++libmtp9t64:arm64	1.1.22-1ubuntu1
++libmutter-18-0:arm64	50.1-0ubuntu2.5
++libmysofa1:arm64	1.3.3+dfsg-1ubuntu2
++libnautilus-extension4:arm64	1:50.2.2-0ubuntu0.2
++libncurses6:arm64	6.6+20251231-1
++libncursesw6:arm64	6.6+20251231-1
++libndp0:arm64	1.9-1build1
++libneon27t64:arm64	0.36.0-1
++libnetfilter-conntrack3:arm64	1.1.1-1
++libnetplan1:arm64	1.2-1ubuntu5.1
++libnettle8t64:arm64	3.10.2-1
++libnewt0.52:arm64	0.52.25-1ubuntu3
++libnfnetlink0:arm64	1.0.2-3build1
++libnfs14:arm64	5.0.2-1ubuntu1.2
++libnfsidmap1:arm64	1:2.8.5-1ubuntu1
++libnftnl11:arm64	1.3.1-1
++libnghttp2-14:arm64	1.68.0-2ubuntu0.2
++libnice10:arm64	0.1.23-2
++libnl-3-200:arm64	3.12.0-2
++libnl-3-dev:arm64	3.12.0-2
++libnl-genl-3-200:arm64	3.12.0-2
++libnl-genl-3-dev:arm64	3.12.0-2
++libnl-route-3-200:arm64	3.12.0-2
++libnm0:arm64	1.54.3-2ubuntu3.1
++libnma-common	1.10.6-7
++libnma-gtk4-0:arm64	1.10.6-7
++libnma0:arm64	1.10.6-7
++libnorm1t64:arm64	1.5.9+dfsg-4
++libnotify4:arm64	0.8.8-1
++libnpth0t64:arm64	1.8-3build1
++libnspr4:arm64	2:4.38.2-1ubuntu1
++libnss-myhostname:arm64	259.9-0ubuntu0.1
++libnss-systemd:arm64	259.9-0ubuntu0.1
++libnss3:arm64	2:3.120-1ubuntu2.2
++libntfs-3g89t64:arm64	1:2022.10.3-5ubuntu1.1
++libnuma1:arm64	2.0.19-1build1
++libnvme1t64:arm64	1.16.1-4
++liboeffis1:arm64	1.5.0-3
++libogg0:arm64	1.3.6-2
++libonig5:arm64	6.9.10-1build1
++libonnx1t64:arm64	1.20.0-1
++libonnxruntime-providers:arm64	1.23.2+dfsg-6ubuntu1
++libonnxruntime1.23:arm64	1.23.2+dfsg-6ubuntu1
++libopenal-data	1:1.25.1-2
++libopenal1:arm64	1:1.25.1-2
++libopenexr-3-1-30:arm64	3.1.13-2build1
++libopengl0:arm64	1.7.0-3
++libopenh264-8:arm64	2.6.0+dfsg-2build1
++libopenjp2-7:arm64	2.5.4-1ubuntu0.1
++libopenmpt-modplug1:arm64	0.8.9.0-openmpt1-2build3
++libopenmpt0t64:arm64	0.8.4-1
++libopenni2-0:arm64	2.2.0.33+dfsg-19
++libopus0:arm64	1.6.1-1
++liborc-0.4-0t64:arm64	1:0.4.42-2
++libostree-1-1:arm64	2025.7-3build1
++libp11-kit0:arm64	0.26.2-2
++libpackagekit-glib2-18:arm64	1.3.4-3ubuntu1.2
++libpam-fprintd:arm64	1.94.5-4
++libpam-gnome-keyring:arm64	50.0-1
++libpam-modules:arm64	1.7.0-5ubuntu3.2
++libpam-modules-bin	1.7.0-5ubuntu3.2
++libpam-runtime	1.7.0-5ubuntu3.2
++libpam-systemd:arm64	259.9-0ubuntu0.1
++libpam0g:arm64	1.7.0-5ubuntu3.2
++libpango-1.0-0:arm64	1.57.0-1
++libpangocairo-1.0-0:arm64	1.57.0-1
++libpangoft2-1.0-0:arm64	1.57.0-1
++libpangomm-2.48-1t64:arm64	2.56.1-2
++libpangoxft-1.0-0:arm64	1.57.0-1
++libpaper2:arm64	2.2.5-0.3maysync1
++libparted2t64:arm64	3.6-6
++libpci3:arm64	1:3.14.0-1build2
++libpciaccess0:arm64	0.18.1-1ubuntu4.1
++libpcre2-16-0:arm64	10.46-1ubuntu0.1
++libpcre2-32-0:arm64	10.46-1ubuntu0.1
++libpcre2-8-0:arm64	10.46-1ubuntu0.1
++libpcre2-dev:arm64	10.46-1ubuntu0.1
++libpcre2-posix3:arm64	10.46-1ubuntu0.1
++libpcsclite1:arm64	2.4.1-1
++libperl5.40:arm64	5.40.1-7ubuntu0.4
++libpgm-5.3-0t64:arm64	5.3.128~dfsg-2.1build2
++libphonenumber8:arm64	8.13.51+ds-5
++libpipeline1:arm64	1.5.8-2
++libpipewire-0.3-0t64:arm64	1.6.2-1ubuntu1.2
++libpipewire-0.3-modules:arm64	1.6.2-1ubuntu1.2
++libpisp-common	1.3.0-1build1
++libpisp1:arm64	1.3.0-1build1
++libpixman-1-0:arm64	0.46.4-1
++libpkcs11-helper1t64:arm64	1.31.0-1
++libpkgconf7:arm64	2.5.1-4
++libplacebo360:arm64	7.360.0-3
++libplist-2.0-4:arm64	2.7.0+git20250820-1build1
++libplymouth5:arm64	24.004.60+git20250831.4a3c171d-0ubuntu8
++libpng16-16t64:arm64	1.6.57-1ubuntu0.1
++libpolkit-agent-1-0:arm64	127-2ubuntu1.1
++libpolkit-gobject-1-0:arm64	127-2ubuntu1.1
++libpoppler-cpp3:arm64	26.01.0-2ubuntu0.3
++libpoppler-glib8t64:arm64	26.01.0-2ubuntu0.3
++libpoppler156:arm64	26.01.0-2ubuntu0.3
++libpopt0:arm64	1.19+dfsg-2build1
++libportal-gtk4-1:arm64	0.9.1-2build1
++libportal1:arm64	0.9.1-2build1
++libppd2:arm64	2:2.1.1-0ubuntu2
++libppd2-common	2:2.1.1-0ubuntu2
++libppsdocument-4.0-6:arm64	50.2-0ubuntu0.1
++libppsview-4.0-5:arm64	50.2-0ubuntu0.1
++libproc-processtable-perl:arm64	0.637-1
++libproc2-0:arm64	2:4.0.4-9ubuntu1
++libprotobuf-lite32t64:arm64	3.21.12-15ubuntu1.1
++libprotobuf32t64:arm64	3.21.12-15ubuntu1.1
++libproxy1v5:arm64	0.5.12-1
++libpsl5t64:arm64	0.21.2-1.1build2
++libpthreadpool0:arm64	0.0~git20251020.0e6ca13-1
++libpulse-mainloop-glib0:arm64	1:17.0+dfsg1-2ubuntu4
++libpulse0:arm64	1:17.0+dfsg1-2ubuntu4
++libpwquality-common	1.4.5-5build1
++libpwquality1:arm64	1.4.5-5build1
++libpython3-stdlib:arm64	3.14.3-0ubuntu2
++libpython3.14-minimal:arm64	3.14.4-1ubuntu0.2
++libpython3.14-stdlib:arm64	3.14.4-1ubuntu0.2
++libqmi-glib5:arm64	1.38.0-1
++libqmi-proxy	1.38.0-1
++libqpdf30:arm64	12.3.2-1
++libqrencode4:arm64	4.1.1-2build1
++libqrtr-glib0:arm64	1.2.2-2ubuntu1
++libqt5core5t64:arm64	5.15.18+dfsg-1ubuntu1
++libqt5dbus5t64:arm64	5.15.18+dfsg-1ubuntu1
++libqt5gui5t64:arm64	5.15.18+dfsg-1ubuntu1
++libqt5network5t64:arm64	5.15.18+dfsg-1ubuntu1
++libqt5svg5:arm64	5.15.18-1
++libqt5widgets5t64:arm64	5.15.18+dfsg-1ubuntu1
++libqt5x11extras5:arm64	5.15.18-1
++librabbitmq4:arm64	0.15.0-1ubuntu0.26.04.2
++libraptor2-0:arm64	2.0.16-6build1
++librav1e0.8:arm64	0.8.1-7
++libraw1394-11:arm64	2.1.2-2build4
++libre2-11:arm64	20250805-1build3
++libreadline8t64:arm64	8.3-4
++libregexp-assemble-perl	0.38-2
++libresid-builder0c2a:arm64	2.1.1-16build1
++librest-1.0-0:arm64	0.10.2-1
++librist4:arm64	0.2.11+dfsg-1build1
++libroc0.4:arm64	0.4.0+dfsg-5ubuntu3.1
++librsvg2-2:arm64	2.61.3+dfsg-3ubuntu0.1
++librsvg2-common:arm64	2.61.3+dfsg-3ubuntu0.1
++librtmp1:arm64	2.4+20151223.gitfa8646d.1-3
++librubberband3:arm64	4.0.0+dfsg-2ubuntu1
++libsamplerate0:arm64	0.2.2-4build2
++libsane-common	1.4.0-1ubuntu1
++libsane1:arm64	1.4.0-1ubuntu1
++libsasl2-2:arm64	2.1.28+dfsg1-9ubuntu3
++libsasl2-modules-db:arm64	2.1.28+dfsg1-9ubuntu3
++libsbc1:arm64	2.1-1build1
++libsctp1:arm64	1.0.21+dfsg-1build2
++libsdl2-2.0-0:arm64	2.32.10+dfsg-6
++libsdl2-classic:arm64	2.32.10+dfsg-6
++libsdl3-0:arm64	3.4.2+ds-1ubuntu1
++libseccomp2:arm64	2.6.0-2ubuntu5
++libsecret-1-0:arm64	0.21.7-2build1
++libsecret-common	0.21.7-2build1
++libselinux-dev:arm64	3.9-4build1
++libselinux1:arm64	3.9-4build1
++libsemanage-common	3.9-1build1
++libsemanage2:arm64	3.9-1build1
++libsensors-config	1:3.6.2-2build1
++libsensors5:arm64	1:3.6.2-2build1
++libsepol-dev:arm64	3.9-2
++libsepol2:arm64	3.9-2
++libserd-0-0:arm64	0.32.6-1
++libsframe3:arm64	2.46-3ubuntu2
++libsharpyuv0:arm64	1.5.0-0.1build1
++libshine3:arm64	3.1.1-3build1
++libshout3:arm64	2.4.6-1build3
++libsidplay2:arm64	2.1.1-16build1
++libsigc++-2.0-0v5:arm64	2.12.1-4build1
++libsigc++-3.0-0:arm64	3.6.0-2build1
++libsimdutf31:arm64	8.0.0-1
++libslang2:arm64	2.3.3-5build1
++libsm6:arm64	2:1.2.6-1build1
++libsmartcols1:arm64	2.41.3-3ubuntu2.2
++libsmbclient0:arm64	2:4.23.6+dfsg-1ubuntu2.2
++libsnapd-glib-2-1:arm64	1.72-0ubuntu3
++libsnappy1v5:arm64	1.2.2-2
++libsndfile1:arm64	1.2.2-4
++libsnmp-base	5.9.4+dfsg-2ubuntu3.1
++libsnmp40t64:arm64	5.9.4+dfsg-2ubuntu3.1
++libsodium23:arm64	1.0.18-2
++libsord-0-0:arm64	0.16.20-1
++libsoundtouch1:arm64	2.4.0+ds-1build1
++libsoup-3.0-0:arm64	3.6.6-1ubuntu0.3
++libsoup-3.0-common	3.6.6-1ubuntu0.3
++libsoxr0:arm64	0.1.3-4.1
++libspa-0.2-bluetooth:arm64	1.6.2-1ubuntu1.2
++libspa-0.2-libcamera:arm64	1.6.2-1ubuntu1.2
++libspa-0.2-modules:arm64	1.6.2-1ubuntu1.2
++libspandsp2t64:arm64	0.0.6+dfsg-2.2build2
++libspatialaudio0t64:arm64	0.3.0+git20180730+dfsg1-3
++libspeex1:arm64	1.2.1-3build1
++libspeexdsp1:arm64	1.2.1-3build1
++libspelling-1-2:arm64	0.4.9-1build1
++libspelling-common	0.4.9-1build1
++libsqlite3-0:arm64	3.46.1-9ubuntu0.3
++libsratom-0-0:arm64	0.6.20-1
++libsrt1.5-gnutls:arm64	1.5.4-3
++libsrtp2-1:arm64	2.7.0-3build1
++libss2:arm64	1.47.2-3ubuntu4
++libssh-4:arm64	0.11.3-1ubuntu2.1
++libssh2-1t64:arm64	1.11.1-1ubuntu0.26.04.4
++libssl3t64:arm64	3.5.5-1ubuntu3.7
++libstartup-notification0:arm64	0.12-8build1
++libstdc++-15-dev:arm64	15.2.0-16ubuntu1
++libstdc++6:arm64	16-20260322-1ubuntu1
++libstemmer0d:arm64	3.0.1-1
++libsvtav1enc2:arm64	2.3.0+dfsg-1build1
++libswresample6:arm64	7:8.0.1-3ubuntu2
++libswscale9:arm64	7:8.0.1-3ubuntu2
++libsysprof-capture-4-dev:arm64	50.0-1
++libsystemd-shared:arm64	259.9-0ubuntu0.1
++libsystemd0:arm64	259.9-0ubuntu0.1
++libtag2:arm64	2.2.1-3
++libtalloc2:arm64	2:2.4.3+samba4.23.6+dfsg-1ubuntu2.2
++libtasn1-6:arm64	4.21.0-2
++libtcl8.6:arm64	8.6.17+dfsg-1build1
++libtdb1:arm64	2:1.4.14+samba4.23.6+dfsg-1ubuntu2.2
++libteamdctl0:arm64	1.31-1build4
++libtensorflow-lite2.14.1:arm64	2.14.1+dfsg-3build1
++libtevent0t64:arm64	2:0.17.1+samba4.23.6+dfsg-1ubuntu2.2
++libtext-charwidth-perl:arm64	0.04-11build4
++libtext-iconv-perl:arm64	1.7-8.1
++libtext-wrapi18n-perl	0.06-10
++libthai-data	0.1.30-1
++libthai0:arm64	0.1.30-1
++libtheora1:arm64	1.2.0+dfsg-6
++libtheoradec2:arm64	1.2.0+dfsg-6
++libtheoraenc2:arm64	1.2.0+dfsg-6
++libthunarx-3-0:arm64	4.20.7-1
++libtiff6:arm64	4.7.0-3ubuntu5
++libtinfo6:arm64	6.6+20251231-1
++libtinysparql-3.0-0:arm64	3.11.0-1
++libtirpc-common	1.3.7-0.1
++libtirpc3t64:arm64	1.3.7-0.1
++libtotem-plparser-common	3.26.6-3
++libtotem-plparser18:arm64	3.26.6-3
++libtsan2:arm64	16-20260322-1ubuntu1
++libtss2-esys-3.0.2-0t64:arm64	4.1.3-6
++libtss2-mu-4.0.1-0t64:arm64	4.1.3-6
++libtss2-rc0t64:arm64	4.1.3-6
++libtss2-sys1t64:arm64	4.1.3-6
++libtss2-tcti-cmd0t64:arm64	4.1.3-6
++libtss2-tcti-device0t64:arm64	4.1.3-6
++libtss2-tcti-libtpms0t64:arm64	4.1.3-6
++libtss2-tcti-mssim0t64:arm64	4.1.3-6
++libtss2-tcti-spi-helper0t64:arm64	4.1.3-6
++libtss2-tcti-swtpm0t64:arm64	4.1.3-6
++libtss2-tctildr0t64:arm64	4.1.3-6
++libtwolame0:arm64	0.4.0-2build4
++libubsan1:arm64	16-20260322-1ubuntu1
++libuchardet0:arm64	0.0.8-2
++libudev1:arm64	259.9-0ubuntu0.1
++libudfread3:arm64	1.2.0-2
++libudisks2-0:arm64	2.10.91-1ubuntu2.1
++libunibreak6:arm64	6.1-3build1
++libunistring5:arm64	1.3-2build1
++libunity-protocol-private0:arm64	7.1.4+19.04.20190319-6.1ubuntu1
++libunity-scopes-json-def-desktop	7.1.4+19.04.20190319-6.1ubuntu1
++libunity9	7.1.4+19.04.20190319-6.1ubuntu1
++libunwind8:arm64	1.8.3-0ubuntu1
++libupnp17t64:arm64	1:1.14.25-1ubuntu1
++libupower-glib3:arm64	1.91.1-1
++libusb-1.0-0:arm64	2:1.0.29-2build1
++libusbmuxd-2.0-7:arm64	2.1.1-1
++libuuid1:arm64	2.41.3-3ubuntu2.2
++libuv1t64:arm64	1.51.0-2ubuntu1
++libv4l-0t64:arm64	1.32.0-2ubuntu1
++libv4l2rds0t64:arm64	1.32.0-2ubuntu1
++libv4lconvert0t64:arm64	1.32.0-2ubuntu1
++libva-drm2:arm64	2.23.0-1ubuntu1
++libva-wayland2:arm64	2.23.0-1ubuntu1
++libva-x11-2:arm64	2.23.0-1ubuntu1
++libva2:arm64	2.23.0-1ubuntu1
++libvdpau1:arm64	1.5-4
++libvidstab1.1:arm64	1.1.0-2.1
++libvisual-0.4-0:arm64	0.4.2-4
++libvlc-bin:arm64	3.0.23-1
++libvlc5:arm64	3.0.23-1
++libvlccore9:arm64	3.0.23-1
++libvo-aacenc0:arm64	0.1.3-3build1
++libvo-amrwbenc0:arm64	0.1.3-2build2
++libvolume-key1:arm64	0.3.12-10build2
++libvorbis0a:arm64	1.3.7-3build2
++libvorbisenc2:arm64	1.3.7-3build2
++libvorbisfile3:arm64	1.3.7-3build2
++libvpx12:arm64	1.16.0-3
++libvte-2.91-0:arm64	0.84.0-2
++libvte-2.91-common	0.84.0-2
++libvte-2.91-gtk4-0:arm64	0.84.0-2
++libvulkan1:arm64	1.4.341.0-1
++libwacom-common	2.18.0-1
++libwacom9:arm64	2.18.0-1
++libwavpack1:arm64	5.9.0-1
++libwayland-client0:arm64	1.24.0-2
++libwayland-cursor0:arm64	1.24.0-2
++libwayland-egl1:arm64	1.24.0-2
++libwayland-server0:arm64	1.24.0-2
++libwbclient0:arm64	2:4.23.6+dfsg-1ubuntu2.2
++libwebkit2gtk-4.1-0:arm64	2.52.6-0ubuntu0.26.04.2
++libwebp7:arm64	1.5.0-0.1build1
++libwebpdemux2:arm64	1.5.0-0.1build1
++libwebpmux3:arm64	1.5.0-0.1build1
++libwebrtc-audio-processing-1-3:arm64	1.3-3build2
++libwhoopsie-preferences0	23build4
++libwhoopsie0:arm64	0.2.82ubuntu
++libwildmidi2:arm64	0.4.6-1
++libwinpr3-3:arm64	3.32.2+dfsg-0ubuntu0.26.04.1
++libwireplumber-0.5-0:arm64	0.5.13-1ubuntu1.1
++libwnck-3-0:arm64	43.3-1build1
++libwnck-3-common	43.3-1build1
++libwrap0:arm64	7.6.q-36build2
++libwrap0-dev:arm64	7.6.q-36build2
++libx11-6:arm64	2:1.8.13-1ubuntu0.1
++libx11-data	2:1.8.13-1ubuntu0.1
++libx11-xcb1:arm64	2:1.8.13-1ubuntu0.1
++libx264-165:arm64	2:0.165.3222+gitb35605ac-3build1
++libx265-215:arm64	4.1-4
++libxapian30:arm64	1.4.31-2
++libxau6:arm64	1:1.0.11-1build2
++libxaw7:arm64	2:1.0.16-1build1
++libxcb-dri2-0:arm64	1.17.0-2ubuntu1
++libxcb-dri3-0:arm64	1.17.0-2ubuntu1
++libxcb-glx0:arm64	1.17.0-2ubuntu1
++libxcb-icccm4:arm64	0.4.2-1build1
++libxcb-image0:arm64	0.4.0-2build2
++libxcb-keysyms1:arm64	0.4.1-1build1
++libxcb-present0:arm64	1.17.0-2ubuntu1
++libxcb-randr0:arm64	1.17.0-2ubuntu1
++libxcb-render-util0:arm64	0.3.10-1build1
++libxcb-render0:arm64	1.17.0-2ubuntu1
++libxcb-res0:arm64	1.17.0-2ubuntu1
++libxcb-shape0:arm64	1.17.0-2ubuntu1
++libxcb-shm0:arm64	1.17.0-2ubuntu1
++libxcb-sync1:arm64	1.17.0-2ubuntu1
++libxcb-util1:arm64	0.4.1-1build1
++libxcb-xfixes0:arm64	1.17.0-2ubuntu1
++libxcb-xinerama0:arm64	1.17.0-2ubuntu1
++libxcb-xinput0:arm64	1.17.0-2ubuntu1
++libxcb-xkb1:arm64	1.17.0-2ubuntu1
++libxcb-xv0:arm64	1.17.0-2ubuntu1
++libxcb1:arm64	1.17.0-2ubuntu1
++libxcomposite1:arm64	1:0.4.6-1build1
++libxcursor1:arm64	1:1.2.3-1build1
++libxcvt0:arm64	0.1.3-1build1
++libxdamage1:arm64	1:1.1.7-1
++libxdmcp6:arm64	1:1.1.5-2
++libxext6:arm64	2:1.3.4-1build3
++libxfce4panel-2.0-4	4.20.7-1
++libxfce4ui-2-0:arm64	4.20.2-1
++libxfce4ui-common	4.20.2-1
++libxfce4util-common	4.20.1-1build1
++libxfce4util7:arm64	4.20.1-1build1
++libxfce4windowing-0-0:arm64	4.20.5-1
++libxfce4windowing-common	4.20.5-1
++libxfconf-0-3:arm64	4.20.0-1build1
++libxfixes3:arm64	1:6.0.0-2build2
++libxfont2:arm64	1:2.0.6-2ubuntu0.2
++libxft2:arm64	2.3.6-1build2
++libxi6:arm64	2:1.8.2-2
++libxinerama1:arm64	2:1.1.4-3build2
++libxkbcommon-x11-0:arm64	1.13.1-1
++libxkbcommon0:arm64	1.13.1-1
++libxkbfile1:arm64	1:1.1.0-1build5
++libxkbregistry0:arm64	1.13.1-1
++libxklavier16:arm64	5.4-6build1
++libxml2-16:arm64	2.15.2+dfsg-0.1ubuntu0.3
++libxmlb2:arm64	0.3.24-2
++libxmu6:arm64	2:1.1.3-4
++libxmuu1:arm64	2:1.1.3-4
++libxnnpack0.20241108:arm64	0.0~git20241108.4ea82e5-2build1
++libxnvctrl0:arm64	510.47.03-0ubuntu7
++libxpm4:arm64	1:3.5.17-1ubuntu0.26.04.2
++libxpresent1:arm64	1.0.1-1build1
++libxrandr2:arm64	2:1.5.4-1build1
++libxrender1:arm64	1:0.9.12-1build1
++libxres1:arm64	2:1.2.1-1build2
++libxshmfence1:arm64	1.3.3-1build1
++libxslt1.1:arm64	1.1.45-0.1
++libxss1:arm64	1:1.2.3-1build4
++libxt6t64:arm64	1:1.2.1-1.3build1
++libxtables12:arm64	1.8.11-2ubuntu3
++libxtst6:arm64	2:1.2.5-1ubuntu0.1
++libxv1:arm64	2:1.0.13-1
++libxvidcore4:arm64	2:1.3.7-3
++libxxf86dga1:arm64	2:1.1.5-1build2
++libxxf86vm1:arm64	1:1.1.4-2
++libxxhash0:arm64	0.8.3-2build1
++libyajl2:arm64	2.1.0-5.1
++libyaml-0-2:arm64	0.2.5-2build3
++libyuv0:arm64	0.0.1922.20260106-1
++libzbar0t64:arm64	0.23.93-9ubuntu1
++libzimg2:arm64	3.0.6+ds1-1
++libzix-0-0:arm64	0.8.0-1
++libzmq5:arm64	4.3.5-1build3
++libzstd1:arm64	1.5.7+dfsg-3
++libzvbi-common	0.2.44-1ubuntu2
++libzvbi0t64:arm64	0.2.44-1ubuntu2
++libzxing3:arm64	2.3.0-5
++lightdm	1.32.0-6ubuntu4
++lightdm-gtk-greeter	2.0.9-0ubuntu3.1
++linux-base	4.15ubuntu5
++linux-image-6.18.63-t736-gnome-v47	6.18.63-47
++linux-libc-dev:arm64	7.0.0-44.44
++lm-sensors	1:3.6.2-2build1
++locales	2.43-2ubuntu2.7
++localsearch	3.11.0-1ubuntu1.1
++login	1:4.16.0-2+really2.41.3-3ubuntu2.2
++login.defs	1:4.17.4-2ubuntu3
++logrotate	3.22.0-1build1
++logsave	1.47.2-3ubuntu4
++loupe	50.0-0ubuntu2
++lsb-release	12.1-2build1
++lsof	4.99.4+dfsg-2build2
++lto-disabled-list	79
++m4	1.4.21-1
++make	4.4.1-3
++man-db	2.13.1-1build1
++mawk	1.3.4.20260129-1
++mc	3:4.8.33-1.1build1
++mc-data	3:4.8.33-1.1build1
++media-types	14.0.0build1
++mesa-libgallium:arm64	26.0.8-1ubuntu0.3
++mesa-utils	9.0.0-2build1
++mesa-utils-bin:arm64	9.0.0-2build1
++mesa-vulkan-drivers:arm64	26.0.8-1ubuntu0.3
++mmc-utils	1.0-1ubuntu1
++modemmanager	1.25.95-1ubuntu1
++mokutil	0.7.2-2
++mount	2.41.3-3ubuntu2.2
++mtd-utils	1:2.3.0-1ubuntu2
++mutter-common	50.1-0ubuntu2.5
++mutter-common-bin	50.1-0ubuntu2.5
++nano	8.7.1-1ubuntu0.1
++native-architecture	0.2.6build1
++nautilus	1:50.2.2-0ubuntu0.2
++nautilus-data	1:50.2.2-0ubuntu0.2
++ncurses-base	6.6+20251231-1
++ncurses-bin	6.6+20251231-1
++ncurses-term	6.6+20251231-1
++netbase	6.5build1
++netplan-generator	1.2-1ubuntu5.1
++netplan.io	1.2-1ubuntu5.1
++network-manager	1.54.3-2ubuntu3.1
++network-manager-applet	1.36.0-4ubuntu1
++network-manager-config-connectivity-armbian	1.1-0+armbian1~resolute
++network-manager-gnome	1.36.0-4ubuntu1
++network-manager-openvpn	1.12.5-1
++network-manager-openvpn-gnome	1.12.5-1
++network-manager-ssh	1.4.4-1
++network-manager-vpnc	1.4.0-3build1
++nfs-common	1:2.8.5-1ubuntu1
++nm-connection-editor	1.36.0-4ubuntu1
++ntfs-3g	1:2022.10.3-5ubuntu1.1
++numix-icon-theme	0~20251215-1
++ocl-icd-libopencl1:arm64	2.3.4-1
++openssh-client	1:10.2p1-2ubuntu3.8
++openssh-server	1:10.2p1-2ubuntu3.8
++openssh-sftp-server	1:10.2p1-2ubuntu3.8
++openssl	3.5.5-1ubuntu3.7
++openssl-provider-legacy	3.5.5-1ubuntu3.7
++openvpn	2.7.0-1ubuntu1.4
++p11-kit	0.26.2-2
++p11-kit-modules:arm64	0.26.2-2
++packagekit	1.3.4-3ubuntu1.2
++pahole	1.31-2ubuntu1
++papers	50.2-0ubuntu0.1
++papers-common	50.2-0ubuntu0.1
++parted	3.6-6
++passwd	1:4.17.4-2ubuntu3
++patch	2.8-2build1
++pci.ids	0.0~2026.02.12-1
++pciutils	1:3.14.0-1build2
++perl	5.40.1-7ubuntu0.4
++perl-base	5.40.1-7ubuntu0.4
++perl-modules-5.40	5.40.1-7ubuntu0.4
++pinentry-curses	1.3.2-3ubuntu1
++pinentry-gnome3	1.3.2-3ubuntu1
++pipewire:arm64	1.6.2-1ubuntu1.2
++pipewire-alsa:arm64	1.6.2-1ubuntu1.2
++pipewire-audio	1.6.2-1ubuntu1.2
++pipewire-bin	1.6.2-1ubuntu1.2
++pipewire-libcamera	1.6.2-1ubuntu1.2
++pipewire-pulse	1.6.2-1ubuntu1.2
++pkexec	127-2ubuntu1.1
++pkgconf:arm64	2.5.1-4
++pkgconf-bin	2.5.1-4
++plymouth	24.004.60+git20250831.4a3c171d-0ubuntu8
++plymouth-label	24.004.60+git20250831.4a3c171d-0ubuntu8
++plymouth-theme-spinner	24.004.60+git20250831.4a3c171d-0ubuntu8
++plymouth-themes	24.004.60+git20250831.4a3c171d-0ubuntu8
++polkitd	127-2ubuntu1.1
++poppler-data	0.4.12-1build1
++poppler-utils	26.01.0-2ubuntu0.3
++power-profiles-daemon	0.30-2
++printer-driver-all	0.20210903build1
++procps	2:4.0.4-9ubuntu1
++profile-sync-daemon	8.0-1+armbian2~resolute
++psmisc	23.7-2ubuntu2
++ptyxis	50.1-1ubuntu2
++pv	1.10.3-1
++python-apt-common	3.1.0ubuntu1.1
++python3	3.14.3-0ubuntu2
++python3-apport	2.34.1-0ubuntu0.1
++python3-apt	3.1.0ubuntu1.1
++python3-aptdaemon	2.0.2build1
++python3-aptdaemon.gtk3widgets	2.0.2build1
++python3-autocommand	2.2.2-4
++python3-bcrypt	5.0.0-3build1
++python3-blinker	1.9.0-2build1
++python3-cairo	1.27.0-2build2
++python3-cffi-backend:arm64	2.0.0-3build1
++python3-click	8.2.0+0.really.8.1.8-1build1
++python3-configobj	5.0.9-1build1
++python3-cryptography	46.0.5-1ubuntu2.2
++python3-dateutil	2.9.0-4build1
++python3-dbus	1.4.0-1build2
++python3-defer	1.0.6-2.1ubuntu2
++python3-distro	1.9.0-1build1
++python3-distro-info	1.15ubuntu0.1
++python3-distupgrade	1:26.04.27
++python3-gi	3.56.2-1
++python3-gi-cairo	3.56.2-1
++python3-httplib2	0.22.0-1ubuntu0.1
++python3-ibus-1.0	1.5.34~rc2-1
++python3-inflect	7.5.0-1build1
++python3-jaraco.context	6.0.1-2
++python3-jaraco.functools	4.1.0-1build1
++python3-jaraco.text	4.0.0-1build1
++python3-jwt	2.10.1-4ubuntu1.4
++python3-launchpadlib	2.1.0-1build1
++python3-lazr.restfulclient	0.14.6-3build1
++python3-lazr.uri	1.0.6-7build1
++python3-minimal	3.14.3-0ubuntu2
++python3-more-itertools	10.8.0-1build1
++python3-netplan	1.2-1ubuntu5.1
++python3-oauthlib	3.3.1-1build1
++python3-packaging	26.0-1
++python3-pkg-resources	78.1.1-0.1build1
++python3-problem-report	2.34.1-0ubuntu0.1
++python3-psutil	7.1.0-1ubuntu1
++python3-pyparsing	3.3.2-2
++python3-setuptools	78.1.1-0.1build1
++python3-software-properties	0.120.2+armbian2~resolute
++python3-typeguard	4.4.4-2
++python3-typing-extensions	4.15.0-2
++python3-update-manager	1:26.04.5+armbian3~resolute
++python3-urllib3	2.6.3-1ubuntu1.2
++python3-wadllib	2.0.0-3
++python3-xkit	0.5.0ubuntu8
++python3-yaml	6.0.3-1build1
++python3-zipp	3.23.0-1build1
++python3.14	3.14.4-1ubuntu0.2
++python3.14-minimal	3.14.4-1ubuntu0.2
++qrencode	4.1.1-2build1
++readline-common	8.3-4
++rfkill	2.41.3-3ubuntu2.2
++rng-tools-debian	2.6build1
++rpcbind	1.2.7-1build2
++rpcsvc-proto	1.4.3-1build1
++rsync	3.4.1+ds1-7ubuntu0.3
++rsyslog	8.2512.0-1ubuntu4.2
++rtkit	0.14-1ubuntu0.1
++rust-coreutils	0.10.0-1ubuntu2~26.04.1
++samba-libs:arm64	2:4.23.6+dfsg-1ubuntu2.2
++screen	4.9.1-3ubuntu2
++sed	4.9-2ubuntu1
++sensible-utils	0.0.26build1
++sgml-base	1.31+nmu1build1
++shared-mime-info	2.4-5build3
++simple-scan	48.1-0ubuntu3
++smartmontools	7.5-2
++software-properties-common	0.120.2+armbian2~resolute
++software-properties-gtk	0.120.2+armbian2~resolute
++sound-theme-freedesktop	0.8-7build1
++sshpass	1.10-0.1build1
++ssl-cert	1.1.3ubuntu2
++stress	1.0.7-2
++sudo	1.9.17p2-1ubuntu3.2
++sudo-common	1.2ubuntu
++systemd	259.9-0ubuntu0.1
++systemd-resolved	259.9-0ubuntu0.1
++systemd-sysv	259.9-0ubuntu0.1
++systemd-timesyncd	259.9-0ubuntu0.1
++sysvinit-utils	3.15-5ubuntu1
++t736-img-userspace-candidate	24.2.6603887-2
++tar	1.35+dfsg-4ubuntu0.4
++tcl	8.6.16build1
++tcl-expect:arm64	5.45.4-4build1
++tcl8.6	8.6.17+dfsg-1build1
++tecla	49.0-2
++terminator	2.1.5-1
++thunar	4.20.7-1
++thunar-data	4.20.7-1
++timgm6mb-soundfont	1.3-5build1
++tinysparql	3.11.0-1
++toilet	0.3-5
++toilet-fonts	0.3-5
++tpm-udev	4.1.3-6
++tzdata	2026e-0ubuntu0.26.04.1
++u-boot-tools	2025.10-0ubuntu2.2
++ubuntu-drivers-common	1:0.10.9ubuntu0.2
++ubuntu-keyring	2023.11.28.1build1
++ubuntu-wallpapers	26.04.2
++ubuntu-wallpapers-resolute	26.04.2
++ucf	3.0052ubuntu1
++udev	259.9-0ubuntu0.1
++udisks2	2.10.91-1ubuntu2.1
++unattended-upgrades	2.12ubuntu9
++unicode-data	16.0.0-1build1
++unzip	6.0-29ubuntu1
++update-manager	1:26.04.5+armbian3~resolute
++update-manager-core	1:26.04.5+armbian3~resolute
++upower	1.91.1-1
++usb-modeswitch	2.6.2-1ubuntu1
++usb-modeswitch-data	20191128-7build1
++usbutils	1:019-1
++user-session-migration	0.5.1
++util-linux	2.41.3-3ubuntu2.2
++uuid-dev:arm64	2.41.3-3ubuntu2.2
++v4l-utils	1.32.0-2ubuntu1
++vainfo	2.22.0+ds1-2build1
++vlc	3.0.23-1
++vlc-bin	3.0.23-1
++vlc-data	3.0.23-1
++vlc-plugin-base:arm64	3.0.23-1
++vlc-plugin-qt:arm64	3.0.23-1
++vlc-plugin-video-output:arm64	3.0.23-1
++vnstat	2.13-1build1
++vpnc	0.5.3+git20241220-2build1
++vpnc-scripts	0.1~git20220510-1.1
++vulkan-tools	1.4.341.0+dfsg1-1
++webp-pixbuf-loader:arm64	0.2.7-3
++wget	1.25.0-2ubuntu4.4
++whiptail	0.52.25-1ubuntu3
++whoopsie-preferences	23build4
++wireguard-tools	1.0.20250521-1ubuntu1
++wireless-regdb	2026.05.30-0ubuntu1~26.04.1
++wireplumber	0.5.13-1ubuntu1.1
++wpasupplicant	2:2.11-0ubuntu5
++x11-common	1:7.7+26ubuntu1
++x11-utils	7.7+7build1
++x11-xkb-utils	7.7+9build1
++x11-xserver-utils	7.7+11build1
++xdg-dbus-proxy	0.1.7-1
++xdg-desktop-portal	1.21.1+ds-1ubuntu3.1
++xdg-desktop-portal-gnome	50.0-0ubuntu1
++xdg-desktop-portal-gtk	1.15.3-2ubuntu1
++xdg-terminal-exec	0.14.0-1ubuntu0.1
++xdg-user-dirs	0.19-1
++xdg-user-dirs-gtk	0.16-1
++xdg-utils	1.2.1-2ubuntu2
++xfce4-helpers	4.20.1-1ubuntu2
++xfce4-panel	4.20.7-1
++xfce4-session	4.20.4-1
++xfce4-settings	4.20.1-1ubuntu2
++xfconf	4.20.0-1build1
++xfdesktop4	4.20.1-1ubuntu2
++xfdesktop4-data	4.20.1-1ubuntu2
++xfonts-encodings	1:1.0.5-0ubuntu3
++xfonts-utils	1:7.7+7build1
++xfwm4	4.20.0-1build1
++xkb-data	2.46-2
++xml-core	0.19build1
++xserver-common	2:21.1.22-1ubuntu1.3
++xserver-xorg	1:7.7+26ubuntu1
++xserver-xorg-core	2:21.1.22-1ubuntu1.3
++xserver-xorg-input-all	1:7.7+26ubuntu1
++xserver-xorg-input-libinput	1.5.0-1build1
++xserver-xorg-video-fbdev	1:0.5.0-2build3
++xwayland	2:24.1.10-1
++xz-utils	5.8.3-1ubuntu0.1
++zenity	4.2.1-1
++zenity-common	4.2.1-1
++zip	3.0-15ubuntu3
++zlib1g:arm64	1:1.3.dfsg+really1.3.1-1ubuntu3.2
++zlib1g-dev:arm64	1:1.3.dfsg+really1.3.1-1ubuntu3.2
 diff --git a/userpatches/atlasa1-release/config/gnome-wayland/50-atlasa1-wayland.conf b/userpatches/atlasa1-release/config/gnome-wayland/50-atlasa1-wayland.conf
 new file mode 100644
 index 0000000000000000000000000000000000000000..24cf46eb78f20235790e270bfeadca741821b3f9
@@ -10963,55 +12500,56 @@ index 0000000000000000000000000000000000000000..a085cc553de48c0809a648e5905d8e42
 +本次只更新候选源码、实板启动配置及测试记录，没有重新发布完整系统镜像。
 diff --git a/userpatches/atlasa1-release/docs/FRESH_HOST_BUILD.md b/userpatches/atlasa1-release/docs/FRESH_HOST_BUILD.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..2c3f3cb74d2e0df6c90b720168f6c9e42a064747
+index 0000000000000000000000000000000000000000..be6b23894fea32d38fd53613d710c107ee551c79
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/FRESH_HOST_BUILD.md
-@@ -0,0 +1,45 @@
-+# 全新主机构建：交付条件与当前缺口
+@@ -0,0 +1,46 @@
++# 全新主机构建与版本锁定
 +
-+2026-11-23 的目标是：用户只需拉取 AtlasA1-build，在全新 Linux 主机执行一个入口，即可生成与当前实板相同的软件版本、板级配置和 GNOME/GPU/Cedar 功能的完整 eMMC 镜像。用户不再提供 Tina SDK、私有压缩包、旧构建目录或人工安装板级补丁。显示默认值和自动校时修复也应包含在镜像中。
++目标：只拉取 AtlasA1-build，在新 Ubuntu 24.04 x86_64 主机执行一个入口，自动生成包含 GNOME、PowerVR、Cedar、播放器和 Firefox 适配的完整 eMMC 镜像。不需要用户准备 Tina SDK、私有压缩包或旧工作目录。
 +
-+**现有主分支尚未达到这个目标。** 四个源码仓库、单补丁及实板证据已经备份，但源码备份完整不等于从空白主机成功构建。现有 `build_atlasa1_resolute.sh` 仍要求 `ATLAS_TINA_SDK`，下面列出的缺口未验证解决前，不将它称为全新主机一键构建。
++**2026-11-23：完整镜像仍在隔离构建验收中，暂不宣称一键复现通过。** 已通过：断网容器从固定输入重建启动链、Linux v47、PowerVR 内核模块、GPU 用户态包、Cedar/OMX、原生播放器、Firefox 解码适配、Armbian BSP 和 base-files。全新根文件系统正在组装。
 +
-+## 必须消除的依赖
++## 构建入口
 +
-+| 当前输入 | 已发现的问题 | 完成交付的条件 |
-+| --- | --- | --- |
-+| DDR 训练库 | 启动源码外另需固定 SHA-256 的 `libdram` | 必需的闭源输入随版本管理，由入口自动获取和校验；用户不准备 SDK |
-+| Tina 显示、PowerVR 内核源码 | 内核重建导入 264 个显示文件及 Rogue KM 源码 | 将必要源码、版权说明和补丁固定存放到组件仓库或可下载源码附件，独立校验 |
-+| PowerVR 用户态和 Cedar 库 | 工具从 SDK 深层目录提取运行库 | 固定最小输入集及 SHA-256，自动下载；缺项时失败，不能省略 GPU/视频 |
-+| Cedar/OMX 编译 | `build_cedar_4k_omx.py` 复制配置后的 libcedarc 并复用旧对象；服务构建依赖 SDK sysroot | 从源码重新配置、编译，明确保留的厂家闭源库；不能依赖旧 `.o`、libtool 缓存或旧主机绝对路径 |
-+| 主机工具链 | GCC、ARM32/AArch64 工具链及 QEMU 由主机手工提供 | 固定构建环境、自动准备依赖，在隔离环境测试 |
-+| Ubuntu 软件包 | 当前 APT 安装跟随镜像站更新 | 固定版本清单及可取回的软件包校验和；对照当前系统，不静默升级 |
-+| 官方源码 | Armbian、内核、U-Boot、TF-A、FFmpeg 等分散下载 | 一个输入清单记录提交、来源及哈希，自动获取，支持缓存和失败重试 |
++入口及依赖锁定正在本次备份中交付。依赖 Release 发布、完整构建通过后，使用：
 +
-+闭源 DDR/GPU/编解码组件仍是实现这些功能的必需部分；“不依赖其他”在工程交付中指不依赖用户另行寻找的 SDK、私有文件和当前构建机。不能声称这些闭源组件已被源码替代。
++```sh
++git clone https://github.com/dshanpi/AtlasA1-build.git
++cd AtlasA1-build
++bash build.sh
++```
 +
-+## 通过标准
++支持 Ubuntu 24.04 amd64，需 sudo、网络、8 GiB 内存与至少 35 GiB 空闲空间。入口自动安装缺失的 Docker、下载工具和压缩工具，按 SHA-256 校验并装载固定构建环境；编译容器断网运行。可用 `bash build.sh /absolute/path/new-output` 指定新的输出目录。
 +
-+1. 全新 Ubuntu 24.04 x86_64 验收环境，不挂载开发者 home、旧 Tina 或构建缓存。
-+2. 只允许版本化的公开源码、记录并校验的下载输入和标准构建环境；一次命令完成。
-+3. 编译日志证明内核、启动链和可编译的多媒体组件重新构建，不用现成系统镜像冒充编译结果。
-+4. 对比内核配置、启动参数、GNOME、GPU、播放器、Firefox、软件包版本和首次启动配置。
-+5. 输出完整 eMMC 镜像、SHA256SUMS、输入锁定清单、软件包清单和构建日志。
-+6. 完成离线检查，并重新烧写、冷启动、GPU 和视频验收；保留未通过项目。
-+7. 将唯一入口、全部必要输入与验收证据上传，随后才宣称“全新主机一键复现已通过”。
++所需输入的版本、大小、下载地址和 SHA-256 都在 `config/clean-build/inputs.lock.json`。入口自动获取约 2.3 GB 输入；缓存位置为 `~/.cache/atlasa1`，可用 `ATLAS_DOWNLOAD_CACHE` 更改。预先准备好校验一致的输入缓存后，编译本身不访问网络。首次安装主机依赖仍需 Ubuntu 软件源。
 +
-+这里的系统等价不等于磁盘镜像逐字节相同：当前打包器没有固定 ext4 的全部随机量和时间字段。若要求镜像 SHA-256 也完全一致，需另做确定性文件系统打包和两次独立构建对照，不能沿用功能验收结论。
++| 输入 | 内容 |
++| --- | --- |
++| build-inputs | 固定 LPDDR4x DDR 库、264 个显示源码、PowerVR 内核源码及用户态、Cedar 原始源码和运行库、最小 sysroot 与 SDK 交叉工具链 |
++| upstream-sources | 固定提交的 Armbian、Linux、U-Boot、TF-A、FFmpeg 源码和少量构建工具 |
++| arm64-packages | 当前系统 1,404 个发行版软件包的精确版本与哈希 |
++| builder | 固定 Ubuntu 24.04 amd64 Docker 构建环境 |
 +
-+## 当前验收阻塞
++另外 7 个板级包在构建时重新生成。OMX 使用 6 个原始 C 源文件重新编译，不复用旧 `.o`、`.lo`、`.la` 或配置后构建目录。厂家闭源 DDR/GPU/解码库依然是必要输入，自动获取并不表示已将它们开源替代。
 +
-+2026-11-23 检查时，构建机 `192.168.1.228:22` 在 SSH banner 阶段返回 EOF，尚未进入认证；本机没有可用的 Linux 容器/WSL 环境。依赖审计和源码备份可以继续，完整编译及 SDK 最小输入提取尚需恢复构建环境。没有将构建脚本检查或旧镜像下载计作新的完整编译。
++## 输出和校验
 +
-+## 备份校验
++输出目录中的 `image/` 应包含镜像、压缩镜像、SHA256SUMS、磁盘布局清单和精确软件包对照；根目录保存构建日志和输入锁定清单。软件包差异、缺失库、内核模块版本不匹配或构建失败都会中断，不能静默省略 GPU/视频。
 +
-+四个仓库均附 `SOURCE-MANIFEST.json`。直接校验提交对象，可以避免 Windows 换行转换掩盖缺失或损坏的文件：
++镜像等价指相同软件版本、板级配置和功能，不承诺镜像 SHA-256 逐字节相同。ext4 随机量、构建路径和时间字段尚未全部规范化。新镜像的完整冷启动/媒体实板验收结果须单独记录，不能以编译成功替代。
++
++当前已知限制保持公开：Wi-Fi/蓝牙、物理音频、Chromium Cedar 和严格视频零丢帧尚未通过。新主机构建不会把这些未完成项标记为已支持。
++
++## 源码备份校验
++
++四个仓库均有 `SOURCE-MANIFEST.json`。校验 Git 提交对象可以避免 Windows 换行转换的影响：
 +
 +```sh
 +python3 tools/verify_source_manifest.py . --git-ref HEAD
 +```
 +
-+捕获日志保留原始字节，源码文本采用 LF。验收数据中的历史限制仍然有效：无线、物理音频、Chromium Cedar 和严格视频零丢帧尚未通过，不能在复现镜像里标为已解决。
++维护者输入提取脚本 `package_atlasa1_build_inputs.py` 仅用于生成版本附件；普通用户不需要它，也不需要厂家 SDK。
 diff --git a/userpatches/atlasa1-release/docs/GNOME_MEDIA.md b/userpatches/atlasa1-release/docs/GNOME_MEDIA.md
 new file mode 100644
 index 0000000000000000000000000000000000000000..6d29f70c87ec73e3078ce20c4011efd410581de2
@@ -16823,6 +18361,79 @@ index 0000000000000000000000000000000000000000..d11a543079d9160bb9dd509f3fac4d22
 @@ -0,0 +1,2 @@
 +Startup finished in 5.233s (kernel) + 15.821s (userspace) = 21.055s 
 +graphical.target reached after 15.654s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/clean-build-20261123/source-components.json b/userpatches/atlasa1-release/evidence/clean-build-20261123/source-components.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..985e99cf453b2e7539ef7a8fa59c37345654fee4
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/clean-build-20261123/source-components.json
+@@ -0,0 +1,67 @@
++{
++  "date": "2026-11-23",
++  "network": "none",
++  "old_sdk_mounted": false,
++  "prebuilt_image_used": false,
++  "source_component_build": "passed",
++  "armbian_bsp_and_base_files_offline_build": "passed",
++  "complete_image_build": "pending",
++  "new_image_hardware_acceptance": "pending",
++  "artifacts": [
++    {
++      "path": "boot/payload/bl31.bin",
++      "size": 53924,
++      "sha256": "81f53c1d1f571c74bd907317d813a5ed56c64382479caa75edd3cec43ada6dc6"
++    },
++    {
++      "path": "boot/payload/boot-manifest.json",
++      "size": 987,
++      "sha256": "b6dc438ce6eb42c05e7c374fb72c3736640b6c7a411aa8a6646a07992c7e000e"
++    },
++    {
++      "path": "boot/payload/boot-package.bin",
++      "size": 325632,
++      "sha256": "d8e285a172f70b0b4c0028972657cf5ebec9f32946a112a27c44cc638faf8f5e"
++    },
++    {
++      "path": "boot/payload/emmc-spl.bin",
++      "size": 221184,
++      "sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea"
++    },
++    {
++      "path": "boot/payload/stage64.bin",
++      "size": 5040,
++      "sha256": "44aeb8e56f64f2ccd80a1cd286460eda6d0232f9cc1e82618866826b23298535"
++    },
++    {
++      "path": "boot/payload/u-boot.bin",
++      "size": 265640,
++      "sha256": "fd3ffd3d5584642ad0eb0be645941b671591d47d1e2fc575c8a30d3b539c00c3"
++    },
++    {
++      "path": "kernel/linux-image-6.18.63-t736-gnome-v47_6.18.63-47_arm64.deb",
++      "size": 5073672,
++      "sha256": "b8ad6d1603e90a761621095569d3deb9df2a804ea13e3a50fe5ebba818be739e"
++    },
++    {
++      "path": "kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko",
++      "size": 2163504,
++      "sha256": "7ccf73c0823fa62034a70cbeb63d0e292d206f0a2e3128c337355fa872088a47"
++    },
++    {
++      "path": "player/atlasa1-player_0.1-6~resolute1_arm64.deb",
++      "size": 6256012,
++      "sha256": "e565cd5fff65eb9ec1be21e4793820b641eaa9dda1384154db7679e85d95f8e1"
++    },
++    {
++      "path": "firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb",
++      "size": 4860780,
++      "sha256": "245fa1984a8047d3d09595cbbfcbfdea421b612439c544173653c95c5970e551"
++    },
++    {
++      "path": "omx/libOmxVdec.so",
++      "size": 279016,
++      "sha256": "d371dc443d99306b21e85ab5ba9caf59df5b0132f01c7bfecae070d097b73747"
++    }
++  ]
++}
 diff --git a/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json b/userpatches/atlasa1-release/evidence/gnome-media-20261119/aic8800d80-combined-sdio-20261120.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..0798778236467351f7e2695a83f505ab8b83d8ff
@@ -160370,6 +161981,61 @@ index 0000000000000000000000000000000000000000..fe1c3930540382cae149a1cf1efa626d
 +    puts("PASS: actual v2 client/broker Unix+SCM_RIGHTS setup, listener UID/memfd owner/version/sequence rejection before backend use, readonly sealed slot, bounded 4x4/1080p pixels, guards, no old-frame cross-talk, 1000 concurrent pulls with API lock verified inside memcpy, flush/EOS/close/reopen, both-direction v1 refusal, 8 malformed reply cases and AGAIN without stale copy, fd balance0; software backend only");
 +    return 0;
 +}
+diff --git a/userpatches/atlasa1-release/tests/test_frozen_inputs.py b/userpatches/atlasa1-release/tests/test_frozen_inputs.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..03d6f2ebb930a388914c3708b383e2eb73558938
+--- /dev/null
++++ b/userpatches/atlasa1-release/tests/test_frozen_inputs.py
+@@ -0,0 +1,49 @@
++import hashlib
++import importlib.util
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++spec = importlib.util.spec_from_file_location('fetch_inputs', Path(__file__).resolve().parents[1] / 'tools/fetch_atlasa1_inputs.py')
++fetch = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(fetch)
++
++
++class FrozenInputs(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.lock = self.root / 'lock.json'
++        self.cache = self.root / 'cache'
++        self.cache.mkdir()
++        self.lock.write_text(json.dumps({'assets': [{'name': 'input.tar.zst', 'size': 4,
++            'sha256': hashlib.sha256(b'good').hexdigest(), 'url': 'https://example.invalid/input'}]}))
++
++    def test_corrupted_cache_is_rejected_without_download(self):
++        (self.cache / 'input.tar.zst').write_bytes(b'evil')
++        with patch.object(fetch.subprocess, 'run') as run:
++            with self.assertRaises(RuntimeError):
++                fetch.fetch(self.lock, self.cache)
++            run.assert_not_called()
++
++    def test_complete_partial_recovers_without_network(self):
++        (self.cache / 'input.tar.zst.partial').write_bytes(b'good')
++        with patch.object(fetch.subprocess, 'run') as run:
++            fetch.fetch(self.lock, self.cache)
++            run.assert_not_called()
++        self.assertEqual((self.cache / 'input.tar.zst').read_bytes(), b'good')
++
++    def test_bad_download_never_becomes_final_asset(self):
++        def bad_download(*args, **kwargs):
++            (self.cache / 'input.tar.zst.partial').write_bytes(b'evil')
++        with patch.object(fetch.subprocess, 'run', side_effect=bad_download):
++            with self.assertRaises(RuntimeError):
++                fetch.fetch(self.lock, self.cache)
++        self.assertFalse((self.cache / 'input.tar.zst').exists())
++
++
++if __name__ == '__main__':
++    unittest.main()
 diff --git a/userpatches/atlasa1-release/tests/test_gnome_display_default.py b/userpatches/atlasa1-release/tests/test_gnome_display_default.py
 new file mode 100644
 index 0000000000000000000000000000000000000000..98e6a69f80b4316b6557c737edd99d1563e97bcf
@@ -160574,6 +162240,57 @@ index 0000000000000000000000000000000000000000..7163076a4fb409b872d09a25b889ab60
 +sync
 +printf 'GNOME selected for next boot. Desktop backup: %s/desktop.tar\n' "$backup"
 +printf 'Restore with: sudo tar -xpf %q/desktop.tar -C / && sudo systemctl daemon-reload\n' "$backup"
+diff --git a/userpatches/atlasa1-release/tools/assemble_atlasa1_frozen_image.sh b/userpatches/atlasa1-release/tools/assemble_atlasa1_frozen_image.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..b31aa997e860553002b71c9190bac364b5e34aa1
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/assemble_atlasa1_frozen_image.sh
+@@ -0,0 +1,45 @@
++#!/usr/bin/env bash
++# Assemble only newly compiled components and a newly bootstrapped package tree.
++set -euo pipefail
++[[ $EUID == 0 && $# == 4 ]] || { echo 'Usage (root): RECIPE COMPONENT_BUILD ROOTFS OUTPUT' >&2; exit 2; }
++recipe=$(realpath -e "$1")
++build=$(realpath -e "$2")
++root=$(realpath -e "$3")
++out=$(realpath -m "$4")
++tools="$recipe/tools"
++release=6.18.63-t736-gnome-v47
++mkdir -- "$out"
++bash "$tools/configure_atlasa1_resolute.sh" "$root" \
++    "$build/kernel/linux-image-${release}_6.18.63-47_arm64.deb" \
++    "$build/kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko" "$build/media" \
++    "$build/vendor/t736-img-userspace-candidate_24.2.6603887-2_arm64.deb" \
++    "$build/player/atlasa1-player_0.1-6~resolute1_arm64.deb" \
++    "$build/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb"
++bash "$tools/configure_atlasa1_gnome_release.sh" "$root" \
++    "$build/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb"
++# Never ship the transient, build-only localhost APT repository.
++rm -f "$root/etc/apt/sources.list"
++install -d "$root/etc/apt/sources.list.d"
++cat > "$root/etc/apt/sources.list.d/ubuntu.sources" <<'EOF'
++Types: deb
++URIs: https://ports.ubuntu.com/ubuntu-ports
++Suites: resolute resolute-updates resolute-security resolute-backports
++Components: main restricted universe multiverse
++Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
++EOF
++if grep -R -E '127\.0\.0\.1:18765|/work/|/repo/' "$root/etc/apt/sources.list.d"; then
++    echo 'Build-only APT source leaked into rootfs' >&2; exit 1
++fi
++chroot "$root" dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort > "$out/installed-packages.tsv"
++LC_ALL=C sort "$recipe/config/clean-build/packages-arm64.tsv" > "$out/expected-packages.tsv"
++diff -u "$out/expected-packages.tsv" "$out/installed-packages.tsv" > "$out/package-comparison.diff" || {
++    cat "$out/package-comparison.diff" >&2; echo 'Package versions differ from the locked board' >&2; exit 1;
++}
++bash "$tools/verify_atlasa1_resolute.sh" "$root" "$release" --require-firefox-cedar
++image="$out/Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img"
++python3 "$tools/pack_atlasa1_resolute.py" --rootfs "$root" --boot "$build/boot/payload" --output "$image"
++xz -T4 -6 --keep "$image"
++xz -t "$image.xz"
++cd "$out"
++sha256sum "$(basename "$image")" "$(basename "$image").xz" > SHA256SUMS
++printf 'CLEAN_IMAGE_ASSEMBLY_PASSED\n'
 diff --git a/userpatches/atlasa1-release/tools/browser/build_browser_ffmpeg.py b/userpatches/atlasa1-release/tools/browser/build_browser_ffmpeg.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..b7319e52b51e9c18d4c0ceae90b2d2fa111f409b
@@ -166303,6 +168020,131 @@ index 0000000000000000000000000000000000000000..664348edee5d5e312ac7acabf9f449bb
 +    selected = codec.avcodec_find_decoder(codec_id)
 +    assert selected and selected.contents.name == name, name
 +print("Desktop user sees the Firefox Cedar launcher; ABI 62/60 selects h264_cedar and hevc_cedar")
+diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_frozen_bsp.sh b/userpatches/atlasa1-release/tools/build_atlasa1_frozen_bsp.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..1af965b7262e558a61d8db52824c1fb34f177d86
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/build_atlasa1_frozen_bsp.sh
+@@ -0,0 +1,35 @@
++#!/usr/bin/env bash
++# Build the official Armbian BSP and base-files with frozen upstream inputs.
++set -euo pipefail
++[[ $# == 3 ]] || { echo 'Usage: SOURCE_CACHE NEW_WORK RECIPE_ROOT' >&2; exit 2; }
++sources=$(realpath -e "$1")
++work=$(realpath -m "$2")
++recipe=$(realpath -e "$3")
++mkdir -- "$work"
++cp -a "$sources/armbian/." "$work/"
++git -C "$work" apply --check "$recipe/patches/t736-armbian-open-source.patch"
++git -C "$work" apply "$recipe/patches/t736-armbian-open-source.patch"
++mkdir -p "$work/cache/tools"
++cp -a "$sources/host-tools/." "$work/cache/tools/"
++# Keep the official base-files transformation. Replace only discovery of the
++# latest Ubuntu package with our immutable, SHA-verified upstream package.
++python3 - "$work" "$sources" <<'PY'
++from pathlib import Path
++import sys
++work, sources = map(Path, sys.argv[1:])
++p = work / 'lib/functions/artifacts/artifact-armbian-base-files.sh'
++text = p.read_text()
++anchor = '\tsleep_seconds="15" do_with_retries 10 apt_find_upstream_package_version_and_download_url "base-files"'
++assert text.count(anchor) == 1
++replacement = '''\tfound_package_version=14ubuntu6
++\tfound_package_filename=base-files_14ubuntu6_arm64.deb
++\tfound_package_down_url="file://''' + str(sources) + '''/base-files_14ubuntu6_arm64.deb"'''
++p.write_text(text.replace(anchor, replacement))
++PY
++cd "$work"
++params=(ARCH=arm64 RELEASE=resolute BOARD=t736-mainline BRANCH=current EXPERT=yes
++    BUILD_DESKTOP=no OFFLINE_WORK=yes ARTIFACT_IGNORE_CACHE=yes MANAGE_ACNG=no
++    SHARE_LOG=no SKIP_EXTERNAL_TOOLCHAINS=yes IGNORE_UPDATES=yes REVISION=26.11.0-trunk)
++for package in armbian-bsp-cli armbian-base-files; do
++    bash compile.sh "$package" "${params[@]}"
++done
+diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_frozen_rootfs.py b/userpatches/atlasa1-release/tools/build_atlasa1_frozen_rootfs.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..ae3ed06fa8257decf7e7fabaa2e78919a82be730
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/build_atlasa1_frozen_rootfs.py
+@@ -0,0 +1,78 @@
++#!/usr/bin/env python3
++"""Bootstrap the locked ARM64 package set, not a previously built rootfs."""
++import argparse
++import functools
++import http.server
++import json
++from pathlib import Path
++import shutil
++import subprocess
++import threading
++
++
++def run(*args, **kwargs):
++    subprocess.run(list(map(str, args)), check=True, **kwargs)
++
++
++def build(packages, bsp, output, recipe):
++    output.mkdir()
++    repo = output / 'repo'
++    repo.mkdir()
++    # Link immutable inputs; the local HTTP server reads their verified bytes.
++    def link(src, dst):
++        try:
++            Path(dst).hardlink_to(src)
++        except OSError:
++            Path(dst).symlink_to(Path(src).resolve())
++    shutil.copytree(packages / 'pool', repo / 'pool', copy_function=link)
++    board = list(bsp.glob('armbian-bsp-cli-t736-mainline-current_*_arm64__*.deb'))
++    base = list(bsp.glob('extra/resolute-utils/base-files_*resolute_arm64__*.deb'))
++    if len(board) != 1 or len(base) != 1:
++        raise ValueError('Expected freshly compiled BSP and base-files packages')
++    for p in board + base:
++        link(p, repo / 'pool' / p.name)
++    with (repo / 'Packages').open('wb') as f:
++        run('dpkg-scanpackages', '--multiversion', 'pool', '/dev/null', cwd=repo, stdout=f,
++            stderr=subprocess.PIPE)
++    # mmdebstrap selects Essential packages by suite/codename even for a flat
++    # repository. Without Release it silently selects an empty bootstrap set.
++    with (repo / 'Release').open('wb') as f:
++        run('apt-ftparchive', '-o', 'APT::FTPArchive::Release::Suite=resolute',
++            '-o', 'APT::FTPArchive::Release::Codename=resolute',
++            '-o', 'APT::FTPArchive::Release::Architectures=arm64',
++            'release', '.', cwd=repo, stdout=f)
++    manifest = json.loads((packages / 'PACKAGE-MANIFEST.json').read_text())
++    includes = [p['package'] + '=' + p['version'] for p in manifest['packages']]
++    for p in board + base:
++        name = subprocess.check_output(['dpkg-deb', '-f', str(p), 'Package'], text=True).strip()
++        version = subprocess.check_output(['dpkg-deb', '-f', str(p), 'Version'], text=True).strip()
++        includes.append(name + '=' + version)
++    class Quiet(http.server.SimpleHTTPRequestHandler):
++        def log_message(self, *args):
++            pass
++    server = http.server.ThreadingHTTPServer(('127.0.0.1', 18765), functools.partial(Quiet, directory=str(repo)))
++    worker = threading.Thread(target=server.serve_forever, daemon=True)
++    worker.start()
++    root = output / 'rootfs'
++    try:
++        run('mmdebstrap', '--architectures=arm64', '--variant=minbase', '--format=directory',
++            '--dpkgopt=force-unsafe-io',
++            '--aptopt=APT::Install-Recommends "false"',
++            '--aptopt=Acquire::Languages "none"', '--include=' + ','.join(includes),
++            'resolute', root, 'deb [trusted=yes] http://127.0.0.1:18765 ./')
++        # The same release configuration used by the original Armbian image.
++        run('bash', recipe / 'tools/prepare_t736_resolute_rootfs.sh', root, root, bsp)
++    finally:
++        server.shutdown()
++        server.server_close()
++    (output / 'ROOTFS-BOOTSTRAP.json').write_text(json.dumps({
++        'schema': 1, 'source': 'frozen distribution debs and freshly rebuilt Armbian BSP',
++        'copied_existing_rootfs': False, 'package_specs': sorted(includes)}, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    p = argparse.ArgumentParser(description=__doc__)
++    for name in ('packages', 'bsp', 'output', 'recipe'):
++        p.add_argument('--' + name, type=Path, required=True)
++    a = p.parse_args()
++    build(*(getattr(a, name).resolve() for name in ('packages', 'bsp', 'output', 'recipe')))
 diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_player.py b/userpatches/atlasa1-release/tools/build_atlasa1_player.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..22f7957fc63a47a082834cf232b92d6390f98b53
@@ -166698,22 +168540,23 @@ index 0000000000000000000000000000000000000000..b7706cf91bb3ec2f181455f03a078849
 +sha256sum "$deb" kout/arch/arm64/boot/Image "$dtb" pvr-out/target_aarch64/kbuild/pvrsrvkm.ko > SHA256SUMS
 diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh b/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..a8ed639633eb81431a0eba298f73138be1ec9064
+index 0000000000000000000000000000000000000000..ca66ad9827212ce5d52331a98abc7ce51ddc40c7
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_atlasa1_resolute.sh
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,127 @@
 +#!/usr/bin/env bash
 +# Rebuild AtlasA1 eMMC media on an Armbian-supported Linux build host.
 +set -euo pipefail
 +if [[ $# != 2 && $# != 3 ]] || [[ $# == 3 && ${3-} != --pcie-v34 && ${3-} != --gnome-v47 ]]; then
 +    echo "Usage: $0 OFFICIAL_ARMBIAN_CHECKOUT NEW_OUTPUT_DIRECTORY [--pcie-v34|--gnome-v47]" >&2
-+    echo "Set ATLAS_TINA_SDK to the configured T736 Tina SDK (see docs/UBUNTU_26_04.md)." >&2
++    echo "For automatic locked inputs use the repository build.sh entry point." >&2
 +    exit 2
 +fi
 +framework=$(realpath -e "$1")
 +out=$(realpath -m "$2")
 +tools=$(cd "$(dirname "$0")" && pwd -P)
 +tina=$(realpath -e "${ATLAS_TINA_SDK:?set the configured T736 Tina SDK path}")
++cache=${ATLAS_SOURCE_CACHE:-}
 +ddr="$tina/brandy/dramlib/sun60iw2p1/spl_libdram/libdram"
 +test -x "$tina/out/t736/demo_aiot/buildroot/buildroot/host/bin/aarch64-none-linux-gnu-gcc"
 +git -C "$framework" cat-file -e '2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736^{commit}'
@@ -166745,15 +168588,26 @@ index 0000000000000000000000000000000000000000..a8ed639633eb81431a0eba298f73138b
 +fi
 +cd "$out/sources"
 +
-+git clone --depth=1 --branch v2026.10 https://github.com/u-boot/u-boot.git u-boot
-+git -C u-boot archive --format=tar.gz -o "$out/sources/u-boot.tar.gz" 5508406582f6f7120dce0c4b3059819a41788db2
++if [[ -n $cache ]]; then
++    cp "$cache/u-boot.tar.gz" "$cache/tf-a.tar.gz" "$out/sources/"
++else
++    git clone --depth=1 --branch v2026.10 https://github.com/u-boot/u-boot.git u-boot
++    git -C u-boot archive --format=tar.gz -o "$out/sources/u-boot.tar.gz" 5508406582f6f7120dce0c4b3059819a41788db2
++fi
 +check_file af3cca26c2ea2a352efc05980d991b7310959dc431c427ad3250e832a221abd8 u-boot.tar.gz
++if [[ -z $cache ]]; then
 +curl --fail --location --retry 3 -o tf-a.tar.gz \
 +    https://codeload.github.com/InfernoEmbedded/arm-trusted-firmware/tar.gz/7d322909068fc4bb4ee35e9e43c78ed68d98619b
++fi
 +python3 "$tools/build_atlasa1_release_boot.py" --work "$out/boot" \
 +    --uboot-archive "$out/sources/u-boot.tar.gz" --tfa-archive "$out/sources/tf-a.tar.gz" --ddr-library "$ddr"
 +
-+git clone --depth=1 --branch v6.18.63 https://github.com/gregkh/linux.git linux
++if [[ -n $cache ]]; then
++    linux_source="$cache/linux.tar.gz"
++else
++    git clone --depth=1 --branch v6.18.63 https://github.com/gregkh/linux.git linux
++    linux_source="$out/sources/linux"
++fi
 +release=6.18.63-t736-media-v30
 +version=6.18.63-30
 +if [[ ${3-} == --pcie-v34 ]]; then
@@ -166763,23 +168617,29 @@ index 0000000000000000000000000000000000000000..a8ed639633eb81431a0eba298f73138b
 +if [[ ${3-} == --gnome-v47 ]]; then
 +    release=6.18.63-t736-gnome-v47
 +    version=6.18.63-47
-+    bash "$tools/build_gnome_media_candidate.sh" "$out/sources/linux" "$tina" "$out/kernel" --boot-fast
++    bash "$tools/build_gnome_media_candidate.sh" "$linux_source" "$tina" "$out/kernel" --boot-fast
 +    python3 "$tools/package_atlasa1_gnome_kernel.py" "$out/kernel" "$out/kernel/linux-image-${release}_${version}_arm64.deb"
 +    python3 "$tools/build_gpu_userspace.py" --tina "$tina" --platform wayland --work "$out/wayland"
 +    export ATLAS_FIREFOX_PANEL_CANDIDATE=1
 +else
-+    bash "$tools/build_atlasa1_release_kernel.sh" "$out/sources/linux" "$tina" "$out/kernel" "${@:3}"
++    bash "$tools/build_atlasa1_release_kernel.sh" "$linux_source" "$tina" "$out/kernel" "${@:3}"
 +fi
 +kernel="$out/kernel/linux-image-${release}_${version}_arm64.deb"
 +pvr="$out/kernel/pvr-out/target_aarch64/kbuild/pvrsrvkm.ko"
 +
-+curl --fail --location --retry 3 -o ffmpeg.tar.xz https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz
++if [[ -n $cache ]]; then
++    cp "$cache/ffmpeg.tar.xz" ffmpeg.tar.xz
++else
++    curl --fail --location --retry 3 -o ffmpeg.tar.xz https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz
++fi
 +check_file de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f ffmpeg.tar.xz
 +tar -xf ffmpeg.tar.xz
 +bash "$tools/build_atlasa1_resolute_player.sh" "$out/sources/ffmpeg-7.1.5" "$sdl" "$out/player"
 +player="$out/player/atlasa1-player_0.1-6~resolute1_arm64.deb"
 +if [[ -z ${ATLAS_FIREFOX_DEB:-} ]]; then
-+    bash "$tools/browser/build_firefox_resolute_ffmpeg.sh" --ubuntu-archive "$out/firefox"
++    firefox_source=--ubuntu-archive
++    if [[ -n $cache ]]; then firefox_source="$cache/firefox/ffmpeg_8.0.1-3ubuntu2.dsc"; fi
++    bash "$tools/browser/build_firefox_resolute_ffmpeg.sh" "$firefox_source" "$out/firefox"
 +    firefox="$out/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb"
 +fi
 +export T736_TINA_SDK="$tina/out/t736/demo_aiot/buildroot/buildroot/host"
@@ -166788,6 +168648,10 @@ index 0000000000000000000000000000000000000000..a8ed639633eb81431a0eba298f73138b
 +python3 "$tools/prepare_atlasa1_resolute_media.py" --wc-archive "$wc" --service-build "$out/service" \
 +    --omx-vdec "$out/omx/libOmxVdec.so" --pvr-module "$pvr" --kernel-release "$release" --gpu-deb "$gpu" --output "$out/media"
 +bash "$tools/stage_atlasa1_resolute_x11.sh" "$out/media"
++if [[ ${ATLAS_COMPONENTS_ONLY:-0} == 1 ]]; then
++    printf 'ALL_SOURCE_COMPONENTS_BUILT\n'
++    exit 0
++fi
 +
 +bash "$tools/build_atlasa1_resolute_rootfs.sh" "$framework" "$out/ubuntu"
 +root="$out/ubuntu/rootfs"
@@ -166933,15 +168797,15 @@ index 0000000000000000000000000000000000000000..421dc6e81d0a9fa9e32395122f1e0cd8
 +(cd "$work" && sha256sum *.deb t736-cedar-wc-v5.tar.gz > SHA256SUMS)
 diff --git a/userpatches/atlasa1-release/tools/build_cedar_4k_omx.py b/userpatches/atlasa1-release/tools/build_cedar_4k_omx.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..5a20c433078ecd0053faa9840afb07c6d154ae5c
+index 0000000000000000000000000000000000000000..7e133255e8d6a269588f0151c2bf1eb5600d9649
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_cedar_4k_omx.py
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,88 @@
 +#!/usr/bin/env python3
-+"""Build a private, opt-in T736 4K OMX candidate from a configured Tina tree."""
++"""Compile every OMX decoder translation unit from source, without old objects."""
 +import argparse
 +import hashlib
-+import os
++import json
 +from pathlib import Path
 +import shutil
 +import subprocess
@@ -166953,32 +168817,73 @@ index 0000000000000000000000000000000000000000..5a20c433078ecd0053faa9840afb07c6
 +
 +def main():
 +    parser = argparse.ArgumentParser(description=__doc__)
-+    parser.add_argument("--tina", required=True, type=Path)
++    parser.add_argument("--tina", required=True, type=Path, help="SDK or automatically prepared minimal input tree")
 +    parser.add_argument("--output", required=True, type=Path, help="New build directory")
 +    args = parser.parse_args()
 +    tina, output = args.tina.resolve(), args.output.resolve()
 +    buildroot = tina / "out/t736/demo_aiot/buildroot/buildroot"
-+    configured = buildroot / "build/libcedarc"
++    original = tina / "platform/allwinner/multimedia/libcedarc_v2.0"
++    sdk = buildroot / 'host'
++    compiler = sdk / 'bin/aarch64-none-linux-gnu-gcc'
++    sysroot = sdk / 'aarch64-buildroot-linux-gnu/sysroot'
 +    decoder = Path("openmax/vdec/src/omx_vdec_aw_decoder_linux.c")
 +    patch = Path(__file__).resolve().parents[1] / "patches/cedar/omx-4k-broker-buffers.patch"
 +    if output == tina or tina in output.parents or output.exists():
 +        parser.error("Choose a new directory outside Tina")
-+    if sha256(configured / decoder) != "9e8acb893ec55a0e55cc19f1620ff7b37fcc23b2f72fbfbc40e05b507b12b661":
-+        parser.error("Configured decoder source differs from the T736 build")
++    if sha256(original / decoder) != "9e8acb893ec55a0e55cc19f1620ff7b37fcc23b2f72fbfbc40e05b507b12b661":
++        parser.error("Decoder source differs from the T736 build")
 +    output.mkdir(parents=True)
 +    source = output / "source"
-+    shutil.copytree(configured, source, symlinks=True)
-+    # libtool's existing objects belong to other, unmodified components.
-+    # Recompile the changed decoder TU against its original target flags.
++    source.mkdir()
++    input_hashes = {}
++    # Copy source/header files only. No Makefile/config.status, .libs, .lo or .o
++    # can carry configured paths or objects from the developer's old build.
++    for path in sorted(original.rglob('*')):
++        if path.is_file() and path.suffix in ('.c', '.h'):
++            relative = path.relative_to(original)
++            destination = source / relative
++            destination.parent.mkdir(parents=True, exist_ok=True)
++            shutil.copyfile(path, destination)
++            input_hashes[relative.as_posix()] = sha256(destination)
 +    subprocess.run(["patch", "--fuzz=0", "-p1", "-i", str(patch)], cwd=source, check=True)
-+    os.utime(source / decoder)
 +    vdec = source / "openmax/vdec"
-+    with (output / "make.log").open("wb") as log:
-+        subprocess.run(["make", "-j2", "V=1", "libOmxVdec.la"], cwd=vdec, check=True,
-+                       stdout=log, stderr=subprocess.STDOUT)
++    sources = ['src/omx_vdec.c', 'src/omx_vdec_port.c', 'src/omx_vdec_aw_decoder_linux.c',
++               'looper/omx_thread.c', 'looper/omx_mutex.c', 'looper/omx_sem.c']
++    includes = [source / rel for rel in ('openmax/include', 'openmax/vdec/inc',
++                'openmax/vdec/looper', 'include', 'openmax/omxcore/include',
++                'base/include', 've/include', 'openmax/omxcore/tablelist/linux')]
++    flags = ['-g', '-O0', '-Wall', '-Werror', '-D_GNU_SOURCE', '-fPIC',
++             '-D__LINUX__', '-DCONF_KERNEL_VERSION_6_6', '-DCONF_USE_IOMMU',
++             '-DCONF_AUTO_SCALE_OVER_4K', '-DCONF_AW_AFBC_MODE=0',
++             '-DCONF_VE_MULTIPLE_OUTPUT', '-DCONF_OMX_USE_ZERO_COPY']
++    flags += ['-Wno-' + name for name in ('unused-variable', 'array-bounds',
++              'unused-but-set-variable', 'unused-result', 'unused-function', 'unused-value',
++              'pointer-to-int-cast', 'int-to-pointer-cast', 'unused-label', 'strict-aliasing', 'format')]
++    flags += ['-I' + str(path) for path in includes]
++    objects = output / 'objects'
++    objects.mkdir()
++    commands = []
 +    candidate = output / "libOmxVdec.so"
-+    shutil.copy2(vdec / ".libs/libOmxVdec.so", candidate)
-+    subprocess.run(["patchelf", "--remove-rpath", str(candidate)], check=True)
++    with (output / "make.log").open("wb") as log:
++        for name in sources:
++            obj = objects / (Path(name).stem + '.o')
++            command = [str(compiler), *flags, '-c', str(vdec / name), '-o', str(obj)]
++            commands.append(command)
++            subprocess.run(command, check=True, stdout=log, stderr=subprocess.STDOUT)
++        command = [str(compiler), '-shared', '-Wl,--no-undefined', '-Wl,-soname,libOmxVdec.so',
++                   '-o', str(candidate), *[str(objects / (Path(n).stem + '.o')) for n in sources],
++                   '-L' + str(sysroot / 'usr/lib'), '-Wl,-rpath-link,' + str(sysroot / 'usr/lib'),
++                   '-lcdc_base', '-lvdecoder', '-lMemAdapter', '-lVE', '-lvideoengine',
++                   '-ldl', '-lrt', '-lpthread', '-lm']
++        commands.append(command)
++        subprocess.run(command, check=True, stdout=log, stderr=subprocess.STDOUT)
++    dynamic = subprocess.check_output(['aarch64-linux-gnu-readelf', '-d', candidate], text=True)
++    if '(RPATH)' in dynamic or '(RUNPATH)' in dynamic:
++        raise ValueError('Unexpected build-host runtime library path')
++    (output / 'source-build.json').write_text(json.dumps({
++        'reused_objects': False, 'translation_units': sources, 'input_sha256': input_hashes,
++        'commands': commands, 'dynamic_section': dynamic, 'output_sha256': sha256(candidate)
++    }, indent=2) + '\n')
 +    print(f"{sha256(candidate)}  {candidate}")
 +
 +
@@ -168254,6 +170159,171 @@ index 0000000000000000000000000000000000000000..672917e5a05b0e9349b85e395ccc49b2
 +
 +if __name__ == "__main__":
 +    main()
+diff --git a/userpatches/atlasa1-release/tools/fetch_atlasa1_inputs.py b/userpatches/atlasa1-release/tools/fetch_atlasa1_inputs.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..4ec4b5590be386c2677e9a77e10d0832a6ac8ea0
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/fetch_atlasa1_inputs.py
+@@ -0,0 +1,52 @@
++#!/usr/bin/env python3
++"""Download immutable build inputs; never accept a partial or mismatched asset."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import subprocess
++
++
++def sha(path):
++    h = hashlib.sha256()
++    with path.open('rb') as f:
++        for block in iter(lambda: f.read(4 * 1024 * 1024), b''):
++            h.update(block)
++    return h.hexdigest()
++
++
++def fetch(lock, directory):
++    data = json.loads(lock.read_text())
++    directory.mkdir(parents=True, exist_ok=True)
++    for item in data['assets']:
++        name = item['name']
++        if Path(name).name != name or name in ('.', '..'):
++            raise ValueError('Invalid asset name')
++        target = directory / name
++        def valid(p):
++            return p.is_file() and p.stat().st_size == item['size'] and sha(p) == item['sha256']
++        if valid(target):
++            print('Verified cached input: ' + name, flush=True)
++            continue
++        if target.exists():
++            raise RuntimeError('Cached input has wrong hash; remove it explicitly: ' + str(target))
++        partial = target.with_name(name + '.partial')
++        if valid(partial):
++            partial.replace(target)
++            print('Recovered verified download: ' + name, flush=True)
++            continue
++        subprocess.run(['curl', '--fail', '--location', '--retry', '5', '--retry-all-errors', '--retry-delay', '3',
++                        '--connect-timeout', '30', '--continue-at', '-', '--output', str(partial),
++                        item['url']], check=True)
++        if not valid(partial):
++            raise RuntimeError('Downloaded input hash/size mismatch: ' + name)
++        partial.replace(target)
++        print('Downloaded and verified: ' + name, flush=True)
++
++
++if __name__ == '__main__':
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('lock', type=Path)
++    p.add_argument('cache', type=Path)
++    a = p.parse_args()
++    fetch(a.lock, a.cache)
+diff --git a/userpatches/atlasa1-release/tools/freeze_atlasa1_apt.py b/userpatches/atlasa1-release/tools/freeze_atlasa1_apt.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..e04ae05d2d8500591a9b81f64a0c447d04973853
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/freeze_atlasa1_apt.py
+@@ -0,0 +1,101 @@
++#!/usr/bin/env python3
++"""Maintainer: freeze exact installed distribution packages from verified APT indexes."""
++import argparse
++from concurrent.futures import ThreadPoolExecutor, as_completed
++import gzip
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import time
++import urllib.request
++
++
++def sha(path):
++    with path.open('rb') as stream:
++        return hashlib.file_digest(stream, 'sha256').hexdigest()
++
++
++def freeze(inventory, cache, output):
++    data = json.loads(inventory.read_text())
++    if data['missing']:
++        raise ValueError('Missing exact package versions: ' + str(data['missing']))
++    output = output.absolute()
++    output.mkdir(parents=True, exist_ok=False)
++    repo = output / 'packages'
++    pool = repo / 'pool'
++    pool.mkdir(parents=True)
++    candidates = list(cache.glob('*.deb'))
++    with ThreadPoolExecutor(max_workers=4) as executor:
++        cached = dict(executor.map(lambda p: (sha(p), p), candidates))
++
++    def download(item):
++        name, record = item
++        expected = record['SHA256']
++        dest = pool / (expected[:16] + '-' + Path(record['Filename']).name)
++        prefix = record['index'].split('_dists_', 1)[0].replace('_', '/')
++        urls = ['https://' + prefix.rstrip('/') + '/' + record['Filename'].lstrip('/')]
++        if 'ubuntu' in prefix:
++            urls.append('https://ports.ubuntu.com/' + record['Filename'].lstrip('/'))
++        origin = 'verified-local-apt-cache'
++        if expected in cached:
++            shutil.copyfile(cached[expected], dest)
++        else:
++            last = None
++            for attempt in range(3):
++                for url in urls:
++                    try:
++                        with urllib.request.urlopen(url, timeout=60) as source, dest.open('wb') as target:
++                            shutil.copyfileobj(source, target, 1024 * 1024)
++                        if dest.stat().st_size != int(record['Size']) or sha(dest) != expected:
++                            raise ValueError('Downloaded package hash mismatch: ' + name)
++                        origin = url
++                        break
++                    except (OSError, ValueError) as exc:
++                        last = exc
++                else:
++                    time.sleep(attempt + 1)
++                    continue
++                break
++            else:
++                raise RuntimeError('Cannot freeze ' + name) from last
++        if dest.stat().st_size != int(record['Size']) or sha(dest) != expected:
++            raise ValueError('Package verification failed: ' + name)
++        return {'package': name, 'version': record['Version'], 'architecture': record['Architecture'],
++                'file': dest.relative_to(repo).as_posix(), 'size': dest.stat().st_size,
++                'sha256': expected, 'origin': origin}
++
++    records = []
++    with ThreadPoolExecutor(max_workers=6) as executor:
++        futures = [executor.submit(download, item) for item in data['records'].items()]
++        for future in as_completed(futures):
++            records.append(future.result())
++            if len(records) % 100 == 0:
++                print(f'Verified {len(records)}/{len(futures)} exact package versions', flush=True)
++    with (repo / 'Packages').open('wb') as stream:
++        subprocess.run(['dpkg-scanpackages', '--multiversion', 'pool', '/dev/null'], cwd=repo,
++                       stdout=stream, stderr=subprocess.PIPE, check=True)
++    (repo / 'Packages.gz').write_bytes(gzip.compress((repo / 'Packages').read_bytes(), mtime=0))
++    manifest = {'schema': 1, 'kind': 'atlasa1-frozen-arm64-packages',
++                'rebuilt_separately': data['excluded_rebuilt'],
++                'packages': sorted(records, key=lambda r: r['package'])}
++    (repo / 'PACKAGE-MANIFEST.json').write_text(json.dumps(manifest, indent=2) + '\n')
++    archive = output / 'atlasa1-arm64-packages-v1.tar.zst'
++    subprocess.run(['tar', '--sort=name', '--owner=0', '--group=0', '--numeric-owner',
++                    '--mtime=@1795392000', '-I', 'zstd -T4 -3', '-cf', str(archive),
++                    '-C', str(output), 'packages'], check=True)
++    result = {'archive': archive.name, 'sha256': sha(archive), 'size': archive.stat().st_size,
++              'package_count': len(records), 'manifest_sha256': sha(repo / 'PACKAGE-MANIFEST.json')}
++    (output / 'archive.json').write_text(json.dumps(result, indent=2) + '\n')
++    print(json.dumps(result), flush=True)
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--inventory', type=Path, required=True)
++    parser.add_argument('--apt-cache', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    freeze(args.inventory, args.apt_cache, args.output)
 diff --git a/userpatches/atlasa1-release/tools/pack_armbian_raw_v6.py b/userpatches/atlasa1-release/tools/pack_armbian_raw_v6.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..d408306eca0dcc18dc61f5b4feeb3162a3a31b91
@@ -168885,6 +170955,127 @@ index 0000000000000000000000000000000000000000..92d7efaaef1d61ba5140b48ec5894f5c
 +
 +if __name__ == "__main__":
 +    main()
+diff --git a/userpatches/atlasa1-release/tools/package_atlasa1_build_inputs.py b/userpatches/atlasa1-release/tools/package_atlasa1_build_inputs.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..00c47b8405e9c7c43c209df66ddd74c4dda7c35a
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/package_atlasa1_build_inputs.py
+@@ -0,0 +1,115 @@
++#!/usr/bin/env python3
++"""Maintainer tool: capture the exact minimal SDK inputs for automatic builds.
++
++This packages third-party source, runtime libraries and a compiler, not a built
++kernel/rootfs and not previously compiled OMX objects. Never point it at a home
++directory or publish an unreviewed output: the manifest identifies every input.
++"""
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++
++ROOT = Path(__file__).resolve().parents[1]
++HOST = Path('out/t736/demo_aiot/buildroot/buildroot/host')
++CEDAR = Path('platform/allwinner/multimedia/libcedarc_v2.0')
++
++
++def digest(path):
++    with path.open('rb') as stream:
++        return hashlib.file_digest(stream, 'sha256').hexdigest()
++
++
++def package(tina, output):
++    tina = tina.resolve(strict=True)
++    output = output.absolute()
++    if output.exists() or output.is_relative_to(tina):
++        raise ValueError('Output must be a new directory outside SDK')
++    output.mkdir(parents=True)
++    stage = output / 'inputs'
++    stage.mkdir()
++
++    def copy(relative, source_only=False):
++        src, dst = tina / relative, stage / relative
++        dst.parent.mkdir(parents=True, exist_ok=True)
++        if src.is_symlink():
++            dst.symlink_to(os.readlink(src))
++        elif src.is_dir():
++            dst.mkdir(exist_ok=True)
++            for child in sorted(src.iterdir()):
++                if child.name.startswith('binary_') or child.name in ('.git', '.svn', '.libs', '.deps', '__pycache__'):
++                    continue
++                if source_only and (child.suffix in ('.o', '.a', '.so', '.lo', '.la', '.ko', '.pyc') or '.so.' in child.name):
++                    continue
++                copy(child.relative_to(tina), source_only)
++        else:
++            shutil.copy2(src, dst)
++
++    ddr = Path('brandy/dramlib/sun60iw2p1/spl_libdram/libdram')
++    if digest(tina / ddr) != '5361d148fa097ccc14e15a173523783d0eb1a71969bc76d57eb8e1229ddc6d90':
++        raise ValueError('Unexpected DDR library')
++    copy(ddr)
++    display = json.loads((ROOT / 'patches/linux/media-v30-replay/tina-display-inputs.json').read_text())
++    for entry in display:
++        if digest(tina / entry['source']) != entry['sha256']:
++            raise ValueError('Unexpected display source: ' + entry['source'])
++        copy(Path(entry['source']))
++    copy(Path('bsp/modules/gpu/img-bxm/linux/rogue_km'), source_only=True)
++    gpu = Path('platform/allwinner/display/libgpu/img-bxm/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu')
++    for platform in ('x11', 'wayland'):
++        for sub in ('usr/lib', 'usr/local/lib', 'lib/firmware', 'powervr_icd.json'):
++            copy(gpu / platform / sub)
++    copy(CEDAR, source_only=True)
++    # An immutable target feature header, not a configured build directory.
++    copy(Path('out/t736/demo_aiot/buildroot/buildroot/build/libcedarc/config.h'))
++    copy(Path('debian/packages/arm64/libcedarc/libcedarc-dev_2.0.0_arm64.deb'))
++    copy(Path('buildroot/buildroot-202205/dl/gst-omx/gst-omx-1.20.1.tar.xz'))
++    recipe = Path('buildroot/buildroot-202205/package/gstreamer1/gst-omx')
++    for path in sorted((tina / recipe).glob('*.patch')):
++        copy(path.relative_to(tina))
++    copy(HOST / 'opt/ext-toolchain')
++    copy(HOST / 'bin/toolchain-wrapper')
++    for path in sorted((tina / HOST / 'bin').glob('aarch64-none-linux-gnu-*')):
++        copy(path.relative_to(tina))
++    sysroot = HOST / 'aarch64-buildroot-linux-gnu/sysroot'
++    for relative in ('lib', 'lib64', 'usr/include', 'usr/lib', 'usr/lib64', 'usr/share/pkgconfig'):
++        if (tina / sysroot / relative).exists() or (tina / sysroot / relative).is_symlink():
++            copy(sysroot / relative)
++    # Sysroot absolute links refer to the target root, never to host /usr/lib.
++    for path in sorted((stage / sysroot).rglob('*')):
++        if path.is_symlink() and os.readlink(path).startswith('/'):
++            target = stage / sysroot / os.readlink(path).lstrip('/')
++            path.unlink()
++            path.symlink_to(os.path.relpath(target, path.parent))
++    files = []
++    for path in sorted(stage.rglob('*')):
++        if path.is_symlink():
++            target = path.resolve()
++            if not target.is_relative_to(stage.resolve()):
++                raise ValueError('Input symlink escapes package: ' + str(path))
++            files.append({'path': path.relative_to(stage).as_posix(), 'link': os.readlink(path)})
++        elif path.is_file():
++            files.append({'path': path.relative_to(stage).as_posix(), 'size': path.stat().st_size, 'sha256': digest(path)})
++    manifest = {'schema': 1, 'kind': 'atlasa1-minimal-build-inputs', 'display_files': len(display),
++                'configured_omx_objects_included': False, 'files': files}
++    (stage / 'INPUT-MANIFEST.json').write_text(json.dumps(manifest, indent=2) + '\n')
++    archive = output / 'atlasa1-build-inputs-v1.tar.zst'
++    subprocess.run(['tar', '--sort=name', '--owner=0', '--group=0', '--numeric-owner',
++                    '--mtime=@1795392000', '-I', 'zstd -T4 -6', '-cf', str(archive),
++                    '-C', str(output), 'inputs'], check=True)
++    result = {'archive': archive.name, 'size': archive.stat().st_size,
++              'sha256': digest(archive), 'input_manifest_sha256': digest(stage / 'INPUT-MANIFEST.json'),
++              'files': len(files), 'display_files': len(display)}
++    (output / 'archive.json').write_text(json.dumps(result, indent=2) + '\n')
++    print(json.dumps(result))
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--tina', required=True, type=Path)
++    parser.add_argument('--output', required=True, type=Path)
++    args = parser.parse_args()
++    package(args.tina, args.output)
 diff --git a/userpatches/atlasa1-release/tools/package_atlasa1_gnome_kernel.py b/userpatches/atlasa1-release/tools/package_atlasa1_gnome_kernel.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..69bb2277e6224264e0481c961af45c7122b67679
@@ -169510,10 +171701,10 @@ index 0000000000000000000000000000000000000000..89c0cd0fe51d19419ab0f381c0fe2163
 +    main()
 diff --git a/userpatches/atlasa1-release/tools/prepare_atlasa1_sdl_sysroot.sh b/userpatches/atlasa1-release/tools/prepare_atlasa1_sdl_sysroot.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f70480726
+index 0000000000000000000000000000000000000000..5350ca3673e71d6cd450f385a0b6451e0deca151
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/prepare_atlasa1_sdl_sysroot.sh
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,32 @@
 +#!/usr/bin/env bash
 +# Minimal ARM64 SDL2 development sysroot for the private FFplay build.
 +set -euo pipefail
@@ -169525,7 +171716,11 @@ index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f
 +origin=https://deb.debian.org/debian/pool/main/libs/libsdl2
 +cd "$work"
 +for pkg in libsdl2-2.0-0 libsdl2-dev; do
-+    curl --fail --location --retry 3 --output "$pkg.deb" "$origin/${pkg}_${version}_arm64.deb"
++    if [[ -n ${ATLAS_SOURCE_CACHE:-} ]]; then
++        cp "$ATLAS_SOURCE_CACHE/sdl/${pkg}_${version}_arm64.deb" "$pkg.deb"
++    else
++        curl --fail --location --retry 3 --output "$pkg.deb" "$origin/${pkg}_${version}_arm64.deb"
++    fi
 +done
 +sha256sum --check <<'SUMS'
 +6312ccbc29645ac5cc9dde9f9ed8bd5c85a0233690c270c83c963b49f8cd49d5  libsdl2-2.0-0.deb
@@ -169544,10 +171739,10 @@ index 0000000000000000000000000000000000000000..b1635a854590247bd6095c5834bc383f
 +readelf -d abi-test | grep -F 'Shared library: [libSDL2-2.0.so.0]'
 diff --git a/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..6bc2b21de38095edee6c7d4a2caa8fa2a200c40c
+index 0000000000000000000000000000000000000000..972a39dc78c9a8b989dc535f49a034f762ec8b2b
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/prepare_t736_resolute_rootfs.sh
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,116 @@
 +#!/usr/bin/env bash
 +# Finish the official Armbian Resolute ARM64 rootfs for AtlasA1 image assembly.
 +# Usage: sudo bash prepare_t736_resolute_rootfs.sh ROOTFS.tar.zst NEW_ROOT BSP_OUTPUT_DEBS
@@ -169567,8 +171762,12 @@ index 0000000000000000000000000000000000000000..6bc2b21de38095edee6c7d4a2caa8fa2
 +bsp=("$debs"/armbian-bsp-cli-t736-mainline-current_*_arm64__*.deb)
 +base=("$debs"/extra/resolute-utils/base-files_*resolute_arm64__*.deb)
 +[[ ${#bsp[@]} == 1 && ${#base[@]} == 1 ]] || { echo "Expected one BSP and one Resolute base-files package" >&2; exit 1; }
-+mkdir -- "$root"
-+tar --xattrs --acls --numeric-owner -I zstd -xf "$archive" -C "$root"
++if [[ -d $archive ]]; then
++    [[ $archive == "$root" ]] || { echo 'Directory input must be the target rootfs' >&2; exit 2; }
++else
++    mkdir -- "$root"
++    tar --xattrs --acls --numeric-owner -I zstd -xf "$archive" -C "$root"
++fi
 +grep -q '^VERSION_CODENAME=resolute$' "$root/usr/lib/os-release"
 +[[ $(chroot "$root" dpkg --print-architecture) == arm64 ]]
 +mount -t proc proc "$root/proc"
@@ -169660,6 +171859,97 @@ index 0000000000000000000000000000000000000000..6bc2b21de38095edee6c7d4a2caa8fa2
 +done
 +rm -f -- "$root/usr/sbin/policy-rc.d"
 +run start-stop-daemon --version
+diff --git a/userpatches/atlasa1-release/tools/relocate_atlasa1_build_inputs.py b/userpatches/atlasa1-release/tools/relocate_atlasa1_build_inputs.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..ac9f5d5009669a990285bbf6313687875937468f
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/relocate_atlasa1_build_inputs.py
+@@ -0,0 +1,58 @@
++#!/usr/bin/env python3
++"""Prepare relocatable SDK compatibility paths from the versioned input bundle."""
++import argparse
++import json
++import os
++from pathlib import Path
++
++HOST = Path('out/t736/demo_aiot/buildroot/buildroot/host')
++
++
++def prepare(root):
++    root = root.resolve(strict=True)
++    host = root / HOST
++    sysroot = host / 'aarch64-buildroot-linux-gnu/sysroot'
++    binary = host / 'bin'
++    for name, command in (('meson', '/usr/bin/meson'), ('ninja', '/usr/bin/ninja'), ('pkgconf', '/usr/bin/pkg-config')):
++        path = binary / name
++        path.write_text('#!/bin/sh\nexec ' + command + ' "$@"\n')
++        path.chmod(0o755)
++    path = binary / 'pkg-config'
++    path.write_text('''#!/bin/sh
++set -eu
++sdk=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
++sysroot=$sdk/aarch64-buildroot-linux-gnu/sysroot
++export PKG_CONFIG_SYSROOT_DIR=${PKG_CONFIG_SYSROOT_DIR:-$sysroot}
++export PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-$sysroot/usr/lib/pkgconfig:$sysroot/usr/share/pkgconfig}
++exec /usr/bin/pkg-config "$@"
++''')
++    path.chmod(0o755)
++    # Meson uses the supplied paths; no developer home directory is consulted.
++    def quote(value):
++        return "'" + str(value).replace('\\', '\\\\').replace("'", "\\'") + "'"
++    cross = host / 'etc/meson/cross-compilation.conf'
++    cross.parent.mkdir(parents=True, exist_ok=True)
++    lines = ['[binaries]']
++    for key, name in [('c', 'gcc'), ('cpp', 'g++'), ('ar', 'gcc-ar'), ('strip', 'strip')]:
++        lines.append(key + ' = ' + quote(binary / ('aarch64-none-linux-gnu-' + name)))
++    lines += ['pkgconfig = ' + quote(binary / 'pkg-config'),
++              '[built-in options]', "c_args = ['-D_LARGEFILE_SOURCE', '-D_LARGEFILE64_SOURCE', '-D_FILE_OFFSET_BITS=64', '-Os', '-g0', '-D_FORTIFY_SOURCE=1']",
++              "wrap_mode = 'nodownload'", '[properties]', 'needs_exe_wrapper = true',
++              'sys_root = ' + quote(sysroot), 'pkg_config_libdir = ' + quote(str(sysroot / 'usr/lib/pkgconfig') + ':' + str(sysroot / 'usr/share/pkgconfig')),
++              '[host_machine]', "system = 'linux'", "cpu_family = 'aarch64'", "cpu = 'cortex-a76'", "endian = 'little'"]
++    cross.write_text('\n'.join(lines) + '\n')
++    old = '/home/ubuntu/t736-aiot/tina'
++    changed = []
++    for path in sysroot.rglob('*'):
++        if not path.is_symlink() and path.is_file() and path.suffix in ('.pc', '.la', '.cmake'):
++            text = path.read_text()
++            if old in text:
++                path.write_text(text.replace(old, str(root)))
++                changed.append(path.relative_to(root).as_posix())
++    (root / 'RELOCATION.json').write_text(json.dumps({'root': str(root), 'rewritten_metadata': changed}, indent=2) + '\n')
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('inputs', type=Path)
++    prepare(parser.parse_args().inputs)
+diff --git a/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh b/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..8a4facb356972fdc1d90c70dbc7f9dac177e743e
+--- /dev/null
++++ b/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh
+@@ -0,0 +1,21 @@
++#!/usr/bin/env bash
++set -euo pipefail
++[[ $EUID == 0 && -d /assets && -d /recipe && -d /work ]]
++[[ ! -e /work/inputs && ! -e /work/build ]] || { echo 'Use an empty output directory' >&2; exit 2; }
++tar -I zstd -xf /assets/atlasa1-build-inputs-v1.tar.zst -C /work
++tar -I zstd -xf /assets/atlasa1-upstream-sources-v2.tar.zst -C /work
++tar -I zstd -xf /assets/atlasa1-arm64-packages-v1.tar.zst -C /work
++python3 /recipe/tools/relocate_atlasa1_build_inputs.py /work/inputs
++chown -R ubuntu:ubuntu /work
++export ATLAS_TINA_SDK=/work/inputs ATLAS_SOURCE_CACHE=/work/source-inputs-v1
++export ATLAS_COMPONENTS_ONLY=1 JOBS=${JOBS:-6}
++sudo -u ubuntu --preserve-env=ATLAS_TINA_SDK,ATLAS_SOURCE_CACHE,ATLAS_COMPONENTS_ONLY,JOBS \
++    bash /recipe/tools/build_atlasa1_resolute.sh "$ATLAS_SOURCE_CACHE/armbian" /work/build --gnome-v47
++sudo -u ubuntu bash /recipe/tools/build_atlasa1_frozen_bsp.sh "$ATLAS_SOURCE_CACHE" /work/bsp /recipe
++if ! mountpoint -q /proc/sys/fs/binfmt_misc; then mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc; fi
++update-binfmts --enable qemu-aarch64
++python3 /recipe/tools/build_atlasa1_frozen_rootfs.py --packages /work/packages \
++    --bsp /work/bsp/output/debs --output /work/ubuntu --recipe /recipe
++bash /recipe/tools/assemble_atlasa1_frozen_image.sh /recipe /work/build /work/ubuntu/rootfs /work/image
++cp /recipe/config/clean-build/inputs.lock.json /work/image/
++printf 'FRESH_HOST_BUILD_COMPLETE\n'
 diff --git a/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh b/userpatches/atlasa1-release/tools/stage_atlasa1_gnome_wayland.sh
 new file mode 100755
 index 0000000000000000000000000000000000000000..373f364afe56e4e22aabba92d741d63675a82b68
