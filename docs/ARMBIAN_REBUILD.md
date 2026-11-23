@@ -1,6 +1,6 @@
-# T736 Armbian 重建入口
+# 历史：T736 通用 Armbian 框架适配
 
-Ubuntu 26.04 LTS 的发布镜像使用固定板级 GPT 和专用重建脚本。请从本版单文件补丁开始；下文记录此前的通用框架适配和 Debian 开发镜像。[Ubuntu 26.04 发布镜像构建步骤](UBUNTU_26_04.md)
+**GNOME Ubuntu 26.04 的新主机入口是仓库根目录的 `bash build.sh`。** 它自动获取公开、锁定的构建输入，无需手动提供下面历史命令中的 `/private/t736-vendor-input`。请使用 [全新主机构建](FRESH_HOST_BUILD.md) 或 [官方 Armbian 加单文件补丁](UBUNTU_26_04.md)。下文仅保留此前的通用框架适配和 Debian 开发镜像记录。
 
 在锁定版本的官方 Armbian build 上执行下面的 `git apply` 即可加入公开板级支持。复现实板的 LPDDR4x 启动、PVR 加速桌面和 Cedar 硬解还需要对应的厂家组件，获取与安装要求见下文。[下载公开补丁](../patches/t736-armbian-open-source.patch)
 
@@ -22,7 +22,7 @@ git apply /path/to/t736/mainline/patches/t736-armbian-open-source.patch
 
 ## 准备厂家输入
 
-GPU 用户态、PVR 内核模块、Cedar/OMX/WC、匹配固件和 DDR 启动库属于授权厂家输入，公开仓库不分发。将它们放在私有目录或 tar/tar.zst 中，并在根目录放置 `manifest.json`。字段格式见 [`config/t736-vendor-inputs.example.json`](../config/t736-vendor-inputs.example.json)。每个文件必须有相对 payload 路径、绝对 rootfs 目标路径、角色和 SHA256；入口会要求 `gpu_userspace`、`pvr_module`、`codec_backend`、`codec_service`、`device_rules`、`ddr_boot` 和 `boot_package` 输入齐全，hash 不匹配时停止。
+以下旧脚本要求手动整理 GPU 用户态、PVR 内核模块、Cedar/OMX/WC、匹配固件和 DDR 启动库。新的 GNOME 入口已改为自动下载公开 Release 输入，不再要求此步骤。维护旧配方时，将输入放在目录或 tar/tar.zst 中，并在根目录放置 `manifest.json`。字段格式见 [`config/t736-vendor-inputs.example.json`](../config/t736-vendor-inputs.example.json)。每个文件必须有相对 payload 路径、绝对 rootfs 目标路径、角色和 SHA256；旧入口会要求 `gpu_userspace`、`pvr_module`、`codec_backend`、`codec_service`、`device_rules`、`ddr_boot` 和 `boot_package` 输入齐全，hash 不匹配时停止。
 
 完整媒体输入现在还要求浏览器侧桥接和服务配置：`codec_userspace`、`codec_config`、`browser_bridge`、`browser_service`。入口会拒绝只含 Cedar broker/OMX 插件的半成品 manifest，避免把“插件能枚举”误报为 Firefox 硬解完成。设备规则必须保持专用 `t736-cedar` 服务账号的 0600 权限，不能用后置的 `video` 组规则覆盖它。
 

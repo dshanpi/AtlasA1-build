@@ -1,0 +1,23 @@
+{
+  "container_image_id": "sha256:013979e8c4b28fd8fd26369bba0019335c28caf607fa8f01de4a0216520693f5",
+  "network": "none",
+  "mounts": [
+    {
+      "destination": "/work",
+      "read_only": false
+    },
+    {
+      "destination": "/assets",
+      "read_only": true
+    },
+    {
+      "destination": "/recipe",
+      "read_only": true
+    }
+  ],
+  "started_at": "2026-11-23T05:11:57.888435016Z",
+  "host_entry": "bash build.sh NEW_OUTPUT_DIRECTORY",
+  "recipe_commit": "6a6f3b731af5822fe8cd98c6dde9eae889b9d3a3",
+  "download_cache": "SHA-256 verified published assets; prepopulated for this compilation test",
+  "old_sdk_or_existing_rootfs_mounted": false
+}

@@ -1,6 +1,6 @@
 # AtlasA1 / T736 · Armbian Ubuntu 26.04 LTS
 
-2026-11-23：新主机使用自动下载、版本锁定的入口，不需要手动准备 Tina SDK。当前完整构建验收进度和适用条件见 [全新主机构建](FRESH_HOST_BUILD.md)。
+2026-11-23：新主机使用自动下载、版本锁定的入口，不需要手动准备 Tina SDK。完整入口已从空目录生成镜像并通过离线检查；固定版本与适用条件见 [全新主机构建](FRESH_HOST_BUILD.md)。
 
 本配方从官方 Armbian 的固定提交生成 arm64 Ubuntu 26.04（Resolute）根文件系统和板级软件包，交叉编译 Linux、PowerVR 内核模块、SPL、TF-A、U-Boot 和原生播放器，再按 AtlasA1 的 eMMC 布局生成 8 GiB 磁盘镜像。固定 LPDDR4x 参数随源码提供。[发行镜像与校验文件](https://github.com/dshanpi/AtlasA1-build/releases)
 

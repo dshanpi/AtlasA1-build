@@ -21,8 +21,8 @@
       "path": "README.md",
       "kind": "generated",
       "source": "generated/AtlasA1-build/README.md",
-      "size": 2141,
-      "sha256": "246150ea704b51e058b5c0e650dfb9164f5df27f564b2f4b35ace737c784ea04"
+      "size": 2244,
+      "sha256": "157027f1f089f1cd5879472ecacf9ede42914f2ee044c370240e12b85f7db9d9"
     },
     {
       "path": "boards/candidates/media-v28-400mhz/BUILD-PLAN.md",
@@ -1015,8 +1015,8 @@
       "path": "docs/ARMBIAN_REBUILD.md",
       "kind": "source",
       "source": "mainline/docs/ARMBIAN_REBUILD.md",
-      "size": 9322,
-      "sha256": "56d49ead469120a26115b25954cbb4a474790b427da7a3a1f631c89bf3a043dc"
+      "size": 9583,
+      "sha256": "0b8f45422e05b14d095db62c55f4373625b7e7d7f5046d6a7f7f4413ed1139c0"
     },
     {
       "path": "docs/ATLAS_REPOSITORY_LAYOUT.md",
@@ -1071,8 +1071,8 @@
       "path": "docs/FRESH_HOST_BUILD.md",
       "kind": "source",
       "source": "mainline/docs/FRESH_HOST_BUILD.md",
-      "size": 3923,
-      "sha256": "ace2886eba2e6b89910e98f664ed25b0db057069675b86d17f1e0dd1820628f0"
+      "size": 5403,
+      "sha256": "4e8bec40400ed36d08cdfaf4d74b34c351a5cb2f89bcf1f9a0a02d805953db95"
     },
     {
       "path": "docs/GNOME_MEDIA.md",
@@ -1099,8 +1099,8 @@
       "path": "docs/UBUNTU_26_04.md",
       "kind": "source",
       "source": "mainline/docs/UBUNTU_26_04.md",
-      "size": 17890,
-      "sha256": "d80f63211bcabac6823a46fa1b2e2944a446804556b1e21738ae5111d0259a00"
+      "size": 17935,
+      "sha256": "a720341887798306e8e2587b614870f7b289aefa82e2f35b46d29fbd0d019454"
     },
     {
       "path": "docs/VALIDATION.md",
@@ -1523,11 +1523,18 @@
       "sha256": "e3c3f2165c2ff5c955e18d7ef548d510ba49d210364a056ec86fcf6c2b9be2f4"
     },
     {
+      "path": "evidence/clean-build-20261123/builder-import-test.log",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/builder-import-test.log",
+      "size": 42,
+      "sha256": "1e332a2277d7b5c2a9201c57c4c27b35537e8c3cb4bc2a3242c0a0dfc7448c3c"
+    },
+    {
       "path": "evidence/clean-build-20261123/desktop-configuration-comparison.json",
       "kind": "source",
       "source": "mainline/evidence/clean-build-20261123/desktop-configuration-comparison.json",
-      "size": 610,
-      "sha256": "1ec8b45c819897e731386d90d8d22632901e772a2149c9b7ef62409d4e15f648"
+      "size": 659,
+      "sha256": "988c307a53d16229c182c21ddcfdde4382f70df7ef1900be3c069e5d6f89ff95"
     },
     {
       "path": "evidence/clean-build-20261123/desktop-configuration.log",
@@ -1535,6 +1542,27 @@
       "source": "mainline/evidence/clean-build-20261123/desktop-configuration.log",
       "size": 379,
       "sha256": "98acebb5b16c7f232200171d966402906221461bbcf5c36bd30d62fd507b3765"
+    },
+    {
+      "path": "evidence/clean-build-20261123/full-clean-build.json",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/full-clean-build.json",
+      "size": 2056,
+      "sha256": "16ee21842f6474aae9c7f2ed993f997738f76b4d46696ec608af2539b78192d5"
+    },
+    {
+      "path": "evidence/clean-build-20261123/full-clean-build.log",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/full-clean-build.log",
+      "size": 441805,
+      "sha256": "bb28b0b6e6a45a09182005bffac86157a3b22326bcbab67d93c66118368e0a1f"
+    },
+    {
+      "path": "evidence/clean-build-20261123/installed-packages.tsv",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/installed-packages.tsv",
+      "size": 45781,
+      "sha256": "4c7dc86a979aca4844e20d496fcec657db38cdec611ccb206574bccc55a17bf5"
     },
     {
       "path": "evidence/clean-build-20261123/kernel-config-comparison.json",
@@ -1551,6 +1579,20 @@
       "sha256": "71fad9cf9e92be6c3674ec4a72e817eeb80121f1b7759833636aadec552a42db"
     },
     {
+      "path": "evidence/clean-build-20261123/one-command-isolation.json",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/one-command-isolation.json",
+      "size": 657,
+      "sha256": "0a170549895d03dec013a9a947f6c5bef4eabed5ad0bb9b626922dd1d2adc0e5"
+    },
+    {
+      "path": "evidence/clean-build-20261123/package-comparison.diff",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/package-comparison.diff",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "evidence/clean-build-20261123/public-input-downloads.json",
       "kind": "source",
       "source": "mainline/evidence/clean-build-20261123/public-input-downloads.json",
@@ -1565,11 +1607,25 @@
       "sha256": "a69c1a764ec55bf80156f97cd5c230a04fda59e8f36c75835c09f578fff55bcb"
     },
     {
+      "path": "evidence/clean-build-20261123/qemu-registration-fix.json",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/qemu-registration-fix.json",
+      "size": 557,
+      "sha256": "1271cbd651f4bd5176206c444b564e361aa5a8982a00c0eb6f162dce76df61e9"
+    },
+    {
+      "path": "evidence/clean-build-20261123/qemu-registration.log",
+      "kind": "source",
+      "source": "mainline/evidence/clean-build-20261123/qemu-registration.log",
+      "size": 185,
+      "sha256": "b43f263c36601118381b3b854a5c9ee210bf94b658e6fdd0e7f9dce04ee8a325"
+    },
+    {
       "path": "evidence/clean-build-20261123/source-components.json",
       "kind": "source",
       "source": "mainline/evidence/clean-build-20261123/source-components.json",
-      "size": 2184,
-      "sha256": "3d38c738dd1aa2982d10944c25c7c8309562f7489a781b916c2446bc59bf9993"
+      "size": 2237,
+      "sha256": "9e25e572898aa00cb9bc8ff881e4cca241c96ffb0dc7d387fc3a262ef4a9effb"
     },
     {
       "path": "evidence/clean-build-20261123/source-components.log",
@@ -3325,8 +3381,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8393838,
-      "sha256": "7c97cdcc4cf4d53ea6a86f003c419ba149fbb8f9d3136dbf45d4339eb7a46284"
+      "size": 8400094,
+      "sha256": "d801f91a1d62591ab98018c7f83d4562b963e88887b7a164588aa6881a1d18dc"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -6734,8 +6790,8 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 34583,
-      "sha256": "df9d137ee2e5255a970e687f39475d487df3946a75b749a32d848f92c7e2f9a8"
+      "size": 35486,
+      "sha256": "303e421652a0e2d07ee23d7641a10e2cc6c6de490868faf9ebd73bd716e5d444"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",

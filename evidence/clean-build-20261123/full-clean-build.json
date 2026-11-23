@@ -1,0 +1,53 @@
+{
+  "container_image_id": "sha256:013979e8c4b28fd8fd26369bba0019335c28caf607fa8f01de4a0216520693f5",
+  "network": "none",
+  "mounts": [
+    {
+      "destination": "/work",
+      "read_only": false
+    },
+    {
+      "destination": "/assets",
+      "read_only": true
+    },
+    {
+      "destination": "/recipe",
+      "read_only": true
+    }
+  ],
+  "started_at": "2026-11-23T05:11:55Z",
+  "host_entry": "bash build.sh NEW_OUTPUT_DIRECTORY",
+  "recipe_commit": "6a6f3b731af5822fe8cd98c6dde9eae889b9d3a3",
+  "download_cache": "SHA-256 verified published assets; prepopulated for this compilation test",
+  "old_sdk_or_existing_rootfs_mounted": false,
+  "date": "2026-11-23",
+  "finished_at": "2026-11-23T06:13:37Z",
+  "elapsed_seconds": 3702,
+  "exit_code": 0,
+  "source_components": "rebuilt",
+  "rootfs": "new mmdebstrap install from locked distribution packages",
+  "package_count": 1411,
+  "exact_package_versions": "passed",
+  "desktop_reference_assets": {
+    "checked": 149,
+    "differences": []
+  },
+  "target_machine_id": "empty; regenerate on boot",
+  "ssh_host_private_keys": "none; regenerate on boot",
+  "host_qemu_not_shipped": true,
+  "qemu_arm64_execution": "passed",
+  "gpt": "passed",
+  "e2fsck": "passed",
+  "boot_file_readback": "passed",
+  "xz_integrity": "passed",
+  "image": "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img",
+  "image_checksums": {
+    "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img": "1346457a02895e79a177c048a81b260425ff5cb59eace67302edb7429d5e42e0",
+    "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img.xz": "2500327e3dfdae600318fa4db54cb78b0103b91f36a3e15e029e27a0314cb951"
+  },
+  "full_build_log_sha256": "bb28b0b6e6a45a09182005bffac86157a3b22326bcbab67d93c66118368e0a1f",
+  "new_image_hardware_boot": "not tested",
+  "bare_new_host_vm_test": false,
+  "test_environment": "existing Ubuntu 24.04 host; new work directory; fixed offline Docker container; verified input cache",
+  "public_asset_full_download_test": "all four archives passed anonymously in a separate Windows curl run"
+}

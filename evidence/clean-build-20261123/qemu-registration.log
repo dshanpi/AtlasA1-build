@@ -1,0 +1,7 @@
+arm64: ok
+enabled
+interpreter /usr/libexec/qemu-binfmt/aarch64-binfmt-P
+flags: POF
+offset 0
+magic 7f454c460201010000000000000000000200b700
+mask ffffffffffffff00fffffffffffffffffeffffff

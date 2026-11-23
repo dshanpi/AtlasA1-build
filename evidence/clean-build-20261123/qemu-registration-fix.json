@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-23",
+  "issue": "The Ubuntu qemu-user-static package provides systemd binfmt rules, but no update-binfmts database entry. The first complete-entry attempt stopped before rootfs installation with exit code 2.",
+  "fix": "Register the pinned /usr/lib/binfmt.d/qemu-aarch64.conf directly and require the F flag; run arch-test arm64 before compilation.",
+  "smoke_test": "arm64: ok",
+  "fixed_recipe_commit": "6a6f3b731af5822fe8cd98c6dde9eae889b9d3a3",
+  "full_entry_retry": "passed",
+  "complete_build_evidence": "full-clean-build.json"
+}

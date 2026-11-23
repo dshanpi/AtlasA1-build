@@ -16,5 +16,6 @@
     "systemd-firstboot mask"
   ],
   "staged_validation": "passed",
-  "final_one_command_test": "in progress"
+  "final_one_command_test": "passed",
+  "complete_build_evidence": "full-clean-build.json"
 }

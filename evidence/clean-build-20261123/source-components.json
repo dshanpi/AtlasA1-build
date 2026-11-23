@@ -5,7 +5,7 @@
   "prebuilt_image_used": false,
   "source_component_build": "passed",
   "armbian_bsp_and_base_files_offline_build": "passed",
-  "complete_image_build": "pending",
+  "complete_image_build": "passed",
   "new_image_hardware_acceptance": "pending",
   "artifacts": [
     {
@@ -63,5 +63,6 @@
       "size": 279016,
       "sha256": "d371dc443d99306b21e85ab5ba9caf59df5b0132f01c7bfecae070d097b73747"
     }
-  ]
+  ],
+  "complete_build_evidence": "full-clean-build.json"
 }
