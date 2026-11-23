@@ -40,7 +40,7 @@ available=$(df --output=avail -B1 "$(dirname "$out")" | tail -1)
 mkdir -- "$out"
 cp "$repo/config/clean-build/inputs.lock.json" "$out/"
 git -C "$repo" rev-parse HEAD > "$out/recipe-commit.txt" 2>/dev/null || printf 'patch export\n' > "$out/recipe-commit.txt"
-sudo docker run --rm --privileged --network none --hostname atlas-builder \
+sudo docker run --rm --privileged --network none --hostname atlas-builder --add-host atlas-builder:127.0.0.1 \
     --mount "type=bind,src=$(realpath "$cache"),dst=/assets,readonly" \
     --mount "type=bind,src=$repo,dst=/recipe,readonly" \
     --mount "type=bind,src=$out,dst=/work" \

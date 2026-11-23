@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-23",
+  "source": "pinned armbian-config package; original non-APT desktop functions",
+  "copied_reference_rootfs": false,
+  "reference_assets_checked": 149,
+  "reference_asset_differences": [],
+  "original_configuration_replayed": [
+    "GNOME wallpaper and icon defaults",
+    "GDM branding",
+    "user skeleton",
+    "browser policy defaults",
+    "APT desktop package pins",
+    "NetworkManager desktop renderer",
+    "profile-sync-daemon settings",
+    "PAM configuration",
+    "systemd-firstboot mask"
+  ],
+  "staged_validation": "passed",
+  "final_one_command_test": "in progress"
+}

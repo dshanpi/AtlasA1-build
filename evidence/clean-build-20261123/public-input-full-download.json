@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-23",
+  "authenticated": false,
+  "initial_cache": "empty",
+  "downloader": "tools/fetch_atlasa1_inputs.py with curl",
+  "download_host": "Windows",
+  "all_assets_passed": true,
+  "assets": [
+    {
+      "name": "atlasa1-build-inputs-v1.tar.zst",
+      "bytes": 385084476,
+      "sha256": "dd5222298761418c6b5677a66553c6e264caf4b63ba471a8cb2828aa6d93482f",
+      "passed": true
+    },
+    {
+      "name": "atlasa1-arm64-packages-v1.tar.zst",
+      "bytes": 1010572410,
+      "sha256": "74326d5320c77a3d1155162ac0ae2f6b8d4158fc852d85040c65c6e2cb6fc59f",
+      "passed": true
+    },
+    {
+      "name": "atlasa1-upstream-sources-v2.tar.zst",
+      "bytes": 491801080,
+      "sha256": "48c78a820c48474f757e3dece1422fd0ea81c79c4443fa622eadef2f0571d38f",
+      "passed": true
+    },
+    {
+      "name": "atlasa1-builder-v3.tar.zst",
+      "bytes": 423687934,
+      "sha256": "f9000c3bfb9bbd749b69fded087f23cfb061f52e4d070721b90e795ed4aaa1a6",
+      "passed": true
+    }
+  ],
+  "linux_direct_network_test": "first asset passed; subsequent connection timed out; compilation test uses verified cached assets"
+}

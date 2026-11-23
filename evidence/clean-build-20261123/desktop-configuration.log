@@ -1,0 +1,8 @@
+Desktop Installing Armbian branding for gnome...
+removed '/etc/dconf/db/local.d/00-bg'
+'/dev/null' -> '/etc/dconf/db/local.d/00-bg'
+removed '/etc/dconf/profile/user'
+'/dev/null' -> '/etc/dconf/profile/user'
+_module_desktops_configure_networking: mode=build, skipping netplan apply
+_module_desktops_configure_fprintd: enabling fprintd PAM module
+FROZEN_ARMBIAN_DESKTOP_CONFIGURED

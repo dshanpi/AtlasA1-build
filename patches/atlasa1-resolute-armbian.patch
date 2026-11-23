@@ -8733,7 +8733,7 @@ index 0000000000000000000000000000000000000000..c0e8243384edf0627ecae663bd03eb22
 +CONFIG_CFG80211=m
 diff --git a/userpatches/atlasa1-release/build.sh b/userpatches/atlasa1-release/build.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..4f83e2cd0ce60c02c6bd56e73012ec29e09accdb
+index 0000000000000000000000000000000000000000..c51ae4029545c876e1f22b566770dcb5b6dd267c
 --- /dev/null
 +++ b/userpatches/atlasa1-release/build.sh
 @@ -0,0 +1,50 @@
@@ -8779,7 +8779,7 @@ index 0000000000000000000000000000000000000000..4f83e2cd0ce60c02c6bd56e73012ec29
 +mkdir -- "$out"
 +cp "$repo/config/clean-build/inputs.lock.json" "$out/"
 +git -C "$repo" rev-parse HEAD > "$out/recipe-commit.txt" 2>/dev/null || printf 'patch export\n' > "$out/recipe-commit.txt"
-+sudo docker run --rm --privileged --network none --hostname atlas-builder \
++sudo docker run --rm --privileged --network none --hostname atlas-builder --add-host atlas-builder:127.0.0.1 \
 +    --mount "type=bind,src=$(realpath "$cache"),dst=/assets,readonly" \
 +    --mount "type=bind,src=$repo,dst=/recipe,readonly" \
 +    --mount "type=bind,src=$out,dst=/work" \
@@ -19241,6 +19241,32 @@ index 0000000000000000000000000000000000000000..d11a543079d9160bb9dd509f3fac4d22
 @@ -0,0 +1,2 @@
 +Startup finished in 5.233s (kernel) + 15.821s (userspace) = 21.055s 
 +graphical.target reached after 15.654s in userspace.
+diff --git a/userpatches/atlasa1-release/evidence/clean-build-20261123/desktop-configuration-comparison.json b/userpatches/atlasa1-release/evidence/clean-build-20261123/desktop-configuration-comparison.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..ddd52ebc46ddee9f7fdec559cca6ca901f941b6b
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/clean-build-20261123/desktop-configuration-comparison.json
+@@ -0,0 +1,20 @@
++{
++  "date": "2026-11-23",
++  "source": "pinned armbian-config package; original non-APT desktop functions",
++  "copied_reference_rootfs": false,
++  "reference_assets_checked": 149,
++  "reference_asset_differences": [],
++  "original_configuration_replayed": [
++    "GNOME wallpaper and icon defaults",
++    "GDM branding",
++    "user skeleton",
++    "browser policy defaults",
++    "APT desktop package pins",
++    "NetworkManager desktop renderer",
++    "profile-sync-daemon settings",
++    "PAM configuration",
++    "systemd-firstboot mask"
++  ],
++  "staged_validation": "passed",
++  "final_one_command_test": "in progress"
++}
 diff --git a/userpatches/atlasa1-release/evidence/clean-build-20261123/kernel-config-comparison.json b/userpatches/atlasa1-release/evidence/clean-build-20261123/kernel-config-comparison.json
 new file mode 100644
 index 0000000000000000000000000000000000000000..3a16fa891e5a6826995492639401a290f2ba4d90
@@ -19732,6 +19758,47 @@ index 0000000000000000000000000000000000000000..f5be228a2634c9a580b208ce59d0d4d9
 +      "content_length": "1"
 +    }
 +  ]
++}
+diff --git a/userpatches/atlasa1-release/evidence/clean-build-20261123/public-input-full-download.json b/userpatches/atlasa1-release/evidence/clean-build-20261123/public-input-full-download.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee3fc527d7d084b3ce9f689e9985d18d212ff8ef
+--- /dev/null
++++ b/userpatches/atlasa1-release/evidence/clean-build-20261123/public-input-full-download.json
+@@ -0,0 +1,35 @@
++{
++  "date": "2026-11-23",
++  "authenticated": false,
++  "initial_cache": "empty",
++  "downloader": "tools/fetch_atlasa1_inputs.py with curl",
++  "download_host": "Windows",
++  "all_assets_passed": true,
++  "assets": [
++    {
++      "name": "atlasa1-build-inputs-v1.tar.zst",
++      "bytes": 385084476,
++      "sha256": "dd5222298761418c6b5677a66553c6e264caf4b63ba471a8cb2828aa6d93482f",
++      "passed": true
++    },
++    {
++      "name": "atlasa1-arm64-packages-v1.tar.zst",
++      "bytes": 1010572410,
++      "sha256": "74326d5320c77a3d1155162ac0ae2f6b8d4158fc852d85040c65c6e2cb6fc59f",
++      "passed": true
++    },
++    {
++      "name": "atlasa1-upstream-sources-v2.tar.zst",
++      "bytes": 491801080,
++      "sha256": "48c78a820c48474f757e3dece1422fd0ea81c79c4443fa622eadef2f0571d38f",
++      "passed": true
++    },
++    {
++      "name": "atlasa1-builder-v3.tar.zst",
++      "bytes": 423687934,
++      "sha256": "f9000c3bfb9bbd749b69fded087f23cfb061f52e4d070721b90e795ed4aaa1a6",
++      "passed": true
++    }
++  ],
++  "linux_direct_network_test": "first asset passed; subsequent connection timed out; compilation test uses verified cached assets"
 +}
 diff --git a/userpatches/atlasa1-release/evidence/clean-build-20261123/source-components.json b/userpatches/atlasa1-release/evidence/clean-build-20261123/source-components.json
 new file mode 100644
@@ -173398,14 +173465,25 @@ index 0000000000000000000000000000000000000000..ac9f5d5009669a990285bbf631368787
 +    prepare(parser.parse_args().inputs)
 diff --git a/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh b/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..705c3a3a809a4ebe5f0dcecca19fb8209bfd9993
+index 0000000000000000000000000000000000000000..58476f5b46547b97c0f8508ea94bf98043dabc18
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/run_atlasa1_clean_container.sh
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,30 @@
 +#!/usr/bin/env bash
 +set -euo pipefail
 +[[ $EUID == 0 && -d /assets && -d /recipe && -d /work ]]
 +[[ ! -e /work/inputs && ! -e /work/build ]] || { echo 'Use an empty output directory' >&2; exit 2; }
++# Ubuntu's qemu-user-static ships systemd binfmt rules, not the database used
++# by update-binfmts. Register the pinned container emulator directly and test
++# ARM64 execution before spending time compiling the source components.
++if ! mountpoint -q /proc/sys/fs/binfmt_misc; then mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc; fi
++if [[ -e /proc/sys/fs/binfmt_misc/qemu-aarch64 ]]; then
++    printf '%s\n' -1 > /proc/sys/fs/binfmt_misc/qemu-aarch64
++fi
++test -x /usr/libexec/qemu-binfmt/aarch64-binfmt-P
++grep '^:qemu-aarch64:' /usr/lib/binfmt.d/qemu-aarch64.conf > /proc/sys/fs/binfmt_misc/register
++grep -q '^flags:.*F' /proc/sys/fs/binfmt_misc/qemu-aarch64
++arch-test arm64
 +tar -I zstd -xf /assets/atlasa1-build-inputs-v1.tar.zst -C /work
 +tar -I zstd -xf /assets/atlasa1-upstream-sources-v2.tar.zst -C /work
 +tar -I zstd -xf /assets/atlasa1-arm64-packages-v1.tar.zst -C /work
@@ -173416,10 +173494,6 @@ index 0000000000000000000000000000000000000000..705c3a3a809a4ebe5f0dcecca19fb820
 +sudo -u ubuntu --preserve-env=ATLAS_TINA_SDK,ATLAS_SOURCE_CACHE,ATLAS_COMPONENTS_ONLY,JOBS \
 +    bash /recipe/tools/build_atlasa1_resolute.sh "$ATLAS_SOURCE_CACHE/armbian" /work/build --gnome-v47
 +sudo -u ubuntu bash /recipe/tools/build_atlasa1_frozen_bsp.sh "$ATLAS_SOURCE_CACHE" /work/bsp /recipe
-+if ! mountpoint -q /proc/sys/fs/binfmt_misc; then mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc; fi
-+# Register this image's fixed QEMU binary even if the host has an older entry.
-+update-binfmts --disable qemu-aarch64
-+update-binfmts --enable qemu-aarch64
 +python3 /recipe/tools/build_atlasa1_frozen_rootfs.py --packages /work/packages \
 +    --bsp /work/bsp/output/debs --output /work/ubuntu --recipe /recipe
 +bash /recipe/tools/assemble_atlasa1_frozen_image.sh /recipe /work/build /work/ubuntu/rootfs /work/image
