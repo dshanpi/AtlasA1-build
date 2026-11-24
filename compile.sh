@@ -4,10 +4,10 @@ set -euo pipefail
 recipe=$(cd "$(dirname "$0")" && pwd -P)
 cache=${ATLAS_DOWNLOAD_CACHE:-$HOME/.cache/atlasa1}
 framework=${ATLAS_ARMBIAN_DIR:-$recipe/output/armbian}
-for command in python3 git curl zstd; do
+for command in python3 git curl zstd aria2c; do
     if ! command -v "$command" >/dev/null; then
         sudo apt-get update >&2
-        sudo apt-get install -y python3 git curl zstd ca-certificates >&2
+        sudo apt-get install -y python3 git curl zstd aria2 ca-certificates >&2
         break
     fi
 done

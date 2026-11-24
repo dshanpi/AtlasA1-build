@@ -8789,7 +8789,7 @@ index 0000000000000000000000000000000000000000..c51ae4029545c876e1f22b566770dcb5
 +printf '\nImage and checksums: %s/image\n' "$out"
 diff --git a/userpatches/atlasa1-release/compile.sh b/userpatches/atlasa1-release/compile.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..38098218e7caac86eab47220c829fe642a6c8448
+index 0000000000000000000000000000000000000000..c858c72a04c33c718b060302866796e81e5ea172
 --- /dev/null
 +++ b/userpatches/atlasa1-release/compile.sh
 @@ -0,0 +1,35 @@
@@ -8799,10 +8799,10 @@ index 0000000000000000000000000000000000000000..38098218e7caac86eab47220c829fe64
 +recipe=$(cd "$(dirname "$0")" && pwd -P)
 +cache=${ATLAS_DOWNLOAD_CACHE:-$HOME/.cache/atlasa1}
 +framework=${ATLAS_ARMBIAN_DIR:-$recipe/output/armbian}
-+for command in python3 git curl zstd; do
++for command in python3 git curl zstd aria2c; do
 +    if ! command -v "$command" >/dev/null; then
 +        sudo apt-get update >&2
-+        sudo apt-get install -y python3 git curl zstd ca-certificates >&2
++        sudo apt-get install -y python3 git curl zstd aria2 ca-certificates >&2
 +        break
 +    fi
 +done
@@ -13771,10 +13771,10 @@ index 0000000000000000000000000000000000000000..f2a573bffa95cb621180aa24a3e2a49c
 +该入口要求新的备份目录，保存显示管理器、GDM 和账户会话设置；不重启、不停止当前桌面、不修改内核启动别名，也不启用自动登录。需要另行确保已安装与 GPU 模块匹配并经过实板测试的内核。脚本输出桌面配置的恢复命令。
 diff --git a/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..0814e9365513f45d204717e5a1254942d5420ad0
+index 0000000000000000000000000000000000000000..86e7d4484f2472fceecc68833c4c43d40f61d3c4
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,86 @@
 +# Armbian 原生构建入口
 +
 +开发中的入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
@@ -13851,9 +13851,16 @@ index 0000000000000000000000000000000000000000..0814e9365513f45d204717e5a1254942
 +
 +配置识别、补丁安装及辅助工具测试通过，并不表示新镜像已经实板启动。
 +官方内核、PowerVR 模块和 U-Boot 编译打包已通过。
++单文件补丁重建的 Linux、U-Boot 和 PowerVR 源码树与原生构建输入完全一致。
 +`kernel-config` 菜单已实测保存退出，保存的配置通过重装保留检查。
 +Wi-Fi、蓝牙及浏览器高帧率播放的现有限制不会因更换构建入口而消失。
 +本次原生构建记录将单独列出，旧版镜像验收不能代替它。
++
++本次验证使用独立构建目录，并复用校验过的公开下载缓存。
++GitHub 连接缓慢，部分官方输入由另一台主机下载、校验后传入。
++后续验证使用 `OFFLINE_WORK=yes` 复用源码缓存；根文件系统安装仍访问软件源。
++正常入口会自动联网获取这些输入，无需另一台主机或私有 SDK。
++无缓存主机全程无人值守构建尚未验证。
 diff --git a/userpatches/atlasa1-release/docs/UBUNTU_26_04.md b/userpatches/atlasa1-release/docs/UBUNTU_26_04.md
 new file mode 100644
 index 0000000000000000000000000000000000000000..608da58469de619ff7bcf3f2591d1d8deed226bb
@@ -171144,10 +171151,10 @@ index 0000000000000000000000000000000000000000..8561a30809fc0a8502daa937bf10446a
 +         int fd = accept4(server, NULL, NULL, SOCK_CLOEXEC);
 diff --git a/userpatches/atlasa1-release/tools/browser/omx_scale_candidate/build_omx_panel.sh b/userpatches/atlasa1-release/tools/browser/omx_scale_candidate/build_omx_panel.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..6b91e1e01e0291831da6c4690efd15ee65d7250b
+index 0000000000000000000000000000000000000000..a1ca33451e09b5337b9785153e8eb55d20a3e263
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/browser/omx_scale_candidate/build_omx_panel.sh
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,46 @@
 +#!/bin/bash
 +# Pass --service-only as the second argument when the player has its own FFmpeg build.
 +set -euo pipefail
@@ -171188,7 +171195,8 @@ index 0000000000000000000000000000000000000000..6b91e1e01e0291831da6c4690efd15ee
 +cc "${ccflags[@]}" -g -fsanitize=address,undefined -no-pie "$stage/tree/tests/test_omx_panel.c" -o "$stage/transport-host"
 +"$cross" "${ccflags[@]}" "$stage/tree/tests/test_omx_panel.c" -o "$stage/transport-arm"
 +"$stage/transport-host" > "$stage/transport-host.log" 2>&1
-+qemu-aarch64-static -L "$sysroot" "$stage/transport-arm" > "$stage/transport-arm.log" 2>&1
++# Match the board's little cores; Armbian exports the older Cortex-A53 model.
++QEMU_CPU=cortex-a55 qemu-aarch64-static -L "$sysroot" "$stage/transport-arm" > "$stage/transport-arm.log" 2>&1
 +tail -n1 "$stage"/transport-{host,arm}.log
 +cd "$stage"
 +sha256sum cedar-broker libcedar_backend.so
@@ -185068,10 +185076,10 @@ index 0000000000000000000000000000000000000000..4684ca2a9040d83644ac25937d5c1266
 +CONFIG_FUNCTION_GRAPH_TRACER=y
 diff --git a/userpatches/atlasa1-release/userpatches/config/sources/families/atlasa1.conf b/userpatches/atlasa1-release/userpatches/config/sources/families/atlasa1.conf
 new file mode 100644
-index 0000000000000000000000000000000000000000..dbf325646a5d253003e0b0474cb11fd78cef7cf9
+index 0000000000000000000000000000000000000000..c3b61cf3213cb41be4a2cc5b39ff536856961138
 --- /dev/null
 +++ b/userpatches/atlasa1-release/userpatches/config/sources/families/atlasa1.conf
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +ARCH="arm64"
 +KERNEL_MAJOR_MINOR="6.18"
@@ -185089,6 +185097,7 @@ index 0000000000000000000000000000000000000000..dbf325646a5d253003e0b0474cb11fd7
 +BOOTSIZE=0
 +IMAGE_PARTITION_TABLE="gpt"
 +ROOTFS_TYPE="ext4"
++INCLUDE_HOME_DIR="yes"
 +KERNEL_GIT="shallow"
 +SKIP_EXTERNAL_TOOLCHAINS="yes"
 +
@@ -185109,10 +185118,10 @@ index 0000000000000000000000000000000000000000..240aab807fb6e7751363e2aadd367c5f
 +EndSection
 diff --git a/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh b/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh
 new file mode 100644
-index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a369a9ee1
+index 0000000000000000000000000000000000000000..bb9e34293edb9a0c31333683acd0291e455b9090
 --- /dev/null
 +++ b/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,113 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +# AtlasA1 hooks for the official Armbian build framework.
 +
@@ -185121,6 +185130,10 @@ index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a
 +    declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
 +    [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'
 +    declare -g ATL_CACHE="${SRC}/cache/atlasa1"
++    local input_identity
++    input_identity=$(sha256sum "$ATL_RECIPE/config/clean-build/inputs.lock.json")
++    # Offline builds skip host_dependencies_ready, but still need the cached input path.
++    declare -g ATL_INPUTS="$ATL_CACHE/inputs-${input_identity:0:16}"
 +    declare -g ATL_IDENTITY
 +    ATL_IDENTITY=$(python3 "$ATL_RECIPE/tools/prepare_atlasa1_native_sources.py" --identity)
 +    declare -g ATL_SOURCES="$ATL_CACHE/sources-${ATL_IDENTITY:0:16}"
@@ -185210,6 +185223,7 @@ index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a
 +}
 +
 +function post_repo_customize_image__atlasa1() {
++    [[ -f "$ATL_INPUTS/verified-inputs.json" ]] || exit_with_error 'AtlasA1 inputs are missing. Run once online to prepare them.'
 +    run_host_command_logged bash "$ATL_RECIPE/tools/configure_atlasa1_native_rootfs.sh" "$SDCARD" \
 +        "$ATL_INPUTS" "$ATL_CACHE" "${BUILD_DESKTOP:-no}" "${DESKTOP_ENVIRONMENT:-console}"
 +}
@@ -185239,10 +185253,10 @@ index 0000000000000000000000000000000000000000..9a99c9baa340453b461b27a19af5e5f2
 +enable_extension "atlasa1"
 diff --git a/userpatches/config/sources/families/atlasa1.conf b/userpatches/config/sources/families/atlasa1.conf
 new file mode 100644
-index 0000000000000000000000000000000000000000..dbf325646a5d253003e0b0474cb11fd78cef7cf9
+index 0000000000000000000000000000000000000000..c3b61cf3213cb41be4a2cc5b39ff536856961138
 --- /dev/null
 +++ b/userpatches/config/sources/families/atlasa1.conf
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +ARCH="arm64"
 +KERNEL_MAJOR_MINOR="6.18"
@@ -185260,6 +185274,7 @@ index 0000000000000000000000000000000000000000..dbf325646a5d253003e0b0474cb11fd7
 +BOOTSIZE=0
 +IMAGE_PARTITION_TABLE="gpt"
 +ROOTFS_TYPE="ext4"
++INCLUDE_HOME_DIR="yes"
 +KERNEL_GIT="shallow"
 +SKIP_EXTERNAL_TOOLCHAINS="yes"
 +
@@ -188118,10 +188133,10 @@ index 0000000000000000000000000000000000000000..4684ca2a9040d83644ac25937d5c1266
 +CONFIG_FUNCTION_GRAPH_TRACER=y
 diff --git a/userpatches/extensions/atlasa1.sh b/userpatches/extensions/atlasa1.sh
 new file mode 100644
-index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a369a9ee1
+index 0000000000000000000000000000000000000000..bb9e34293edb9a0c31333683acd0291e455b9090
 --- /dev/null
 +++ b/userpatches/extensions/atlasa1.sh
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,113 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +# AtlasA1 hooks for the official Armbian build framework.
 +
@@ -188130,6 +188145,10 @@ index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a
 +    declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
 +    [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'
 +    declare -g ATL_CACHE="${SRC}/cache/atlasa1"
++    local input_identity
++    input_identity=$(sha256sum "$ATL_RECIPE/config/clean-build/inputs.lock.json")
++    # Offline builds skip host_dependencies_ready, but still need the cached input path.
++    declare -g ATL_INPUTS="$ATL_CACHE/inputs-${input_identity:0:16}"
 +    declare -g ATL_IDENTITY
 +    ATL_IDENTITY=$(python3 "$ATL_RECIPE/tools/prepare_atlasa1_native_sources.py" --identity)
 +    declare -g ATL_SOURCES="$ATL_CACHE/sources-${ATL_IDENTITY:0:16}"
@@ -188219,6 +188238,7 @@ index 0000000000000000000000000000000000000000..60910535c93bba97244419c44c9d080a
 +}
 +
 +function post_repo_customize_image__atlasa1() {
++    [[ -f "$ATL_INPUTS/verified-inputs.json" ]] || exit_with_error 'AtlasA1 inputs are missing. Run once online to prepare them.'
 +    run_host_command_logged bash "$ATL_RECIPE/tools/configure_atlasa1_native_rootfs.sh" "$SDCARD" \
 +        "$ATL_INPUTS" "$ATL_CACHE" "${BUILD_DESKTOP:-no}" "${DESKTOP_ENVIRONMENT:-console}"
 +}

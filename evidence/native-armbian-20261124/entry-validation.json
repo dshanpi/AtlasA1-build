@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-24",
+  "upstream_revision": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "recipe_code_revision": "27e1b2395135917cb8e47516c54fc8c8346c2460",
+  "user_checkout": "/home/ubuntu/t736/AtlasA1-build",
+  "user_checkout_board_menu": "AtlasA1 / T736 observed; test cancelled before selecting a board",
+  "kernel_config_menu_exit": 0,
+  "kernel_configuration_preserved_after_install": true,
+  "image_configuration": "Repository default restored after the menu test",
+  "patch_route": "Final patch applied to clean pinned official checkout; installer and config-dump-json passed",
+  "native_unit_tests": 5,
+  "hardware_boot": "not tested",
+  "include_home_dir": "yes",
+  "patch_source_tree_comparison": {
+    "linux": "d374c89cf2d72ed061e616f90951c874c62eee4d",
+    "u-boot": "cecdcb9675f14b64bc25c9e81a783b5cd9688128",
+    "pvr": "941d4658644367d68cb1150e713396f96e5901a8"
+  },
+  "patch_source_tree_result": "All three trees match the recipe used by the native build"
+}

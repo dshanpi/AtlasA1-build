@@ -1,0 +1,25 @@
+Cloning into '/home/ubuntu/t736/AtlasA1-native-patch-final-20261124'...
+HEAD is now at 2d3dd98 rockchip64: orangepi5: U-Boot for NVMe on PCB v1.3.2
+/home/ubuntu/t736/AtlasA1-native-20261124/patches/atlasa1-resolute-armbian.patch:3863: trailing whitespace.
+ 
+/home/ubuntu/t736/AtlasA1-native-20261124/patches/atlasa1-resolute-armbian.patch:3872: space before tab in indent.
+ 	  module will be called litex_mmc.
+/home/ubuntu/t736/AtlasA1-native-20261124/patches/atlasa1-resolute-armbian.patch:3873: trailing whitespace.
+ 
+/home/ubuntu/t736/AtlasA1-native-20261124/patches/atlasa1-resolute-armbian.patch:3874: space before tab in indent.
+ 	  If unsure, say N.
+/home/ubuntu/t736/AtlasA1-native-20261124/patches/atlasa1-resolute-armbian.patch:4181: space before tab in indent.
+ 	select PINCTRL_SUNXI
+warning: squelched 10179 whitespace errors
+warning: 10184 lines add whitespace errors.
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.016s
+
+OK
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+Keeping user kernel configuration: /tmp/tmpl1mvxca6/armbian/userpatches/config/kernel/linux-atlasa1-current.config
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+Keeping user kernel configuration: /tmp/tmpl1mvxca6/armbian/userpatches/config/kernel/linux-atlasa1-current.config
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config

@@ -6,6 +6,10 @@ function post_family_config__atlasa1() {
     declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
     [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'
     declare -g ATL_CACHE="${SRC}/cache/atlasa1"
+    local input_identity
+    input_identity=$(sha256sum "$ATL_RECIPE/config/clean-build/inputs.lock.json")
+    # Offline builds skip host_dependencies_ready, but still need the cached input path.
+    declare -g ATL_INPUTS="$ATL_CACHE/inputs-${input_identity:0:16}"
     declare -g ATL_IDENTITY
     ATL_IDENTITY=$(python3 "$ATL_RECIPE/tools/prepare_atlasa1_native_sources.py" --identity)
     declare -g ATL_SOURCES="$ATL_CACHE/sources-${ATL_IDENTITY:0:16}"
@@ -95,6 +99,7 @@ function create_partition_table__atlasa1() {
 }
 
 function post_repo_customize_image__atlasa1() {
+    [[ -f "$ATL_INPUTS/verified-inputs.json" ]] || exit_with_error 'AtlasA1 inputs are missing. Run once online to prepare them.'
     run_host_command_logged bash "$ATL_RECIPE/tools/configure_atlasa1_native_rootfs.sh" "$SDCARD" \
         "$ATL_INPUTS" "$ATL_CACHE" "${BUILD_DESKTOP:-no}" "${DESKTOP_ENVIRONMENT:-console}"
 }

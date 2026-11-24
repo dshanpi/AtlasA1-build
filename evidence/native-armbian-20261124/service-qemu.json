@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-24",
+  "host": "Ubuntu 24.04 amd64",
+  "qemu": "8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.17)",
+  "failure": "Armbian exports QEMU_CPU=cortex-a53; the Tina-linked transport test exits 132 with SIGILL",
+  "same_binary_cpu_comparison": {
+    "cortex-a53": 132,
+    "cortex-a55": 0,
+    "max": 0
+  },
+  "fix": "Run this target transport test with QEMU_CPU=cortex-a55, matching the board's little cores",
+  "rebuilt_service_with_inherited_cortex_a53": "passed host ASan/UBSan and target transport tests",
+  "cedar_broker_sha256": "2a2790b05dd55a7463e8b11f6eed165cb4f2d904906c5ae8957527054de04f98",
+  "libcedar_backend_sha256": "2185f2019b4aea60933c34d387d290e808848e420f8899b0b401783293145583",
+  "log": "service-qemu-check.log",
+  "scope": "Software transport regression; does not validate hardware decoding or display"
+}
