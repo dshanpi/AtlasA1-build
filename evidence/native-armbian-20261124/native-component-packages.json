@@ -1,0 +1,66 @@
+{
+  "kernel_exit": 0,
+  "uboot_exit": 0,
+  "kernel_release": "6.18.63-current-atlasa1",
+  "pvr_vermagic": "6.18.63-current-atlasa1 SMP mod_unload aarch64",
+  "boot_package": {
+    "root_partuuid": "a0085546-4166-744a-a353-fca9272b8e48",
+    "spl_sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea",
+    "boot_package_sha256": "2d11950bd5bc66259fb62784ec2b2bd6d14220e138885fb8e4d5040256ad6e5c",
+    "package_start_lba": 24576,
+    "components": [
+      {
+        "name": "stage64.bin",
+        "lba": 24577,
+        "address": "0x47000000",
+        "size": 5040,
+        "sha256": "44aeb8e56f64f2ccd80a1cd286460eda6d0232f9cc1e82618866826b23298535",
+        "crc32": "caa77399"
+      },
+      {
+        "name": "bl31.bin",
+        "lba": 24587,
+        "address": "0x48000000",
+        "size": 53924,
+        "sha256": "81f53c1d1f571c74bd907317d813a5ed56c64382479caa75edd3cec43ada6dc6",
+        "crc32": "aa2158fa"
+      },
+      {
+        "name": "u-boot.bin",
+        "lba": 24693,
+        "address": "0x52000000",
+        "size": 265704,
+        "sha256": "bb2b0af4fe8467109d9ca9bf8c74cf95ed0d1292f5e0317fcbea2ede482dcbb6",
+        "crc32": "13cf2e9c"
+      }
+    ],
+    "hardware_tested": false
+  },
+  "debs": [
+    {
+      "name": "linux-dtb-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb",
+      "sha256": "6a6e42d2dc3c443b95b7108341dd3f7e4037e7a81196f76853c4f44e2cf1bab9",
+      "bytes": 1659072
+    },
+    {
+      "name": "linux-headers-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb",
+      "sha256": "ea6897196003abd766ec50bc8e0a2fb42b7e9f3dc41121f9975c6e2144f9cab8",
+      "bytes": 102891712
+    },
+    {
+      "name": "linux-image-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb",
+      "sha256": "2192798e66fc8e111a4c0071dca3809d25b6944bcdd09b8d7fc25cb2c31b6682",
+      "bytes": 43018432
+    },
+    {
+      "name": "linux-libc-dev-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb",
+      "sha256": "ac97c337a02e47529ac3987dce905125dbe18ed6bfb3700e13d38f1a784c9a98",
+      "bytes": 7884992
+    },
+    {
+      "name": "linux-u-boot-atlasa1-current_26.11.0-trunk_arm64__1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a.deb",
+      "sha256": "bab9b0229438c1f813850b0804462b984ae182ec9d54a7acae06c992ebf6d24d",
+      "bytes": 921792
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "requirements_sha256": "0e46d9b1faeccfc11f749c9ea6494bb673f0fac0c340b0c48b24f3c4e3064f6c",
+  "pinned_versions": {
+    "pip": "26.3",
+    "setuptools": "84.2.1",
+    "pyelftools": "0.33",
+    "unidiff": "1.0.1",
+    "GitPython": "3.2.1",
+    "gitdb": "4.0.12",
+    "smmap": "5.0.3",
+    "unidecode": "1.4.0",
+    "coloredlogs": "15.0.1",
+    "PyYAML": "6.0.3",
+    "oras": "0.2.43",
+    "Jinja2": "3.1.6",
+    "rich": "15.0.0",
+    "Pygments": "2.21.0",
+    "dtschema": "2026.9",
+    "yamllint": "1.38.0"
+  },
+  "pylibfdt_commit": "f48b96548e2d8baef79ae2d5a2a2f8de3382260f",
+  "cache_identity": "1484b14cc187abc86c943707cc525a619944cfb0ab0bf6e6a3ed4dcd47c2fb51",
+  "network_fallback": "Same public Git mirror transferred after TLS failures; original requirements unchanged"
+}

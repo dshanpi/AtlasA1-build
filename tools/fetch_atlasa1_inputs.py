@@ -16,10 +16,15 @@ def sha(path):
     return h.hexdigest()
 
 
-def fetch(lock, directory):
+def fetch(lock, directory, names=None):
     data = json.loads(lock.read_text())
     directory.mkdir(parents=True, exist_ok=True)
+    selected = set(names or [])
+    if selected - {item['name'] for item in data['assets']}:
+        raise ValueError('Unknown input asset')
     for item in data['assets']:
+        if selected and item['name'] not in selected:
+            continue
         name = item['name']
         if Path(name).name != name or name in ('.', '..'):
             raise ValueError('Invalid asset name')
@@ -57,5 +62,6 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('lock', type=Path)
     p.add_argument('cache', type=Path)
+    p.add_argument('--asset', action='append', help='Fetch only this named asset; repeat as needed')
     a = p.parse_args()
-    fetch(a.lock, a.cache)
+    fetch(a.lock, a.cache, a.asset)

@@ -57,15 +57,12 @@ def build_baseline(args, stage):
                     'PLAT=sun60i_a733', 'DEBUG=1', 'LOG_LEVEL=40', 'PRELOADED_BL33_BASE=0x52000000',
                     'BUILD_STRING=t736-independent-candidate-'+TFA_COMMIT[:8],
                     'BUILD_MESSAGE_TIMESTAMP="06:57:46, Nov 13 2026"', 'bl31'], check=True)
-    subprocess.run(['sh', 'tools/build_source_uboot_cpu_d.sh'], cwd=stage, check=True,
-                   env=dict(os.environ, T736_JOBS=str(args.jobs)))
+    if not getattr(args, 'uboot_binary', None):
+        subprocess.run(['sh', 'tools/build_source_uboot_cpu_d.sh'], cwd=stage, check=True,
+                       env=dict(os.environ, T736_JOBS=str(args.jobs)))
 
 
-def build_uboot(stage, work, jobs):
-    cpud = stage/'build/source-uboot-cpu-d'
-    out = work/'uboot-release'
-    out.mkdir()
-    config = (cpud/'output/.config').read_text()
+def release_boot_command():
     base_args = f'setenv bootargs earlycon=uart8250,mmio32,0x02500000 console=ttyS0,115200 root=PARTUUID={ROOT_ID} rootwait rw clk_ignore_unused'
     fast_args = ('t736_mmc_pio.enable_hs200=1 t736_mmc_pio.hs200_max_hz=200000000 '
                  't736_mmc_pio.enable_hs400=1 t736_mmc_pio.hs400_max_hz=200000000 '
@@ -77,6 +74,15 @@ def build_uboot(stage, work, jobs):
                '/boot/initrd.img-6.18.63-t736-armbian; then setenv rdsize ${filesize}; '
                'if ext4load mmc 0:4 0x63000000 /boot/dtb/allwinner/t736-mainline-bringup.dtb; '
                'then booti 0x60000000 0x64000000:${rdsize} 0x63000000; fi; fi')
+    return command
+
+
+def build_uboot(stage, work, jobs):
+    cpud = stage/'build/source-uboot-cpu-d'
+    out = work/'uboot-release'
+    out.mkdir()
+    config = (cpud/'output/.config').read_text()
+    command = release_boot_command()
     lines = [s for s in config.splitlines() if s.startswith('CONFIG_BOOTCOMMAND=')]
     if len(lines) != 1:
         raise ValueError('expected exactly one CPU-D boot command')
@@ -134,6 +140,7 @@ def main():
     for name in ('uboot-archive', 'tfa-archive', 'ddr-library', 'work'):
         ap.add_argument('--'+name, type=Path, required=True)
     ap.add_argument('--jobs', type=int, default=4)
+    ap.add_argument('--uboot-binary', type=Path, help='Use U-Boot compiled by the official Armbian stage')
     args = ap.parse_args()
     if args.jobs < 1:
         ap.error('--jobs must be positive')
@@ -141,7 +148,10 @@ def main():
     work.mkdir(parents=True)
     stage = work/'boot-project'
     build_baseline(args, stage)
-    pack(stage, work, build_uboot(stage, work, args.jobs))
+    binary = args.uboot_binary.resolve(strict=True) if args.uboot_binary else build_uboot(stage, work, args.jobs)
+    if args.uboot_binary and ('bootcmd='+release_boot_command()).encode()+b'\0' not in binary.read_bytes():
+        raise ValueError('Armbian U-Boot boot command differs from the board layout')
+    pack(stage, work, binary)
 
 
 if __name__ == '__main__':

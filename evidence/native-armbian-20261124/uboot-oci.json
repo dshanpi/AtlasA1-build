@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.unknown.config.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.unknown.layer.v1+tar",
+      "digest": "sha256:cc489599f2c25eec2efaecae6801bc1b5c1bdc0d560fba3c5f09ede176ae4161",
+      "size": 409989120,
+      "annotations": {
+        "org.opencontainers.image.title": "u-boot-complete.git.tar"
+      }
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.created": "2026-11-24T13:13:53Z"
+  }
+}

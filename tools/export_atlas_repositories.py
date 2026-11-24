@@ -125,6 +125,8 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
     _file(ROOT, destination, 'tools/verify_source_manifest.py', 'tools/verify_source_manifest.py', records)
     target = destination / "README.md"
     readme = GENERATED[repo]
+    if repo == 'AtlasA1-build':
+        readme = readme.replace('# AtlasA1-build\n', '# AtlasA1-build\n\n原生 Armbian 入口：运行 `./compile.sh`，在官方菜单选择 `AtlasA1 / T736`。内核配置使用 `./compile.sh BOARD=atlasa1 BRANCH=current kernel-config`。内核、PowerVR 和 U-Boot 编译已通过，完整 GNOME 镜像仍在验证。支持范围、非交互命令和官方源码加单文件补丁的方法见 [原生构建说明](docs/NATIVE_ARMBIAN_BUILD.md)。\n', 1)
     if repo in {'AtlasA1-build', 'AtlasA1-media'}:
         readme += '\nGNOME 50 / Wayland v47 完整镜像已发布，并于 2026-11-22 完成 eMMC 整盘写入、8 GiB SHA-256 回读和断电启动。PowerVR WebRender 与 Cedar 硬解已接通，但不能宣称浏览器 1080p60 或全链路零丢帧通过。主分支另修复首次显示配置与自动校时；已发布 RC1 镜像保持原始字节，安装后修复和实测限制见 [发行记录](https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.21-ubuntu26.04-gnome-v47-rc1)。\n'
     target.write_text(readme, encoding="utf-8", newline="\n")
@@ -175,7 +177,14 @@ def _export_gnome_wayland(destination: Path, records: dict[str, tuple[Path, str]
 def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     records: dict[str, tuple[Path, str]] = {}
     _file(ROOT, destination, 'build.sh', 'build.sh', records)
+    _file(ROOT, destination, 'compile.sh', 'compile.sh', records)
+    _file(ROOT, destination, 'docs/NATIVE_ARMBIAN_BUILD.md', 'docs/NATIVE_ARMBIAN_BUILD.md', records)
+    _file(ROOT, destination, 'tools/validation/firefox_media_debug_snapshot.js',
+          'tools/validation/firefox_media_debug_snapshot.js', records)
+    _tree(ROOT, destination, 'userpatches/extensions', 'userpatches/extensions', records)
     _tree(ROOT, destination, 'evidence/clean-build-20261123', 'evidence/clean-build-20261123', records)
+    _tree(ROOT, destination, 'evidence/native-armbian-20261124', 'evidence/native-armbian-20261124', records)
+    _tree(ROOT, destination, 'evidence/independent-host-build-20261124', 'evidence/independent-host-build-20261124', records)
     _file(ROOT, destination, 'docs/FRESH_HOST_BUILD.md', 'docs/FRESH_HOST_BUILD.md', records)
     _tree(ROOT, destination, 'evidence/gnome-release-20261121', 'evidence/gnome-release-20261121', records)
     _tree(ROOT, destination, 'evidence/wireless-path-20261120', 'evidence/wireless-path-20261120', records)

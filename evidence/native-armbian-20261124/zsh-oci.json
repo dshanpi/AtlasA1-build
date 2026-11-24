@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "artifactType": "application/vnd.unknown.artifact.v1",
+  "config": {
+    "mediaType": "application/vnd.oci.empty.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2,
+    "data": "e30="
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.unknown.layer.v1+tar",
+      "digest": "sha256:84678b3af2d40ad462fbb16b55935530ebf7760a0f5664abc2d41249ef051e78",
+      "size": 17164884,
+      "annotations": {
+        "org.opencontainers.image.title": "armbian-zsh_1-SA4b65-Ba2a8-R448a_all.deb"
+      }
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.created": "2026-08-30T17:42:30Z",
+    "org.opencontainers.image.description": "armbian-zsh - 1-SA4b65-Ba2a8-R448a - Armbian armbian-zsh git revision \"4b657407c98bbc8830ae66c2ac7ff3d737c55a83\" framework bash hash \"a2a889aa986dcd8c\" - type: deb"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "gpt": "passed",
+  "boot_package_crc": "passed",
+  "loop_write_readback": "passed",
+  "source": "previously verified reference boot payload; native U-Boot still pending",
+  "hardware_written": false
+}

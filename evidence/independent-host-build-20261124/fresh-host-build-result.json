@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-24",
+  "test": "second independent Ubuntu 24.04 amd64 host; exact published source; empty work directory; offline pinned container",
+  "recipe_commit": "9814b9ad4c208e92d958ef559f405963ee767325",
+  "host_entry": "bash build.sh",
+  "started": "2026-11-24T11:39:26+00:00",
+  "finished": "2026-11-24T13:22:36+00:00",
+  "elapsed_seconds": 6190,
+  "exit_code": 0,
+  "container": {
+    "container": "34ff9cd243029a2d80654acce1ae7d742244bb5181d0d0dd2b41696dbed69934",
+    "image": "sha256:013979e8c4b28fd8fd26369bba0019335c28caf607fa8f01de4a0216520693f5",
+    "started": "2026-11-24T11:40:00.955159743Z",
+    "network": "none",
+    "mounts": [
+      {
+        "source": "/home/ubuntu/.cache/atlasa1",
+        "destination": "/assets",
+        "read_only": true
+      },
+      {
+        "source": "/home/ubuntu/t736/AtlasA1-build",
+        "destination": "/recipe",
+        "read_only": true
+      },
+      {
+        "source": "/home/ubuntu/t736/AtlasA1-build/output/clean-gnome",
+        "destination": "/work",
+        "read_only": false
+      }
+    ]
+  },
+  "input_acquisition": {
+    "first_input": "downloaded by original unmodified build.sh from public GitHub",
+    "other_three_inputs": "same public release assets, anonymously downloaded previously, SHA verified on this host after LAN transfer",
+    "original_download_pid": 649178,
+    "original_entry_pid": 642130,
+    "download_only_run": "terminated due to slow tail; no compilation started",
+    "build_source_unchanged": true
+  },
+  "package_versions_match": true,
+  "installed_package_count": 1411,
+  "checksums_verified": {
+    "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img": {
+      "sha256": "05be08344ded99c1de8ac8ac7275c5acedc0df8bad6215983348a18cadaf00bf",
+      "size": 8589934592
+    },
+    "Armbian_26.11_AtlasA1_Ubuntu-26.04_GNOME_clean_arm64.img.xz": {
+      "sha256": "83b069eacf91ec7f0480719c81e169fa0c09f872b4baf170b28326610897fc34",
+      "size": 1039749956
+    }
+  },
+  "target_machine_id_empty": true,
+  "target_ssh_host_private_keys_absent": true,
+  "host_qemu_not_shipped": true,
+  "image_hardware_boot": "not tested",
+  "bare_fresh_os_dependency_install": "not tested; host already had Docker and tools",
+  "log_sha256": "eea84cb21a92ced9ed2b8bf52acd62f60f84108bb69834974a8e195b3e3629c4"
+}

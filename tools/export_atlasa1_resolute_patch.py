@@ -9,6 +9,15 @@ BASE = Path(__file__).resolve().parents[1]
 PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
+    'tools/hash_atlasa1_native_recipe.py',
+    'docs/NATIVE_ARMBIAN_BUILD.md',
+    'tests/test_atlasa1_native_image.py', 'tests/test_atlasa1_native_install.py',
+    'compile.sh', 'tools/prepare_atlasa1_native_inputs.py', 'tools/prepare_atlasa1_native_sources.py',
+    'tools/install_atlasa1_armbian.py', 'tools/build_atlasa1_native_pvr.sh',
+    'tools/build_atlasa1_native_media.sh', 'tools/configure_atlasa1_native_rootfs.sh',
+    'tools/atlasa1_native_image.py', 'userpatches/config/boards/atlasa1.conf',
+    'userpatches/config/sources/families/atlasa1.conf', 'userpatches/config/kernel/linux-atlasa1-current.config',
+    'userpatches/extensions/atlasa1.sh', 'patches/u-boot/media-v28-replay/*',
     'evidence/clean-build-20261123/*.json',
     'build.sh', 'tools/fetch_atlasa1_inputs.py', 'tools/build_atlasa1_frozen_bsp.sh', 'tests/test_frozen_inputs.py',
     'tools/build_atlasa1_frozen_rootfs.py', 'tools/assemble_atlasa1_frozen_image.sh',
@@ -121,9 +130,12 @@ def sources():
 def export(output):
     with output.open('wb') as patch:
         patch.write((BASE / BOARD_PATCH).read_bytes().replace(b'\r\n', b'\n'))
-        for path in sources():
+        paths = [(path, f'{PREFIX}/{path.relative_to(BASE).as_posix()}') for path in sources()]
+        native = ['config/boards/atlasa1.conf', 'config/sources/families/atlasa1.conf',
+                  'config/kernel/linux-atlasa1-current.config', 'extensions/atlasa1.sh']
+        paths.extend((BASE/'userpatches'/name, 'userpatches/'+name) for name in native)
+        for path, name in paths:
             rel = path.relative_to(BASE).as_posix()
-            name = f'{PREFIX}/{rel}'
             data = path.read_bytes().replace(b'\r\n', b'\n')
             if b'\x00' in data:
                 raise ValueError(f'Unexpected binary input {rel}')

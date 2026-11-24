@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "artifactType": "application/vnd.unknown.artifact.v1",
+  "config": {
+    "mediaType": "application/vnd.oci.empty.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2,
+    "data": "e30="
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.unknown.layer.v1+tar",
+      "digest": "sha256:614d8212281a8324718be02c48bcbf302ceb16d65812814fad5f3324eb717550",
+      "size": 174310708,
+      "annotations": {
+        "org.opencontainers.image.title": "armbian-firmware_1-SAdb8c-Ba2de-R448a_all.deb"
+      }
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.created": "2026-11-18T12:18:18Z",
+    "org.opencontainers.image.description": "armbian-firmware - 1-SAdb8c-Ba2de-R448a - Armbian firmware git revision \"db8cc456dad5ad511b04f8a5130acda392cad20b\" framework bash hash \"a2de7e90a4d771af\" - type: deb",
+    "org.opencontainers.image.source": "https://github.com/armbian/os"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "linux_board_files": 325,
+  "pvr_board_files": 17,
+  "comparison": "byte-identical to frozen v47 source tree",
+  "kernel_config": "controlled by official Armbian and user menu; not asserted identical",
+  "hardware_boot": "not tested"
+}
