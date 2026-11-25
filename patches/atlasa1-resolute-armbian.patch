@@ -5299,6 +5299,19 @@ index 0000000..0a64d55
 ++#define __T736_BRINGUP_H
 ++#define CFG_SYS_SDRAM_BASE 0x40000000
 ++#endif
+diff --git a/lib/functions/configuration/interactive.sh b/lib/functions/configuration/interactive.sh
+--- a/lib/functions/configuration/interactive.sh
++++ b/lib/functions/configuration/interactive.sh
+@@ -246,6 +246,9 @@
+ function get_kernel_info_for_branch() {
+ 	local search_branch="$1"
+ 	local conf_file="${SRC}/config/sources/families/${BOARDFAMILY}.conf"
++	if [[ -f "${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf" ]]; then
++		conf_file="${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf"
++	fi
+ 
+ 	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
+ 	awk -v branch="$search_branch" '
 diff --git a/userpatches/atlasa1-release/boards/pcie-v32/check-nvme-readonly.py b/userpatches/atlasa1-release/boards/pcie-v32/check-nvme-readonly.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..1e21e79e976c7b66475feda896cdf9fd7edb8b14
@@ -13771,10 +13784,10 @@ index 0000000000000000000000000000000000000000..f2a573bffa95cb621180aa24a3e2a49c
 +该入口要求新的备份目录，保存显示管理器、GDM 和账户会话设置；不重启、不停止当前桌面、不修改内核启动别名，也不启用自动登录。需要另行确保已安装与 GPU 模块匹配并经过实板测试的内核。脚本输出桌面配置的恢复命令。
 diff --git a/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..3097c301e08dda5e95648fd930478dbaf7d00d9f
+index 0000000000000000000000000000000000000000..edd077694f007886647d429490529a1f48d9f3d3
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,169 @@
 +# Armbian 原生构建入口
 +
 +原生入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
@@ -13796,6 +13809,49 @@ index 0000000000000000000000000000000000000000..3097c301e08dda5e95648fd930478dba
 +选择 `AtlasA1 / T736`、`current`、`resolute`。
 +桌面暂支持 GNOME 和 Xfce，也支持无桌面镜像。
 +框架下载至 `output/armbian`；构建产物位于其 `output` 目录。
++
++已有仓库先执行 `git pull --ff-only`。再执行 `./compile.sh BOARD=atlasa1 KERNEL_CONFIGURE=no`。
++依次选择 `current`、`resolute`、桌面镜像、GNOME 或 Xfce、软件包档位。
++`KERNEL_CONFIGURE=yes` 表示编辑内核选项，不是桌面配置开关。
++官方菜单也会显示其他发行版和桌面；本板目前仅支持上述组合。
++
++软件包档位使用新版 Armbian 的 `DESKTOP_TIER`：
++
++| 档位 | 官方桌面软件集合 |
++| --- | --- |
++| `minimal` | 桌面和登录管理器 |
++| `mid` | 增加浏览器、文件管理器和媒体应用 |
++| `full` | 再增加办公、创作和开发工具 |
++
++板级适配仍会加入 GPU、Cedar、播放器和适配的 Firefox。
++目前完整镜像验证使用 `minimal`。其他档位尚未完整构建验证。
++镜像固定为 8 GiB；扩展软件超过根分区容量时，构建会明确报错。
++
++## 自定义预装软件
++
++先运行一次入口，生成 `output/armbian`。然后创建配置文件：
++
++```bash
++cat > output/armbian/userpatches/config-myimage.conf <<'EOF'
++BOARD=atlasa1
++BRANCH=current
++RELEASE=resolute
++BUILD_DESKTOP=yes
++BUILD_MINIMAL=no
++KERNEL_CONFIGURE=no
++function user_config() {
++    add_packages_to_image vim git htop
++}
++EOF
++./compile.sh myimage
++```
++
++此命令继续显示桌面和软件包档位菜单。
++修改 `add_packages_to_image` 后面的 Ubuntu 软件包名称即可增减自定义清单。
++把这份配置文件保存到自己的备份中。安装器不会覆盖它。
++旧的 `PACKAGE_LIST_ADDITIONAL` 不是此版本的配置接口。
++
++## 指定构建参数
 +
 +直接指定 GNOME：
 +
@@ -13843,6 +13899,8 @@ index 0000000000000000000000000000000000000000..3097c301e08dda5e95648fd930478dba
 +```
 +
 +补丁直接安装 `userpatches` 板型、配置和扩展。无需替换官方 `compile.sh`。
++补丁也修正官方菜单的板族查找路径，使其读取 `userpatches` 中的配置。
++安装器重复运行时会识别已应用的修复。
 +公开输入自动下载并按 SHA-256 校验，不需要本地 Tina SDK。
 +这些输入包含厂家 DDR、GPU 和 Cedar 库，构建仍需要网络获取依赖。
 +
@@ -134509,6 +134567,25 @@ index 0000000000000000000000000000000000000000..c6264a8758f837a43be566553a60ed00
 +[ 2509.608819] atlasa1-sdio-diag 4021000.mmc: probe CMD5 failed IRQ=00000104 resp0=00000000
 +nvme0n1     119.2G
 +└─nvme0n1p1 119.2G
+diff --git a/userpatches/atlasa1-release/patches/armbian/menu-user-family.patch b/userpatches/atlasa1-release/patches/armbian/menu-user-family.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..1826b5ff08d7f5b32a68bcf6e022ef793df75890
+--- /dev/null
++++ b/userpatches/atlasa1-release/patches/armbian/menu-user-family.patch
+@@ -0,0 +1,13 @@
++diff --git a/lib/functions/configuration/interactive.sh b/lib/functions/configuration/interactive.sh
++--- a/lib/functions/configuration/interactive.sh
+++++ b/lib/functions/configuration/interactive.sh
++@@ -246,6 +246,9 @@
++ function get_kernel_info_for_branch() {
++ 	local search_branch="$1"
++ 	local conf_file="${SRC}/config/sources/families/${BOARDFAMILY}.conf"
+++	if [[ -f "${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf" ]]; then
+++		conf_file="${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf"
+++	fi
++ 
++ 	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
++ 	awk -v branch="$search_branch" '
 diff --git a/userpatches/atlasa1-release/patches/cedar/backend-parallel-direct-slot.patch b/userpatches/atlasa1-release/patches/cedar/backend-parallel-direct-slot.patch
 new file mode 100644
 index 0000000000000000000000000000000000000000..677b6037d66496743d68ccb0d8724793ca6948cc
@@ -166785,10 +166862,10 @@ index 0000000000000000000000000000000000000000..7a445397044e4a66980e18805f976a31
 +    unittest.main()
 diff --git a/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py b/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..d9e9855a22ebb0746e6d00039c2d711221db63bb
+index 0000000000000000000000000000000000000000..c3609c95947dcbc2e391ffea2944b127cd1f71d0
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,60 @@
 +"""Keep user kernel settings when reinstalling board support."""
 +from pathlib import Path
 +import sys
@@ -166812,7 +166889,8 @@ index 0000000000000000000000000000000000000000..d9e9855a22ebb0746e6d00039c2d7112
 +                source.parent.mkdir(parents=True, exist_ok=True)
 +                source.write_text('# baseline\n')
 +            with patch.object(installer, 'ROOT', recipe), patch.object(
-+                    installer.subprocess, 'check_output', return_value=installer.REVISION+'\n'):
++                    installer.subprocess, 'check_output', return_value=installer.REVISION+'\n'), patch.object(
++                    installer, 'fix_family_menu'):
 +                installer.install(framework)
 +                config = framework/'userpatches/config/kernel/linux-atlasa1-current.config'
 +                config.write_text('CONFIG_TEST_USER_CHOICE=y\n')
@@ -166824,6 +166902,26 @@ index 0000000000000000000000000000000000000000..d9e9855a22ebb0746e6d00039c2d7112
 +                with self.assertRaisesRegex(ValueError, 'modified user file'):
 +                    installer.install(framework)
 +                self.assertEqual(family.read_text(), '# user family\n')
++
++    def test_family_menu_patch_is_idempotent(self):
++        import subprocess
++        with tempfile.TemporaryDirectory() as folder:
++            framework = Path(folder)
++            subprocess.run(['git', 'init', '-q', str(framework)], check=True)
++            target = framework/'lib/functions/configuration/interactive.sh'
++            target.parent.mkdir(parents=True)
++            target.write_text('''function get_kernel_info_for_branch() {
++	local search_branch="$1"
++	local conf_file="${SRC}/config/sources/families/${BOARDFAMILY}.conf"
++
++	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
++	awk -v branch="$search_branch" '
++''', encoding='utf-8')
++            installer.fix_family_menu(framework)
++            first = target.read_bytes()
++            installer.fix_family_menu(framework)
++            self.assertEqual(first, target.read_bytes())
++            self.assertIn(b'${USERPATCHES_PATH}/config/sources/families/', first)
 +
 +
 +if __name__ == '__main__':
@@ -176164,12 +176262,12 @@ index 0000000000000000000000000000000000000000..b500cd6256c504dce4c34767f248524d
 +    print(identity(parser.parse_args().component))
 diff --git a/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py b/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..41c208d1b073e734673557f3ddc78555aa95ea7e
+index 0000000000000000000000000000000000000000..9824858804a16fefe55d5368483ba403cfb3750d
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,67 @@
 +#!/usr/bin/env python3
-+"""Install AtlasA1 userpatches without replacing official Armbian code."""
++"""Install AtlasA1 userpatches and the upstream family-menu compatibility fix."""
 +import argparse
 +import hashlib
 +import json
@@ -176185,6 +176283,17 @@ index 0000000000000000000000000000000000000000..41c208d1b073e734673557f3ddc78555
 +
 +def digest(path):
 +    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def fix_family_menu(framework):
++    patch = ROOT/'patches/armbian/menu-user-family.patch'
++    command = ['git', '-C', str(framework), 'apply']
++    applied = subprocess.run([*command, '--reverse', '--check', str(patch)],
++                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
++    if applied.returncode == 0:
++        return
++    subprocess.run([*command, '--check', str(patch)], check=True)
++    subprocess.run([*command, str(patch)], check=True)
 +
 +
 +def install(framework):
@@ -176204,6 +176313,7 @@ index 0000000000000000000000000000000000000000..41c208d1b073e734673557f3ddc78555
 +                print('Keeping user kernel configuration: '+str(target))
 +                continue
 +            raise ValueError('Preserving modified user file: '+str(target))
++    fix_family_menu(framework)
 +    link = user/'atlasa1-release'
 +    if link.exists() or link.is_symlink():
 +        if link.resolve()!=ROOT:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install AtlasA1 userpatches without replacing official Armbian code."""
+"""Install AtlasA1 userpatches and the upstream family-menu compatibility fix."""
 import argparse
 import hashlib
 import json
@@ -15,6 +15,17 @@ REVISION = '2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736'
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def fix_family_menu(framework):
+    patch = ROOT/'patches/armbian/menu-user-family.patch'
+    command = ['git', '-C', str(framework), 'apply']
+    applied = subprocess.run([*command, '--reverse', '--check', str(patch)],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if applied.returncode == 0:
+        return
+    subprocess.run([*command, '--check', str(patch)], check=True)
+    subprocess.run([*command, str(patch)], check=True)
 
 
 def install(framework):
@@ -34,6 +45,7 @@ def install(framework):
                 print('Keeping user kernel configuration: '+str(target))
                 continue
             raise ValueError('Preserving modified user file: '+str(target))
+    fix_family_menu(framework)
     link = user/'atlasa1-release'
     if link.exists() or link.is_symlink():
         if link.resolve()!=ROOT:

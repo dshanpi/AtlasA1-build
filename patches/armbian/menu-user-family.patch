@@ -1,0 +1,13 @@
+diff --git a/lib/functions/configuration/interactive.sh b/lib/functions/configuration/interactive.sh
+--- a/lib/functions/configuration/interactive.sh
++++ b/lib/functions/configuration/interactive.sh
+@@ -246,6 +246,9 @@
+ function get_kernel_info_for_branch() {
+ 	local search_branch="$1"
+ 	local conf_file="${SRC}/config/sources/families/${BOARDFAMILY}.conf"
++	if [[ -f "${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf" ]]; then
++		conf_file="${USERPATCHES_PATH}/config/sources/families/${BOARDFAMILY}.conf"
++	fi
+ 
+ 	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
+ 	awk -v branch="$search_branch" '

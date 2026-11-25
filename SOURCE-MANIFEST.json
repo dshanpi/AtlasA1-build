@@ -1106,8 +1106,8 @@
       "path": "docs/NATIVE_ARMBIAN_BUILD.md",
       "kind": "source",
       "source": "mainline/docs/NATIVE_ARMBIAN_BUILD.md",
-      "size": 5767,
-      "sha256": "e51f489cdd932fe2cda39bd91e5138a008a536bdbf900bce600c85eeaf17cf2c"
+      "size": 7480,
+      "sha256": "40dfa83c524b5bd9d41344b7e794115dd39049b42ecb0c28ef836df7b3438a56"
     },
     {
       "path": "docs/UBUNTU_26_04.md",
@@ -3266,6 +3266,27 @@
       "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
     },
     {
+      "path": "evidence/native-armbian-20261124/menu-fix/gnome.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/menu-fix/gnome.log",
+      "size": 43377,
+      "sha256": "24379830f6e92f097f9bd1e4b7102e88a5b2bd4014916e9632a4535d22130e1c"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/menu-fix/result.json",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/menu-fix/result.json",
+      "size": 685,
+      "sha256": "a2c9c1b9ea4fa27e46c96914b7366586e159603eb53f5cf9b4dc81a542c7a442"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/menu-fix/xfce.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/menu-fix/xfce.log",
+      "size": 43377,
+      "sha256": "526b1f31a6bd5235608b0c303f5f4ff17faff6d62eb7cdb841cd4ad90fc248ff"
+    },
+    {
       "path": "evidence/native-armbian-20261124/native-component-packages.json",
       "kind": "source",
       "source": "mainline/evidence/native-armbian-20261124/native-component-packages.json",
@@ -3637,11 +3658,18 @@
       "sha256": "c0742a48b553dad505537f8f8c021702db6efb04c3798de781b08ba2ce5ae647"
     },
     {
+      "path": "patches/armbian/menu-user-family.patch",
+      "kind": "source",
+      "source": "mainline/patches/armbian/menu-user-family.patch",
+      "size": 641,
+      "sha256": "6b1223dfabbbf9daf91afb1c160f9f4c147d7309530255d0036b57129aa0c8f5"
+    },
+    {
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8766733,
-      "sha256": "4dc9c960a48baf52b0c33efa10252b29e7b669927309edf91daa7e908a3baccd"
+      "size": 8771707,
+      "sha256": "42e65863037fb8b4a5792a939552fbf5769787e8e6563627ae9724944c8ef50f"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5614,8 +5642,8 @@
       "path": "tests/test_atlasa1_native_install.py",
       "kind": "source",
       "source": "mainline/tests/test_atlasa1_native_install.py",
-      "size": 1775,
-      "sha256": "2fb90761ceda14355d323d45fe986742cedd721dfe85741f43ea3812d114bdb3"
+      "size": 2789,
+      "sha256": "2ee145a85ab6d79912b7d6f0c93f1232448c28df68583c6251732e4916cc21f3"
     },
     {
       "path": "tests/test_atlasa1_player.py",
@@ -7091,15 +7119,15 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 36699,
-      "sha256": "384d756a5f004617f883c616f1a75d8e09c862c7227083f3ff236fbb7169a1d0"
+      "size": 36775,
+      "sha256": "9d92e8b0d66e545485519135807020ed4f69c14a5c3f921ae9f9697904488364"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 10433,
-      "sha256": "61a22056292ccc558fd1f8cd8e95aa4b3364da453d3725298c997177ec1299b8"
+      "size": 10585,
+      "sha256": "059114fee5c0c49370b416e8aa6ece9e64148b5daea4c80516ff6a454a0331e9"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -7168,8 +7196,8 @@
       "path": "tools/install_atlasa1_armbian.py",
       "kind": "source",
       "source": "mainline/tools/install_atlasa1_armbian.py",
-      "size": 2482,
-      "sha256": "ef69862f4a53f30d6c574282f238a1f165fe1a8cd88b8764f84bcc55060850a5"
+      "size": 2993,
+      "sha256": "e6c7b5af80d727b09c3d540f8b4d847cc2e330c92dbe06d0db095a7899e312b0"
     },
     {
       "path": "tools/install_ethernet_v6.sh",

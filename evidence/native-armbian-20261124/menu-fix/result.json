@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-25",
+  "framework_revision": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "fix": "Read family metadata from userpatches before the upstream family path",
+  "tests": {
+    "installer_linux_unittest": 2,
+    "single_patch_git_apply_cached_check": "pass",
+    "interactive_desktops": [
+      "gnome",
+      "xfce"
+    ],
+    "release": "resolute",
+    "tier": "minimal",
+    "custom_packages": [
+      "vim",
+      "git",
+      "htop"
+    ],
+    "exit_codes": [
+      0,
+      0
+    ]
+  },
+  "scope": "Real SSH PTY menus with cached public configng and OFFLINE_WORK=yes. Test-only config exits at extension_finish_config, before image build. No board operations."
+}

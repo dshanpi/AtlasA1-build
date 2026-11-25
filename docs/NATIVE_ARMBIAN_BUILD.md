@@ -20,6 +20,49 @@ cd AtlasA1-build
 桌面暂支持 GNOME 和 Xfce，也支持无桌面镜像。
 框架下载至 `output/armbian`；构建产物位于其 `output` 目录。
 
+已有仓库先执行 `git pull --ff-only`。再执行 `./compile.sh BOARD=atlasa1 KERNEL_CONFIGURE=no`。
+依次选择 `current`、`resolute`、桌面镜像、GNOME 或 Xfce、软件包档位。
+`KERNEL_CONFIGURE=yes` 表示编辑内核选项，不是桌面配置开关。
+官方菜单也会显示其他发行版和桌面；本板目前仅支持上述组合。
+
+软件包档位使用新版 Armbian 的 `DESKTOP_TIER`：
+
+| 档位 | 官方桌面软件集合 |
+| --- | --- |
+| `minimal` | 桌面和登录管理器 |
+| `mid` | 增加浏览器、文件管理器和媒体应用 |
+| `full` | 再增加办公、创作和开发工具 |
+
+板级适配仍会加入 GPU、Cedar、播放器和适配的 Firefox。
+目前完整镜像验证使用 `minimal`。其他档位尚未完整构建验证。
+镜像固定为 8 GiB；扩展软件超过根分区容量时，构建会明确报错。
+
+## 自定义预装软件
+
+先运行一次入口，生成 `output/armbian`。然后创建配置文件：
+
+```bash
+cat > output/armbian/userpatches/config-myimage.conf <<'EOF'
+BOARD=atlasa1
+BRANCH=current
+RELEASE=resolute
+BUILD_DESKTOP=yes
+BUILD_MINIMAL=no
+KERNEL_CONFIGURE=no
+function user_config() {
+    add_packages_to_image vim git htop
+}
+EOF
+./compile.sh myimage
+```
+
+此命令继续显示桌面和软件包档位菜单。
+修改 `add_packages_to_image` 后面的 Ubuntu 软件包名称即可增减自定义清单。
+把这份配置文件保存到自己的备份中。安装器不会覆盖它。
+旧的 `PACKAGE_LIST_ADDITIONAL` 不是此版本的配置接口。
+
+## 指定构建参数
+
 直接指定 GNOME：
 
 ```bash
@@ -66,6 +109,8 @@ git apply --whitespace=nowarn /path/to/atlasa1-resolute-armbian.patch
 ```
 
 补丁直接安装 `userpatches` 板型、配置和扩展。无需替换官方 `compile.sh`。
+补丁也修正官方菜单的板族查找路径，使其读取 `userpatches` 中的配置。
+安装器重复运行时会识别已应用的修复。
 公开输入自动下载并按 SHA-256 校验，不需要本地 Tina SDK。
 这些输入包含厂家 DDR、GPU 和 Cedar 库，构建仍需要网络获取依赖。
 
