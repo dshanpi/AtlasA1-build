@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-25",
+  "assistance": "Public downloads were fetched on the Windows host, checked against upstream SHA-256, and transferred to the build server cache because direct downloads were slow. The image build uses OFFLINE_WORK=yes for Git source caches; apt still accesses package repositories. This is not a zero-cache unattended host acceptance test.",
+  "assets": [
+    {
+      "source": "ghcr.io/armbian/os/armbian-firmware:1-SAdb8c-Ba2de-R448a",
+      "sha256": "614d8212281a8324718be02c48bcbf302ceb16d65812814fad5f3324eb717550"
+    },
+    {
+      "source": "ghcr.io/armbian/os/armbian-zsh:1-SA4b65-Ba2a8-R448a",
+      "sha256": "84678b3af2d40ad462fbb16b55935530ebf7760a0f5664abc2d41249ef051e78"
+    },
+    {
+      "source": "ghcr.io/armbian/os/rootfs-arm64-resolute-gnome-desktop-full:202611-09ad65821713-H6eccde-B58ef30",
+      "sha256": "07876d200fbd2270385d7b589d3dcbc4e0dc9894826854616c6e024f641055a4"
+    },
+    {
+      "source": "https://apt.armbian.com/pool/resolute-desktop/f/firefox/firefox_161.0+build1-0ubuntu0.26.04.1~mt1armbian1_arm64.deb",
+      "bytes": 74768244,
+      "sha256": "e167ccd2cef4da47192a944e184b5a75222538ab2b7e56b7acefac0c5d1fa5cb",
+      "checksum_source": "Signed Armbian apt package index on the build server"
+    }
+  ]
+}

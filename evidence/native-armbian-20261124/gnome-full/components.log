@@ -1,0 +1,4233 @@
+--> (606) [0;36mCOMMAND[0m: bash /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/atlasa1-release/tools/configure_atlasa1_native_rootfs.sh /home/ubuntu/t736/AtlasA1-build/output/armbian/.tmp/rootfs-7f3eac28-935a-4dc7-8b96-ee8fe18950ae /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/inputs-dd8df5d05328b241 /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1 yes gnome
+Hit:2 http://ports.ubuntu.com resolute InRelease
+Hit:3 https://github.armbian.com/configng stable InRelease
+Hit:4 http://ports.ubuntu.com resolute-security InRelease
+Hit:5 http://ports.ubuntu.com resolute-updates InRelease
+Hit:6 http://ports.ubuntu.com resolute-backports InRelease
+Hit:1 http://fi.mirror.armbian.de/apt resolute InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+plymouth-themes is already the newest version (24.004.60+git20250831.4a3c171d-0ubuntu8).
+Solving dependencies...
+Suggested packages:
+  fonts-lyx
+Recommended packages:
+  xul-ext-ubufox
+The following NEW packages will be installed:
+  firefox libxcb-dri2-0
+0 upgraded, 2 newly installed, 0 to remove and 75 not upgraded.
+Need to get 7446 B/74.8 MB of archives.
+After this operation, 301 MB of additional disk space will be used.
+Get:1 http://ports.ubuntu.com resolute/main arm64 libxcb-dri2-0 arm64 1.17.0-2ubuntu1 [7446 B]
+Fetched 7446 B in 1s (9043 B/s)
+Selecting previously unselected package firefox.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 120273 files and directories currently installed.)
+Preparing to unpack .../firefox_9%3a161.0+build1-0ubuntu0.26.04.1~mt1armbian1_arm64.deb ...
+Unpacking firefox (9:161.0+build1-0ubuntu0.26.04.1~mt1armbian1) ...
+Selecting previously unselected package libxcb-dri2-0:arm64.
+Preparing to unpack .../libxcb-dri2-0_1.17.0-2ubuntu1_arm64.deb ...
+Unpacking libxcb-dri2-0:arm64 (1.17.0-2ubuntu1) ...
+Setting up firefox (9:161.0+build1-0ubuntu0.26.04.1~mt1armbian1) ...
+Please restart all running instances of firefox, or you will experience problems.
+Setting up libxcb-dri2-0:arm64 (1.17.0-2ubuntu1) ...
+Processing triggers for hicolor-icon-theme (0.18-2build1) ...
+Processing triggers for libc-bin (2.43-2ubuntu2.4) ...
+Processing triggers for man-db (2.13.1-1build1) ...
+Processing triggers for desktop-file-utils (0.28-1build1) ...
+{
+  "runtime_path": "/opt/t736-img-ddk-24.2-x11/runtime-gles",
+  "manifest_path": "/opt/t736-img-ddk-24.2-x11/runtime-gles.json",
+  "manifest_sha256": "eb8c66c2dcd0cfb31410631256e0790d392574f88dc05f10bbe40da49ac66a18",
+  "links": 46,
+  "excluded": [
+    "libvulkan.so",
+    "libvulkan.so.1",
+    "libvulkan.so.1.3.280"
+  ]
+}
+{
+  "runtime_path": "/opt/t736-img-ddk-24.2-x11/runtime-gles",
+  "manifest_path": "/opt/t736-img-ddk-24.2-x11/runtime-gles.json",
+  "manifest_sha256": "eb8c66c2dcd0cfb31410631256e0790d392574f88dc05f10bbe40da49ac66a18",
+  "links": 46,
+  "excluded": [
+    "libvulkan.so",
+    "libvulkan.so.1",
+    "libvulkan.so.1.3.280"
+  ]
+}
+dpkg-deb: building package 't736-img-userspace-candidate' in '/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/vendor/gpu/t736-img-userspace-candidate_24.2.6603887-2_arm64.deb'.
+{
+  "package": "/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/vendor/gpu/t736-img-userspace-candidate_24.2.6603887-2_arm64.deb",
+  "sha256": "6a28682ccbace2d2ae6026ff725766bd8f2402d653fd2bba56340b8109b7340c",
+  "files": 61,
+  "external_sonames": [
+    "ld-linux-aarch64.so.1",
+    "libX11-xcb.so.1",
+    "libX11.so.6",
+    "libXext.so.6",
+    "libXfixes.so.3",
+    "libXxf86vm.so.1",
+    "libc.so.6",
+    "libdl.so.2",
+    "libdrm.so.2",
+    "libexpat.so.1",
+    "libgcc_s.so.1",
+    "libm.so.6",
+    "libpthread.so.0",
+    "librt.so.1",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libxcb-dri2.so.0",
+    "libxcb-dri3.so.0",
+    "libxcb-glx.so.0",
+    "libxcb-present.so.0",
+    "libxcb-randr.so.0",
+    "libxcb-shm.so.0",
+    "libxcb-sync.so.1",
+    "libxcb-xfixes.so.0",
+    "libxcb.so.1",
+    "libxshmfence.so.1",
+    "libz.so.1"
+  ]
+}
+{"package": "/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/vendor/bridge/t736-cedar-bridge-v2.tar.gz", "bytes": 1103296, "sha256": "3ecffc72f8eca668d698f3a436f46e8cad37d3ba7ec520139cdbac857c5eb2a6", "manifest_sha256": "f2ffea610d2969dfc941db3c643a87d46353aaf2751ccdb75932fb117c80d8fe", "files": 32}
+{"package": "/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/vendor/wc/t736-cedar-wc-v1.tar.gz", "bytes": 1147616, "sha256": "78f2e0acf6b5b1ec9e679e8ac7ccc2de7935ebe0eb33fd1e635a53133dd2e923", "manifest_sha256": "346b2b4ee120dba005d538a4b45d6eb12cab822c0efc55c57862613d59dc0a75", "wc_manifest_sha256": "78f013e3ffa1dd4dea2306cd184de92b61c97ea4fcca64e75d2ce54d19108600", "abi": {"libcdc_base.so": {"missing_exported_symbols": [], "sha256": "d93ed64ecb7f35ebeeba6575ce28a88c14ddc8dfb600ab66c91a2191177d3d96"}, "libMemAdapter.so": {"missing_exported_symbols": [], "sha256": "0315ffca8aab4b3742a6b4139ad28de24f51793ecda7b6242fd62620f2251f33"}}}
+patching file omx/gstomxallocator.c
+patching file omx/gstomxvideodec.c
+patching file omx/gstomxvideodec.c
+patching file omx/gstomxvideodec.c
+ninja: Entering directory `/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/vendor/bridge/build'
+[1/3] Compiling C object omx/libgstomx.so.p/gstomxallocator.c.o
+[2/3] Compiling C object omx/libgstomx.so.p/gstomxvideodec.c.o
+../src/omx/gstomxvideodec.c: In function ‘gst_omx_video_dec_open’:
+../src/omx/gstomxvideodec.c:677:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  677 |     OMX_CONFIG_SCALEFACTORTYPE config;
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../src/omx/gstomxvideodec.c:702:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  702 |     OMX_ERRORTYPE err;
+      |     ^~~~~~~~~~~~~
+../src/omx/gstomxvideodec.c: In function ‘check_dma_caps_support’:
+../src/omx/gstomxvideodec.c:1802:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1802 |   GstCaps *peer_caps = gst_pad_peer_query_caps(srcpad, dma_caps);
+      |   ^~~~~~~
+../src/omx/gstomxvideodec.c: In function ‘gst_omx_video_dec_reconfigure_output_port’:
+../src/omx/gstomxvideodec.c:2099:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 2099 |   gint ext_flag = 0x00;
+      |   ^~~~
+../src/omx/gstomxvideodec.c:2136:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 2136 |   gchar *caps_str = gst_caps_to_string(state->caps);
+      |   ^~~~~
+[3/3] Linking target omx/libgstomx.so
+libsdl2-2.0-0.deb: OK
+libsdl2-dev.deb: OK
+ 0x0000000000000001 (NEEDED)             Shared library: [libSDL2-2.0.so.0]
+patching file shm_v2/cedar_client.c
+patching file shm_v2/cedar_client.h
+patching file ffmpeg_cedar.c
+patching file shm_v2/cedar_protocol.h
+patching file shm_v2/cedar_client.h
+patching file shm_v2/cedar_client.c
+patching file ffmpeg_cedar.c
+patching file fftools/ffplay.c
+patching file fftools/ffplay.c
+install prefix            /opt/atlasa1-player
+source path               /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src
+C compiler                aarch64-linux-gnu-gcc
+C library                 glibc
+host C compiler           gcc
+host C library            glibc
+ARCH                      aarch64 (generic)
+big-endian                no
+runtime cpu detection     yes
+NEON enabled              yes
+DOTPROD enabled           yes
+I8MM enabled              yes
+debug symbols             no
+strip symbols             yes
+optimize for size         no
+optimizations             yes
+static                    no
+shared                    yes
+postprocessing support    no
+network support           no
+threading support         pthreads
+safe bitstream reader     yes
+texi2html enabled         no
+perl enabled              yes
+pod2man enabled           yes
+makeinfo enabled          yes
+makeinfo supports HTML    yes
+xmllint enabled           yes
+
+External libraries:
+iconv                   sdl2
+
+External libraries providing hardware acceleration:
+
+Libraries:
+avcodec                 avformat                swscale
+avdevice                avutil
+avfilter                swresample
+
+Programs:
+ffplay
+
+Enabled decoders:
+aac                     ffvhuff                 pfm
+aac_fixed               ffwavesynth             pgm
+aac_latm                fic                     pgmyuv
+aasc                    fits                    pgssub
+ac3                     flac                    pgx
+ac3_fixed               flic                    phm
+acelp_kelvin            flv                     photocd
+adpcm_4xm               fmvc                    pictor
+adpcm_adx               fourxm                  pixlet
+adpcm_afc               fraps                   pjs
+adpcm_agm               frwu                    ppm
+adpcm_aica              ftr                     prores
+adpcm_argo              g723_1                  prosumer
+adpcm_ct                g729                    psd
+adpcm_dtk               gdv                     ptx
+adpcm_ea                gem                     qcelp
+adpcm_ea_maxis_xa       gif                     qdm2
+adpcm_ea_r1             gremlin_dpcm            qdmc
+adpcm_ea_r2             gsm                     qdraw
+adpcm_ea_r3             gsm_ms                  qoa
+adpcm_ea_xas            h261                    qoi
+adpcm_g722              h263                    qpeg
+adpcm_g726              h263i                   qtrle
+adpcm_g726le            h263p                   r10k
+adpcm_ima_acorn         h264                    r210
+adpcm_ima_alp           h264_cedar              ra_144
+adpcm_ima_amv           hap                     ra_288
+adpcm_ima_apc           hca                     ralf
+adpcm_ima_apm           hcom                    rawvideo
+adpcm_ima_cunning       hdr                     realtext
+adpcm_ima_dat4          hevc                    rka
+adpcm_ima_dk3           hevc_cedar              rl2
+adpcm_ima_dk4           hnm4_video              roq
+adpcm_ima_ea_eacs       hq_hqa                  roq_dpcm
+adpcm_ima_ea_sead       hqx                     rpza
+adpcm_ima_iss           huffyuv                 rtv1
+adpcm_ima_moflex        hymt                    rv10
+adpcm_ima_mtf           iac                     rv20
+adpcm_ima_oki           idcin                   rv30
+adpcm_ima_qt            idf                     rv40
+adpcm_ima_rad           iff_ilbm                s302m
+adpcm_ima_smjpeg        ilbc                    sami
+adpcm_ima_ssi           imc                     sanm
+adpcm_ima_wav           imm4                    sbc
+adpcm_ima_ws            imm5                    scpr
+adpcm_ms                indeo2                  sdx2_dpcm
+adpcm_mtaf              indeo3                  sga
+adpcm_psx               indeo4                  sgi
+adpcm_sbpro_2           indeo5                  sgirle
+adpcm_sbpro_3           interplay_acm           sheervideo
+adpcm_sbpro_4           interplay_dpcm          shorten
+adpcm_swf               interplay_video         simbiosis_imx
+adpcm_thp               ipu                     sipr
+adpcm_thp_le            jacosub                 siren
+adpcm_vima              jpeg2000                smackaud
+adpcm_xa                jpegls                  smacker
+adpcm_xmd               jv                      smc
+adpcm_yamaha            kgv1                    smvjpeg
+adpcm_zork              kmvc                    snow
+agm                     lagarith                sol_dpcm
+aic                     lead                    sonic
+alac                    loco                    sp5x
+alias_pix               m101                    speedhq
+als                     mace3                   speex
+amrnb                   mace6                   srt
+amrwb                   magicyuv                ssa
+amv                     mdec                    stl
+anm                     media100                subrip
+ansi                    metasound               subviewer
+anull                   microdvd                subviewer1
+apac                    mimic                   sunrast
+ape                     misc4                   svq1
+aptx                    mjpeg                   svq3
+aptx_hd                 mjpegb                  tak
+arbc                    mlp                     targa
+argo                    mmvideo                 targa_y216
+ass                     mobiclip                text
+asv1                    motionpixels            theora
+asv2                    movtext                 thp
+atrac1                  mp1                     tiertexseqvideo
+atrac3                  mp1float                tiff
+atrac3al                mp2                     tmv
+atrac3p                 mp2float                truehd
+atrac3pal               mp3                     truemotion1
+atrac9                  mp3adu                  truemotion2
+aura                    mp3adufloat             truemotion2rt
+aura2                   mp3float                truespeech
+av1                     mp3on4                  tscc2
+avrn                    mp3on4float             tta
+avrp                    mpc7                    twinvq
+avs                     mpc8                    txd
+avui                    mpeg1video              ulti
+bethsoftvid             mpeg2video              utvideo
+bfi                     mpeg4                   v210
+bink                    mpegvideo               v210x
+binkaudio_dct           mpl2                    v308
+binkaudio_rdft          msa1                    v408
+bintext                 msmpeg4v1               v410
+bitpacked               msmpeg4v2               vb
+bmp                     msmpeg4v3               vble
+bmv_audio               msnsiren                vbn
+bmv_video               msp2                    vc1
+bonk                    msrle                   vc1image
+brender_pix             mss1                    vcr1
+c93                     mss2                    vmdaudio
+cavs                    msvideo1                vmdvideo
+cbd2_dpcm               mszh                    vmix
+ccaption                mts2                    vmnc
+cdgraphics              mv30                    vnull
+cdtoons                 mvc1                    vorbis
+cdxl                    mvc2                    vp3
+cfhd                    mvdv                    vp4
+cinepak                 mxpeg                   vp5
+clearvideo              nellymoser              vp6
+cljr                    notchlc                 vp6a
+cllc                    nuv                     vp6f
+comfortnoise            on2avc                  vp7
+cook                    opus                    vp8
+cpia                    osq                     vp9
+cri                     paf_audio               vplayer
+cscd                    paf_video               vqa
+cyuv                    pam                     vqc
+dca                     pbm                     vvc
+dds                     pcm_alaw                wady_dpcm
+derf_dpcm               pcm_bluray              wavarc
+dfa                     pcm_dvd                 wavpack
+dfpwm                   pcm_f16le               wbmp
+dirac                   pcm_f24le               webp
+dnxhd                   pcm_f32be               webvtt
+dolby_e                 pcm_f32le               wmalossless
+dpx                     pcm_f64be               wmapro
+dsd_lsbf                pcm_f64le               wmav1
+dsd_lsbf_planar         pcm_lxf                 wmav2
+dsd_msbf                pcm_mulaw               wmavoice
+dsd_msbf_planar         pcm_s16be               wmv1
+dsicinaudio             pcm_s16be_planar        wmv2
+dsicinvideo             pcm_s16le               wmv3
+dss_sp                  pcm_s16le_planar        wmv3image
+dst                     pcm_s24be               wnv1
+dvaudio                 pcm_s24daud             wrapped_avframe
+dvbsub                  pcm_s24le               ws_snd1
+dvdsub                  pcm_s24le_planar        xan_dpcm
+dvvideo                 pcm_s32be               xan_wc3
+dxtory                  pcm_s32le               xan_wc4
+dxv                     pcm_s32le_planar        xbin
+eac3                    pcm_s64be               xbm
+eacmv                   pcm_s64le               xface
+eamad                   pcm_s8                  xl
+eatgq                   pcm_s8_planar           xma1
+eatgv                   pcm_sga                 xma2
+eatqi                   pcm_u16be               xpm
+eightbps                pcm_u16le               xsub
+eightsvx_exp            pcm_u24be               xwd
+eightsvx_fib            pcm_u24le               y41p
+escape124               pcm_u32be               ylc
+escape130               pcm_u32le               yop
+evrc                    pcm_u8                  yuv4
+fastaudio               pcm_vidc                zero12v
+ffv1                    pcx
+
+Enabled encoders:
+
+Enabled hwaccels:
+
+Enabled parsers:
+aac                     dvdsub                  mpegaudio
+aac_latm                evc                     mpegvideo
+ac3                     flac                    opus
+adx                     ftr                     png
+amr                     g723_1                  pnm
+av1                     g729                    qoi
+avs2                    gif                     rv34
+avs3                    gsm                     sbc
+bmp                     h261                    sipr
+cavsvideo               h263                    tak
+cook                    h264                    vc1
+cri                     hdr                     vorbis
+dca                     hevc                    vp3
+dirac                   ipu                     vp8
+dnxhd                   jpeg2000                vp9
+dolby_e                 jpegxl                  vvc
+dpx                     misc4                   webp
+dvaudio                 mjpeg                   xbm
+dvbsub                  mlp                     xma
+dvd_nav                 mpeg4video              xwd
+
+Enabled demuxers:
+aa                      idcin                   pcm_f64le
+aac                     idf                     pcm_mulaw
+aax                     iff                     pcm_s16be
+ac3                     ifv                     pcm_s16le
+ac4                     ilbc                    pcm_s24be
+ace                     image2                  pcm_s24le
+acm                     image2_alias_pix        pcm_s32be
+act                     image2_brender_pix      pcm_s32le
+adf                     image2pipe              pcm_s8
+adp                     image_bmp_pipe          pcm_u16be
+ads                     image_cri_pipe          pcm_u16le
+adx                     image_dds_pipe          pcm_u24be
+aea                     image_dpx_pipe          pcm_u24le
+afc                     image_exr_pipe          pcm_u32be
+aiff                    image_gem_pipe          pcm_u32le
+aix                     image_gif_pipe          pcm_u8
+alp                     image_hdr_pipe          pcm_vidc
+amr                     image_j2k_pipe          pdv
+amrnb                   image_jpeg_pipe         pjs
+amrwb                   image_jpegls_pipe       pmp
+anm                     image_jpegxl_pipe       pp_bnk
+apac                    image_pam_pipe          pva
+apc                     image_pbm_pipe          pvf
+ape                     image_pcx_pipe          qcp
+apm                     image_pfm_pipe          qoa
+apng                    image_pgm_pipe          r3d
+aptx                    image_pgmyuv_pipe       rawvideo
+aptx_hd                 image_pgx_pipe          rcwt
+aqtitle                 image_phm_pipe          realtext
+argo_asf                image_photocd_pipe      redspark
+argo_brp                image_pictor_pipe       rka
+argo_cvg                image_png_pipe          rl2
+asf                     image_ppm_pipe          rm
+asf_o                   image_psd_pipe          roq
+ass                     image_qdraw_pipe        rpl
+ast                     image_qoi_pipe          rsd
+au                      image_sgi_pipe          rso
+av1                     image_sunrast_pipe      s337m
+avi                     image_svg_pipe          sami
+avr                     image_tiff_pipe         sbc
+avs                     image_vbn_pipe          sbg
+avs2                    image_webp_pipe         scc
+avs3                    image_xbm_pipe          scd
+bethsoftvid             image_xpm_pipe          sdns
+bfi                     image_xwd_pipe          sdr2
+bfstm                   ingenient               sds
+bink                    ipmovie                 sdx
+binka                   ipu                     segafilm
+bintext                 ircam                   ser
+bit                     iss                     sga
+bitpacked               iv8                     shorten
+bmv                     ivf                     siff
+boa                     ivr                     simbiosis_imx
+bonk                    jacosub                 sln
+brstm                   jpegxl_anim             smacker
+c93                     jv                      smjpeg
+caf                     kux                     smush
+cavsvideo               kvag                    sol
+cdg                     laf                     sox
+cdxl                    lc3                     spdif
+cine                    live_flv                srt
+codec2                  lmlm4                   stl
+codec2raw               loas                    str
+concat                  lrc                     subviewer
+data                    luodat                  subviewer1
+daud                    lvf                     sup
+dcstr                   lxf                     svag
+derf                    m4v                     svs
+dfa                     matroska                swf
+dfpwm                   mca                     tak
+dhav                    mcc                     tedcaptions
+dirac                   mgsts                   thp
+dnxhd                   microdvd                threedostr
+dsf                     mjpeg                   tiertexseq
+dsicin                  mjpeg_2000              tmv
+dss                     mlp                     truehd
+dts                     mlv                     tta
+dtshd                   mm                      tty
+dv                      mmf                     txd
+dvbsub                  mods                    ty
+dvbtxt                  moflex                  usm
+dxa                     mov                     v210
+ea                      mp3                     v210x
+ea_cdata                mpc                     vag
+eac3                    mpc8                    vc1
+epaf                    mpegps                  vc1t
+evc                     mpegts                  vividas
+ffmetadata              mpegtsraw               vivo
+filmstrip               mpegvideo               vmd
+fits                    mpjpeg                  vobsub
+flac                    mpl2                    voc
+flic                    mpsub                   vpk
+flv                     msf                     vplayer
+fourxm                  msnwc_tcp               vqf
+frm                     msp                     vvc
+fsb                     mtaf                    w64
+fwse                    mtv                     wady
+g722                    musx                    wav
+g723_1                  mv                      wavarc
+g726                    mvi                     wc3
+g726le                  mxf                     webm_dash_manifest
+g729                    mxg                     webvtt
+gdv                     nc                      wsaud
+genh                    nistsphere              wsd
+gif                     nsp                     wsvqa
+gsm                     nsv                     wtv
+gxf                     nut                     wv
+h261                    nuv                     wve
+h263                    obu                     xa
+h264                    ogg                     xbin
+hca                     oma                     xmd
+hcom                    osq                     xmv
+hevc                    paf                     xvag
+hls                     pcm_alaw                xwma
+hnm                     pcm_f32be               yop
+iamf                    pcm_f32le               yuv4mpegpipe
+ico                     pcm_f64be
+
+Enabled muxers:
+
+Enabled protocols:
+async                   data                    pipe
+cache                   fd                      prompeg
+concat                  file                    subfile
+concatf                 hls                     tee
+crypto                  md5
+
+Enabled filters:
+aformat                 hflip                   transpose
+aresample               rotate                  vflip
+crop                    scale                   volume
+format                  showinfo                yadif
+
+Enabled bsfs:
+aac_adtstoasc           h264_mp4toannexb        pcm_rechunk
+av1_frame_merge         h264_redundant_pps      pgs_frame_merge
+av1_frame_split         hapqa_extract           prores_metadata
+av1_metadata            hevc_metadata           remove_extradata
+chomp                   hevc_mp4toannexb        setts
+dca_core                imx_dump_header         showinfo
+dovi_rpu                media100_to_mjpegb      text2movsub
+dts2pts                 mjpeg2jpeg              trace_headers
+dump_extradata          mjpega_dump_header      truehd_core
+dv_error_marker         mov2textsub             vp9_metadata
+eac3_core               mpeg2_metadata          vp9_raw_reorder
+evc_frame_merge         mpeg4_unpack_bframes    vp9_superframe
+extract_extradata       noise                   vp9_superframe_split
+filter_units            null                    vvc_metadata
+h264_metadata           opus_metadata           vvc_mp4toannexb
+
+Enabled indevs:
+
+Enabled outdevs:
+
+License: LGPL version 2.1 or later
+GEN	libavutil/libavutil.version
+GEN	libavcodec/libavcodec.version
+GEN	libavformat/libavformat.version
+GEN	libavfilter/libavfilter.version
+GEN	libavdevice/libavdevice.version
+GEN	libswscale/libswscale.version
+GEN	libswresample/libswresample.version
+CC	libavdevice/alldevices.o
+CC	libavdevice/avdevice.o
+CC	libavdevice/utils.o
+CC	libavdevice/version.o
+CC	libavformat/3dostr.o
+CC	libavformat/4xm.o
+CC	libavformat/aacdec.o
+CC	libavformat/aadec.o
+CC	libavformat/aaxdec.o
+CC	libavformat/ac3dec.o
+CC	libavformat/ac4dec.o
+CC	libavformat/acedec.o
+CC	libavformat/acm.o
+CC	libavformat/act.o
+CC	libavformat/adp.o
+CC	libavformat/ads.o
+CC	libavformat/adxdec.o
+CC	libavformat/aeadec.o
+CC	libavformat/afc.o
+CC	libavformat/aiff.o
+CC	libavformat/aiffdec.o
+CC	libavformat/aixdec.o
+CC	libavformat/allformats.o
+CC	libavformat/alp.o
+CC	libavformat/amr.o
+CC	libavformat/anm.o
+CC	libavformat/apac.o
+CC	libavformat/apc.o
+CC	libavformat/ape.o
+CC	libavformat/apetag.o
+CC	libavformat/apm.o
+CC	libavformat/apngdec.o
+CC	libavformat/aptxdec.o
+CC	libavformat/aqtitledec.o
+CC	libavformat/argo_asf.o
+CC	libavformat/argo_brp.o
+CC	libavformat/argo_cvg.o
+CC	libavformat/asf.o
+CC	libavformat/asf_tags.o
+CC	libavformat/asfcrypt.o
+CC	libavformat/asfdec_f.o
+CC	libavformat/asfdec_o.o
+src/libavformat/asfdec_f.c: In function ‘get_tag’:
+src/libavformat/asfdec_f.c:244:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  244 |         int ret = ffio_read_size(s->pb, value, len);
+      |         ^~~
+CC	libavformat/assdec.o
+CC	libavformat/ast.o
+CC	libavformat/astdec.o
+CC	libavformat/async.o
+CC	libavformat/au.o
+CC	libavformat/av1dec.o
+CC	libavformat/avformat.o
+CC	libavformat/avidec.o
+CC	libavformat/avio.o
+CC	libavformat/aviobuf.o
+CC	libavformat/avlanguage.o
+CC	libavformat/avr.o
+CC	libavformat/avs.o
+src/libavformat/avidec.c: In function ‘read_gab2_sub’:
+src/libavformat/avidec.c:1131:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1131 |         AVIOContext *pb = avio_alloc_context(pkt->data + 7,
+      |         ^~~~~~~~~~~
+src/libavformat/avidec.c: In function ‘avi_load_index’:
+src/libavformat/avidec.c:1837:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1837 |             uint32_t tag1 = avio_rl32(pb);
+      |             ^~~~~~~~
+CC	libavformat/avs2dec.o
+CC	libavformat/avs3dec.o
+CC	libavformat/bethsoftvid.o
+CC	libavformat/bfi.o
+CC	libavformat/bink.o
+CC	libavformat/binka.o
+CC	libavformat/bintext.o
+CC	libavformat/bit.o
+CC	libavformat/bmv.o
+CC	libavformat/boadec.o
+CC	libavformat/bonk.o
+CC	libavformat/brstm.o
+CC	libavformat/c93.o
+CC	libavformat/cache.o
+CC	libavformat/caf.o
+CC	libavformat/cafdec.o
+CC	libavformat/cavsvideodec.o
+CC	libavformat/cdg.o
+CC	libavformat/cdxl.o
+CC	libavformat/cinedec.o
+CC	libavformat/codec2.o
+CC	libavformat/concat.o
+CC	libavformat/concatdec.o
+CC	libavformat/crypto.o
+src/libavformat/codec2.c:215:12: warning: ‘codec2_write_header’ defined but not used [-Wunused-function]
+  215 | static int codec2_write_header(AVFormatContext *s)
+      |            ^~~~~~~~~~~~~~~~~~~
+CC	libavformat/data_uri.o
+CC	libavformat/dauddec.o
+CC	libavformat/dcstr.o
+CC	libavformat/demux.o
+CC	libavformat/demux_utils.o
+CC	libavformat/derf.o
+CC	libavformat/dfa.o
+CC	libavformat/dfpwmdec.o
+CC	libavformat/dhav.o
+src/libavformat/dhav.c: In function ‘dhav_read_header’:
+src/libavformat/dhav.c:300:17: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  300 |                 int64_t ret64 = avio_seek(s->pb, -seek_back, SEEK_CUR);
+      |                 ^~~~~~~
+src/libavformat/demux.c: In function ‘read_frame_internal’:
+src/libavformat/demux.c:1389:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1389 |         int new_extradata = !!av_packet_side_data_get(pkt->side_data, pkt->side_data_elems,
+      |         ^~~
+CC	libavformat/diracdec.o
+CC	libavformat/dnxhddec.o
+CC	libavformat/dovi_isom.o
+CC	libavformat/dsfdec.o
+CC	libavformat/dsicin.o
+CC	libavformat/dss.o
+CC	libavformat/dtsdec.o
+CC	libavformat/dtshddec.o
+CC	libavformat/dump.o
+CC	libavformat/dv.o
+CC	libavformat/dvbsub.o
+CC	libavformat/dvbtxt.o
+CC	libavformat/dxa.o
+CC	libavformat/eacdata.o
+CC	libavformat/electronicarts.o
+CC	libavformat/epafdec.o
+CC	libavformat/evcdec.o
+CC	libavformat/ffmetadec.o
+CC	libavformat/file.o
+CC	libavformat/filmstripdec.o
+CC	libavformat/fitsdec.o
+CC	libavformat/flac_picture.o
+CC	libavformat/flacdec.o
+CC	libavformat/flic.o
+CC	libavformat/flvdec.o
+CC	libavformat/format.o
+CC	libavformat/frmdec.o
+CC	libavformat/fsb.o
+CC	libavformat/fwse.o
+src/libavformat/flvdec.c: In function ‘flv_read_packet’:
+src/libavformat/flvdec.c:1473:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1473 |             int32_t cts = (avio_rb24(s->pb) + 0xff800000) ^ 0xff800000;
+      |             ^~~~~~~
+CC	libavformat/g722.o
+CC	libavformat/g723_1.o
+CC	libavformat/g726.o
+CC	libavformat/g729dec.o
+CC	libavformat/gdv.o
+CC	libavformat/genh.o
+CC	libavformat/gifdec.o
+CC	libavformat/gsmdec.o
+CC	libavformat/gxf.o
+CC	libavformat/h261dec.o
+CC	libavformat/h263dec.o
+CC	libavformat/h264dec.o
+CC	libavformat/hca.o
+CC	libavformat/hcom.o
+CC	libavformat/hevcdec.o
+CC	libavformat/hls.o
+CC	libavformat/hls_sample_encryption.o
+CC	libavformat/hlsproto.o
+CC	libavformat/hnm.o
+CC	libavformat/iamf.o
+CC	libavformat/iamf_parse.o
+CC	libavformat/iamf_reader.o
+CC	libavformat/iamfdec.o
+CC	libavformat/icodec.o
+CC	libavformat/id3v1.o
+CC	libavformat/id3v2.o
+CC	libavformat/idcin.o
+CC	libavformat/idroqdec.o
+CC	libavformat/iff.o
+CC	libavformat/ifv.o
+CC	libavformat/ilbc.o
+CC	libavformat/img2.o
+CC	libavformat/img2_alias_pix.o
+src/libavformat/ilbc.c:33:12: warning: ‘ilbc_write_header’ defined but not used [-Wunused-function]
+   33 | static int ilbc_write_header(AVFormatContext *s)
+      |            ^~~~~~~~~~~~~~~~~
+CC	libavformat/img2_brender_pix.o
+CC	libavformat/img2dec.o
+CC	libavformat/imx.o
+CC	libavformat/ingenientdec.o
+CC	libavformat/ipmovie.o
+CC	libavformat/ipudec.o
+src/libavformat/img2dec.c: In function ‘ff_img_read_packet’:
+src/libavformat/img2dec.c:501:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  501 |     int total_size = 0;
+      |     ^~~
+CC	libavformat/ircam.o
+CC	libavformat/ircamdec.o
+CC	libavformat/isom.o
+CC	libavformat/isom_tags.o
+CC	libavformat/iss.o
+CC	libavformat/iv8.o
+CC	libavformat/ivfdec.o
+CC	libavformat/jacosubdec.o
+CC	libavformat/jpegxl_anim_dec.o
+CC	libavformat/jvdec.o
+CC	libavformat/kvag.o
+CC	libavformat/lafdec.o
+CC	libavformat/lc3.o
+CC	libavformat/lmlm4.o
+CC	libavformat/loasdec.o
+CC	libavformat/lrc.o
+CC	libavformat/lrcdec.o
+src/libavformat/lrcdec.c: In function ‘read_ts’:
+src/libavformat/lrcdec.c:91:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+   91 |     int ret = sscanf(p, "%2[[-]%"SCNu32":%lf]", prefix, &mm, &ss);
+      |     ^~~
+CC	libavformat/luodatdec.o
+CC	libavformat/lvfdec.o
+CC	libavformat/lxfdec.o
+CC	libavformat/m4vdec.o
+CC	libavformat/matroska.o
+CC	libavformat/matroskadec.o
+CC	libavformat/mca.o
+CC	libavformat/mccdec.o
+CC	libavformat/md5proto.o
+CC	libavformat/metadata.o
+CC	libavformat/mgsts.o
+CC	libavformat/microdvddec.o
+CC	libavformat/mj2kdec.o
+src/libavformat/matroskadec.c: In function ‘webm_dash_manifest_compute_bandwidth’:
+src/libavformat/matroskadec.c:4665:17: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 4665 |                 int64_t desc_ns = desc_end.end_time_ns - desc_beg.start_time_ns;
+      |                 ^~~~~~~
+CC	libavformat/mlpdec.o
+CC	libavformat/mlvdec.o
+CC	libavformat/mm.o
+CC	libavformat/mmf.o
+CC	libavformat/mods.o
+CC	libavformat/moflex.o
+CC	libavformat/mov.o
+CC	libavformat/mov_chan.o
+CC	libavformat/mov_esds.o
+CC	libavformat/mp3dec.o
+CC	libavformat/mpc.o
+CC	libavformat/mpc8.o
+CC	libavformat/mpeg.o
+CC	libavformat/mpegts.o
+CC	libavformat/mpegvideodec.o
+CC	libavformat/mpjpegdec.o
+CC	libavformat/mpl2dec.o
+CC	libavformat/mpsubdec.o
+CC	libavformat/msf.o
+CC	libavformat/msnwc_tcp.o
+CC	libavformat/mspdec.o
+CC	libavformat/mtaf.o
+CC	libavformat/mtv.o
+CC	libavformat/musx.o
+CC	libavformat/mux.o
+CC	libavformat/mux_utils.o
+CC	libavformat/mvdec.o
+CC	libavformat/mvi.o
+CC	libavformat/mxf.o
+CC	libavformat/mxfdec.o
+CC	libavformat/mxg.o
+CC	libavformat/ncdec.o
+CC	libavformat/nistspheredec.o
+CC	libavformat/nspdec.o
+CC	libavformat/nsvdec.o
+CC	libavformat/nut.o
+CC	libavformat/nutdec.o
+CC	libavformat/nuv.o
+CC	libavformat/oggdec.o
+CC	libavformat/oggparsecelt.o
+CC	libavformat/oggparsedirac.o
+CC	libavformat/oggparseflac.o
+CC	libavformat/oggparseogm.o
+CC	libavformat/oggparseopus.o
+CC	libavformat/oggparseskeleton.o
+CC	libavformat/oggparsespeex.o
+CC	libavformat/oggparsetheora.o
+CC	libavformat/oggparsevorbis.o
+CC	libavformat/oggparsevp8.o
+CC	libavformat/oma.o
+CC	libavformat/omadec.o
+CC	libavformat/options.o
+CC	libavformat/os_support.o
+CC	libavformat/osq.o
+CC	libavformat/paf.o
+CC	libavformat/pcm.o
+CC	libavformat/pcmdec.o
+CC	libavformat/pdvdec.o
+CC	libavformat/pjsdec.o
+CC	libavformat/pmpdec.o
+CC	libavformat/pp_bnk.o
+CC	libavformat/prompeg.o
+CC	libavformat/protocols.o
+CC	libavformat/psxstr.o
+CC	libavformat/pva.o
+CC	libavformat/pvfdec.o
+CC	libavformat/qcp.o
+CC	libavformat/qoadec.o
+CC	libavformat/qtpalette.o
+CC	libavformat/r3d.o
+CC	libavformat/rawdec.o
+CC	libavformat/rawvideodec.o
+CC	libavformat/rcwtdec.o
+CC	libavformat/realtextdec.o
+CC	libavformat/redspark.o
+CC	libavformat/replaygain.o
+CC	libavformat/riff.o
+CC	libavformat/riffdec.o
+CC	libavformat/rka.o
+CC	libavformat/rl2.o
+CC	libavformat/rm.o
+CC	libavformat/rmdec.o
+CC	libavformat/rmsipr.o
+CC	libavformat/rpl.o
+CC	libavformat/rsd.o
+CC	libavformat/rso.o
+CC	libavformat/rsodec.o
+CC	libavformat/s337m.o
+CC	libavformat/samidec.o
+CC	libavformat/sauce.o
+CC	libavformat/sbcdec.o
+CC	libavformat/sbgdec.o
+CC	libavformat/sccdec.o
+CC	libavformat/scd.o
+CC	libavformat/sdns.o
+CC	libavformat/sdp.o
+CC	libavformat/sdr2.o
+CC	libavformat/sdsdec.o
+CC	libavformat/sdxdec.o
+CC	libavformat/seek.o
+CC	libavformat/segafilm.o
+CC	libavformat/serdec.o
+CC	libavformat/sga.o
+CC	libavformat/shortendec.o
+CC	libavformat/sierravmd.o
+CC	libavformat/siff.o
+CC	libavformat/smacker.o
+CC	libavformat/smjpeg.o
+CC	libavformat/smjpegdec.o
+CC	libavformat/smush.o
+CC	libavformat/sol.o
+CC	libavformat/soxdec.o
+CC	libavformat/spdif.o
+CC	libavformat/spdifdec.o
+CC	libavformat/srtdec.o
+CC	libavformat/stldec.o
+CC	libavformat/subfile.o
+CC	libavformat/subtitles.o
+CC	libavformat/subviewer1dec.o
+CC	libavformat/subviewerdec.o
+CC	libavformat/supdec.o
+CC	libavformat/svag.o
+CC	libavformat/svs.o
+CC	libavformat/swf.o
+CC	libavformat/swfdec.o
+CC	libavformat/takdec.o
+CC	libavformat/tedcaptionsdec.o
+CC	libavformat/tee_common.o
+CC	libavformat/teeproto.o
+CC	libavformat/thp.o
+CC	libavformat/tiertexseq.o
+CC	libavformat/tmv.o
+CC	libavformat/tta.o
+CC	libavformat/tty.o
+CC	libavformat/txd.o
+CC	libavformat/ty.o
+CC	libavformat/url.o
+CC	libavformat/usmdec.o
+CC	libavformat/utils.o
+CC	libavformat/vag.o
+CC	libavformat/vc1dec.o
+CC	libavformat/vc1test.o
+CC	libavformat/version.o
+CC	libavformat/vividas.o
+CC	libavformat/vivo.o
+CC	libavformat/voc.o
+CC	libavformat/voc_packet.o
+CC	libavformat/vocdec.o
+CC	libavformat/vorbiscomment.o
+CC	libavformat/vpk.o
+CC	libavformat/vplayerdec.o
+src/libavformat/vorbiscomment.c: In function ‘ff_vorbiscomment_write’:
+src/libavformat/vorbiscomment.c:103:63: warning: ‘%03d’ directive output may be truncated writing between 3 and 10 bytes into a region of size 4 [-Wformat-truncation=]
+  103 |             snprintf(chapter_number, sizeof(chapter_number), "%03d", i);
+      |                                                               ^~~~
+src/libavformat/vorbiscomment.c:103:62: note: directive argument in the range [0, 2147483647]
+  103 |             snprintf(chapter_number, sizeof(chapter_number), "%03d", i);
+      |                                                              ^~~~~~
+In file included from /usr/aarch64-linux-gnu/include/stdio.h:980,
+                 from src/libavformat/avio.h:30,
+                 from src/libavformat/vorbiscomment.c:22:
+In function ‘snprintf’,
+    inlined from ‘ff_vorbiscomment_write’ at src/libavformat/vorbiscomment.c:103:13:
+/usr/aarch64-linux-gnu/include/bits/stdio2.h:54:10: note: ‘__builtin___snprintf_chk’ output between 4 and 11 bytes into a destination of size 4
+   54 |   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   55 |                                    __glibc_objsize (__s), __fmt,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |                                    __va_arg_pack ());
+      |                                    ~~~~~~~~~~~~~~~~~
+src/libavformat/vorbiscomment.c: In function ‘ff_vorbiscomment_write’:
+src/libavformat/vorbiscomment.c:104:69: warning: ‘%02d’ directive output may be truncated writing between 2 and 3 bytes into a region of size between 1 and 7 [-Wformat-truncation=]
+  104 |             snprintf(chapter_time, sizeof(chapter_time), "%02d:%02d:%02d.%03d", h, m, s, ms);
+      |                                                                     ^~~~
+src/libavformat/vorbiscomment.c:104:58: note: directive argument in the range [-59, 59]
+  104 |             snprintf(chapter_time, sizeof(chapter_time), "%02d:%02d:%02d.%03d", h, m, s, ms);
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~
+src/libavformat/vorbiscomment.c:104:58: note: directive argument in the range [-999, 999]
+In function ‘snprintf’,
+    inlined from ‘ff_vorbiscomment_write’ at src/libavformat/vorbiscomment.c:104:13:
+/usr/aarch64-linux-gnu/include/bits/stdio2.h:54:10: note: ‘__builtin___snprintf_chk’ output between 13 and 21 bytes into a destination of size 13
+   54 |   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   55 |                                    __glibc_objsize (__s), __fmt,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |                                    __va_arg_pack ());
+      |                                    ~~~~~~~~~~~~~~~~~
+CC	libavformat/vqf.o
+CC	libavformat/vvcdec.o
+CC	libavformat/w64.o
+CC	libavformat/wady.o
+CC	libavformat/wavarc.o
+CC	libavformat/wavdec.o
+CC	libavformat/wc3movie.o
+CC	libavformat/webvttdec.o
+CC	libavformat/westwood_aud.o
+CC	libavformat/westwood_vqa.o
+CC	libavformat/wsddec.o
+CC	libavformat/wtv_common.o
+CC	libavformat/wtvdec.o
+CC	libavformat/wv.o
+CC	libavformat/wvdec.o
+CC	libavformat/wvedec.o
+CC	libavformat/xa.o
+CC	libavformat/xmd.o
+CC	libavformat/xmv.o
+CC	libavformat/xvag.o
+CC	libavformat/xwma.o
+CC	libavformat/yop.o
+CC	libavformat/yuv4mpegdec.o
+CC	libavformat/ac3_channel_layout_tab.o
+CC	libavformat/jpegxl_parse.o
+CC	libavformat/log2_tab.o
+CC	libavformat/mpeg4audio_sample_rates.o
+CC	libavformat/mpegaudiotabs.o
+CC	libavformat/to_upper4.o
+CC	libavcodec/log2_tab.o
+CC	libavcodec/reverse.o
+CC	libswresample/log2_tab.o
+GEN	libavdevice/libavdevice.pc
+CC	libavfilter/af_aformat.o
+CC	libavfilter/af_aresample.o
+CC	libavfilter/af_volume.o
+CC	libavfilter/allfilters.o
+CC	libavfilter/audio.o
+CC	libavfilter/avfilter.o
+CC	libavfilter/avfiltergraph.o
+CC	libavfilter/buffersink.o
+CC	libavfilter/buffersrc.o
+CC	libavfilter/ccfifo.o
+CC	libavfilter/colorspace.o
+CC	libavfilter/drawutils.o
+CC	libavfilter/formats.o
+CC	libavfilter/framepool.o
+CC	libavfilter/framequeue.o
+CC	libavfilter/framesync.o
+CC	libavfilter/graphdump.o
+CC	libavfilter/graphparser.o
+CC	libavfilter/pthread.o
+CC	libavfilter/scale_eval.o
+CC	libavfilter/version.o
+CC	libavfilter/vf_crop.o
+CC	libavfilter/vf_format.o
+CC	libavfilter/vf_hflip.o
+CC	libavfilter/vf_rotate.o
+CC	libavfilter/vf_scale.o
+CC	libavfilter/vf_showinfo.o
+CC	libavfilter/vf_transpose.o
+CC	libavfilter/vf_vflip.o
+CC	libavfilter/vf_yadif.o
+CC	libavfilter/video.o
+CC	libavfilter/yadif_common.o
+CC	libavfilter/log2_tab.o
+CC	libswscale/log2_tab.o
+GEN	libavfilter/libavfilter.pc
+GEN	libavformat/libavformat.pc
+GEN	libavcodec/libavcodec.pc
+GEN	libswresample/libswresample.pc
+GEN	libswscale/libswscale.pc
+GEN	libavutil/libavutil.pc
+GEN	libavdevice/libavdevice.ver
+GEN	libavformat/libavformat.ver
+CC	libavcodec/012v.o
+CC	libavcodec/4xm.o
+CC	libavcodec/8bps.o
+CC	libavcodec/8svx.o
+CC	libavcodec/aac/aacdec.o
+CC	libavcodec/aac/aacdec_ac.o
+CC	libavcodec/aac/aacdec_fixed.o
+src/libavcodec/aac/aacdec.c: In function ‘decode_close’:
+src/libavcodec/aac/aacdec.c:1138:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1138 |         AACUSACConfig *usac = &oc->usac;
+      |         ^~~~~~~~~~~~~
+CC	libavcodec/aac/aacdec_float.o
+CC	libavcodec/aac/aacdec_lpd.o
+CC	libavcodec/aac/aacdec_tab.o
+CC	libavcodec/aac/aacdec_usac.o
+CC	libavcodec/aac_ac3_parser.o
+CC	libavcodec/aac_parser.o
+src/libavcodec/aac/aacdec_usac.c: In function ‘decode_usac_element_pair’:
+src/libavcodec/aac/aacdec_usac.c:218:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  218 |         int numBands = ((int[]){0,28,20,14,10,7,5,4})[e->mps.freq_res]; // ISO/IEC 23003-1:2007, 5.2, Table 39
+      |         ^~~
+src/libavcodec/aac/aacdec_usac.c:226:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  226 |         int otts_bands_phase = ((int[]){0,10,10,7,5,3,2,2})[e->mps.freq_res]; // Table 109 — Default value of bsOttBandsPhase
+      |         ^~~
+src/libavcodec/aac_ac3_parser.c: In function ‘ff_aac_ac3_parse’:
+src/libavcodec/aac_ac3_parser.c:151:17: warning: unused variable ‘profile’ [-Wunused-variable]
+  151 |             int profile;
+      |                 ^~~~~~~
+CC	libavcodec/aacps_common.o
+CC	libavcodec/aacps_fixed.o
+CC	libavcodec/aacps_float.o
+CC	libavcodec/aacpsdsp_fixed.o
+CC	libavcodec/aacpsdsp_float.o
+CC	libavcodec/aacsbr.o
+CC	libavcodec/aacsbr_fixed.o
+CC	libavcodec/aactab.o
+CC	libavcodec/aandcttab.o
+CC	libavcodec/aarch64/aacpsdsp_init_aarch64.o
+AS	libavcodec/aarch64/aacpsdsp_neon.o
+CC	libavcodec/aarch64/ac3dsp_init_aarch64.o
+AS	libavcodec/aarch64/ac3dsp_neon.o
+CC	libavcodec/aarch64/fdctdsp_init_aarch64.o
+AS	libavcodec/aarch64/fdctdsp_neon.o
+CC	libavcodec/aarch64/fmtconvert_init.o
+AS	libavcodec/aarch64/fmtconvert_neon.o
+CC	libavcodec/aarch64/h264chroma_init_aarch64.o
+AS	libavcodec/aarch64/h264cmc_neon.o
+CC	libavcodec/aarch64/h264dsp_init_aarch64.o
+AS	libavcodec/aarch64/h264dsp_neon.o
+AS	libavcodec/aarch64/h264idct_neon.o
+CC	libavcodec/aarch64/h264pred_init.o
+AS	libavcodec/aarch64/h264pred_neon.o
+CC	libavcodec/aarch64/h264qpel_init_aarch64.o
+AS	libavcodec/aarch64/h264qpel_neon.o
+AS	libavcodec/aarch64/h26x/epel_neon.o
+AS	libavcodec/aarch64/h26x/qpel_neon.o
+AS	libavcodec/aarch64/h26x/sao_neon.o
+AS	libavcodec/aarch64/hevcdsp_deblock_neon.o
+AS	libavcodec/aarch64/hevcdsp_idct_neon.o
+CC	libavcodec/aarch64/hevcdsp_init_aarch64.o
+CC	libavcodec/aarch64/hpeldsp_init_aarch64.o
+AS	libavcodec/aarch64/hpeldsp_neon.o
+CC	libavcodec/aarch64/idctdsp_init_aarch64.o
+AS	libavcodec/aarch64/idctdsp_neon.o
+CC	libavcodec/aarch64/me_cmp_init_aarch64.o
+AS	libavcodec/aarch64/me_cmp_neon.o
+CC	libavcodec/aarch64/mpegaudiodsp_init.o
+AS	libavcodec/aarch64/mpegaudiodsp_neon.o
+CC	libavcodec/aarch64/mpegvideoencdsp_init.o
+AS	libavcodec/aarch64/mpegvideoencdsp_neon.o
+CC	libavcodec/aarch64/opusdsp_init.o
+AS	libavcodec/aarch64/opusdsp_neon.o
+CC	libavcodec/aarch64/pixblockdsp_init_aarch64.o
+AS	libavcodec/aarch64/pixblockdsp_neon.o
+CC	libavcodec/aarch64/rv40dsp_init_aarch64.o
+CC	libavcodec/aarch64/sbrdsp_init_aarch64.o
+AS	libavcodec/aarch64/sbrdsp_neon.o
+AS	libavcodec/aarch64/simple_idct_neon.o
+CC	libavcodec/aarch64/synth_filter_init.o
+AS	libavcodec/aarch64/synth_filter_neon.o
+CC	libavcodec/aarch64/vc1dsp_init_aarch64.o
+AS	libavcodec/aarch64/vc1dsp_neon.o
+AS	libavcodec/aarch64/videodsp.o
+CC	libavcodec/aarch64/videodsp_init.o
+CC	libavcodec/aarch64/vorbisdsp_init.o
+AS	libavcodec/aarch64/vorbisdsp_neon.o
+CC	libavcodec/aarch64/vp8dsp_init_aarch64.o
+AS	libavcodec/aarch64/vp8dsp_neon.o
+CC	libavcodec/aarch64/vp9dsp_init_10bpp_aarch64.o
+CC	libavcodec/aarch64/vp9dsp_init_12bpp_aarch64.o
+CC	libavcodec/aarch64/vp9dsp_init_aarch64.o
+AS	libavcodec/aarch64/vp9itxfm_16bpp_neon.o
+AS	libavcodec/aarch64/vp9itxfm_neon.o
+AS	libavcodec/aarch64/vp9lpf_16bpp_neon.o
+AS	libavcodec/aarch64/vp9lpf_neon.o
+AS	libavcodec/aarch64/vp9mc_16bpp_neon.o
+AS	libavcodec/aarch64/vp9mc_aarch64.o
+AS	libavcodec/aarch64/vp9mc_neon.o
+AS	libavcodec/aarch64/vvc/alf.o
+CC	libavcodec/aarch64/vvc/dsp_init.o
+AS	libavcodec/aarch64/vvc/inter.o
+AS	libavcodec/aarch64/vvc/sad.o
+CC	libavcodec/aasc.o
+CC	libavcodec/ac3.o
+CC	libavcodec/ac3_channel_layout_tab.o
+CC	libavcodec/ac3_parser.o
+CC	libavcodec/ac3dec_data.o
+CC	libavcodec/ac3dec_fixed.o
+CC	libavcodec/ac3dec_float.o
+CC	libavcodec/ac3dsp.o
+CC	libavcodec/ac3tab.o
+CC	libavcodec/acelp_filters.o
+CC	libavcodec/acelp_pitch_delay.o
+CC	libavcodec/acelp_vectors.o
+CC	libavcodec/adpcm.o
+CC	libavcodec/adpcm_data.o
+CC	libavcodec/adts_header.o
+CC	libavcodec/adts_parser.o
+CC	libavcodec/adx.o
+CC	libavcodec/adx_parser.o
+CC	libavcodec/adxdec.o
+CC	libavcodec/agm.o
+In file included from src/libavcodec/ac3dec_fixed.c:156:
+In function ‘spx_strategy’,
+    inlined from ‘decode_audio_block’ at src/libavcodec/ac3dec.c:1142:24:
+src/libavcodec/ac3dec.c:854:37: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  854 |             s->channel_uses_spx[ch] = get_bits1(bc);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+In file included from src/libavcodec/ac3dec_fixed.c:51:
+src/libavcodec/ac3dec.h: In function ‘decode_audio_block’:
+src/libavcodec/ac3dec.h:144:13: note: at offset 7 into destination object ‘channel_uses_spx’ of size 7
+  144 |     uint8_t channel_uses_spx[AC3_MAX_CHANNELS]; ///< channel uses spectral extension        (chinspx)
+      |             ^~~~~~~~~~~~~~~~
+In file included from src/libavcodec/ac3dec_float.c:38:
+In function ‘spx_strategy’,
+    inlined from ‘decode_audio_block’ at src/libavcodec/ac3dec.c:1142:24:
+src/libavcodec/ac3dec.c:854:37: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  854 |             s->channel_uses_spx[ch] = get_bits1(bc);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+In file included from src/libavcodec/ac3dec_float.c:34:
+src/libavcodec/ac3dec.h: In function ‘decode_audio_block’:
+src/libavcodec/ac3dec.h:144:13: note: at offset 7 into destination object ‘channel_uses_spx’ of size 7
+  144 |     uint8_t channel_uses_spx[AC3_MAX_CHANNELS]; ///< channel uses spectral extension        (chinspx)
+      |             ^~~~~~~~~~~~~~~~
+CC	libavcodec/aic.o
+CC	libavcodec/alac.o
+CC	libavcodec/alac_data.o
+CC	libavcodec/alacdsp.o
+CC	libavcodec/aliaspixdec.o
+CC	libavcodec/allcodecs.o
+CC	libavcodec/alsdec.o
+CC	libavcodec/amr_parser.o
+CC	libavcodec/amrnbdec.o
+CC	libavcodec/amrwbdec.o
+CC	libavcodec/anm.o
+CC	libavcodec/ansi.o
+CC	libavcodec/aom_film_grain.o
+CC	libavcodec/apac.o
+CC	libavcodec/apedec.o
+CC	libavcodec/aptx.o
+CC	libavcodec/aptxdec.o
+CC	libavcodec/arbc.o
+CC	libavcodec/argo.o
+CC	libavcodec/ass.o
+CC	libavcodec/assdec.o
+CC	libavcodec/asv.o
+CC	libavcodec/asvdec.o
+CC	libavcodec/atrac.o
+CC	libavcodec/atrac1.o
+CC	libavcodec/atrac3.o
+CC	libavcodec/atrac3plus.o
+CC	libavcodec/atrac3plusdec.o
+CC	libavcodec/atrac3plusdsp.o
+CC	libavcodec/atrac9dec.o
+CC	libavcodec/atsc_a53.o
+CC	libavcodec/audiodsp.o
+CC	libavcodec/aura.o
+CC	libavcodec/av1_parse.o
+CC	libavcodec/av1_parser.o
+CC	libavcodec/av1dec.o
+CC	libavcodec/avcodec.o
+CC	libavcodec/avdct.o
+CC	libavcodec/avfft.o
+CC	libavcodec/avrndec.o
+CC	libavcodec/avs.o
+CC	libavcodec/avs2.o
+CC	libavcodec/avs2_parser.o
+CC	libavcodec/avs3_parser.o
+CC	libavcodec/avuidec.o
+CC	libavcodec/bethsoftvideo.o
+CC	libavcodec/bfi.o
+CC	libavcodec/bgmc.o
+CC	libavcodec/bink.o
+CC	libavcodec/binkaudio.o
+CC	libavcodec/binkdsp.o
+CC	libavcodec/bintext.o
+CC	libavcodec/bitpacked_dec.o
+CC	libavcodec/bitstream.o
+CC	libavcodec/bitstream_filters.o
+CC	libavcodec/blockdsp.o
+CC	libavcodec/bmp.o
+CC	libavcodec/bmp_parser.o
+CC	libavcodec/bmvaudio.o
+CC	libavcodec/bmvvideo.o
+CC	libavcodec/bonk.o
+CC	libavcodec/brenderpix.o
+CC	libavcodec/bsf.o
+CC	libavcodec/bsf/aac_adtstoasc.o
+CC	libavcodec/bsf/av1_frame_merge.o
+CC	libavcodec/bsf/av1_frame_split.o
+CC	libavcodec/bsf/chomp.o
+CC	libavcodec/bsf/av1_metadata.o
+CC	libavcodec/bsf/dca_core.o
+CC	libavcodec/bsf/dovi_rpu.o
+CC	libavcodec/bsf/dts2pts.o
+CC	libavcodec/bsf/dump_extradata.o
+CC	libavcodec/bsf/dv_error_marker.o
+CC	libavcodec/bsf/eac3_core.o
+CC	libavcodec/bsf/evc_frame_merge.o
+CC	libavcodec/bsf/extract_extradata.o
+CC	libavcodec/bsf/filter_units.o
+CC	libavcodec/bsf/h264_metadata.o
+CC	libavcodec/bsf/h264_mp4toannexb.o
+CC	libavcodec/bsf/h264_redundant_pps.o
+CC	libavcodec/bsf/h265_metadata.o
+CC	libavcodec/bsf/h266_metadata.o
+CC	libavcodec/bsf/hapqa_extract.o
+CC	libavcodec/bsf/hevc_mp4toannexb.o
+CC	libavcodec/bsf/imx_dump_header.o
+CC	libavcodec/bsf/media100_to_mjpegb.o
+CC	libavcodec/bsf/mjpeg2jpeg.o
+CC	libavcodec/bsf/mjpega_dump_header.o
+CC	libavcodec/bsf/movsub.o
+CC	libavcodec/bsf/mpeg2_metadata.o
+CC	libavcodec/bsf/mpeg4_unpack_bframes.o
+CC	libavcodec/bsf/noise.o
+CC	libavcodec/bsf/null.o
+CC	libavcodec/bsf/opus_metadata.o
+CC	libavcodec/bsf/pcm_rechunk.o
+CC	libavcodec/bsf/pgs_frame_merge.o
+CC	libavcodec/bsf/prores_metadata.o
+CC	libavcodec/bsf/remove_extradata.o
+CC	libavcodec/bsf/setts.o
+CC	libavcodec/bsf/showinfo.o
+CC	libavcodec/bsf/trace_headers.o
+CC	libavcodec/bsf/truehd_core.o
+CC	libavcodec/bsf/vp9_metadata.o
+CC	libavcodec/bsf/vp9_raw_reorder.o
+CC	libavcodec/bsf/vp9_superframe.o
+CC	libavcodec/bsf/vp9_superframe_split.o
+CC	libavcodec/bsf/vvc_mp4toannexb.o
+CC	libavcodec/bswapdsp.o
+CC	libavcodec/c93.o
+CC	libavcodec/cabac.o
+CC	libavcodec/canopus.o
+CC	libavcodec/cavs.o
+CC	libavcodec/cavs_parser.o
+CC	libavcodec/cavsdata.o
+CC	libavcodec/cavsdec.o
+CC	libavcodec/cavsdsp.o
+CC	libavcodec/cbrt_data.o
+CC	libavcodec/cbrt_data_fixed.o
+CC	libavcodec/cbs.o
+CC	libavcodec/cbs_av1.o
+CC	libavcodec/cbs_bsf.o
+CC	libavcodec/cbs_h2645.o
+CC	libavcodec/cbs_mpeg2.o
+CC	libavcodec/cbs_sei.o
+CC	libavcodec/cbs_vp8.o
+CC	libavcodec/cbs_vp9.o
+CC	libavcodec/ccaption_dec.o
+CC	libavcodec/cdgraphics.o
+CC	libavcodec/cdtoons.o
+CC	libavcodec/cdxl.o
+CC	libavcodec/celp_filters.o
+CC	libavcodec/celp_math.o
+CC	libavcodec/cfhd.o
+CC	libavcodec/cfhddata.o
+CC	libavcodec/cfhddsp.o
+CC	libavcodec/cga_data.o
+CC	libavcodec/cinepak.o
+CC	libavcodec/clearvideo.o
+CC	libavcodec/cljrdec.o
+CC	libavcodec/cllc.o
+CC	libavcodec/cngdec.o
+CC	libavcodec/codec_desc.o
+CC	libavcodec/codec_par.o
+CC	libavcodec/container_fifo.o
+CC	libavcodec/cook.o
+CC	libavcodec/cook_parser.o
+CC	libavcodec/cpia.o
+CC	libavcodec/cri.o
+CC	libavcodec/cri_parser.o
+CC	libavcodec/cscd.o
+CC	libavcodec/cyuv.o
+src/libavcodec/cri.c: In function ‘cri_decode_frame’:
+src/libavcodec/cri.c:225:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  225 |             int read_len = FFMIN(length, sizeof(codec_name) - 1);
+      |             ^~~
+CC	libavcodec/d3d11va.o
+CC	libavcodec/dca.o
+CC	libavcodec/dca_core.o
+CC	libavcodec/dca_exss.o
+CC	libavcodec/dca_lbr.o
+CC	libavcodec/dca_parser.o
+CC	libavcodec/dca_sample_rate_tab.o
+CC	libavcodec/dca_xll.o
+CC	libavcodec/dcadata.o
+CC	libavcodec/dcadct.o
+CC	libavcodec/dcadec.o
+CC	libavcodec/dcadsp.o
+CC	libavcodec/dcahuff.o
+CC	libavcodec/dct32_fixed.o
+CC	libavcodec/dct32_float.o
+CC	libavcodec/dds.o
+CC	libavcodec/decode.o
+CC	libavcodec/dfa.o
+CC	libavcodec/dfpwmdec.o
+CC	libavcodec/dirac.o
+CC	libavcodec/dirac_arith.o
+CC	libavcodec/dirac_dwt.o
+CC	libavcodec/dirac_parser.o
+CC	libavcodec/dirac_vlc.o
+CC	libavcodec/diracdec.o
+CC	libavcodec/diracdsp.o
+CC	libavcodec/diractab.o
+CC	libavcodec/dnxhd_parser.o
+CC	libavcodec/dnxhddata.o
+CC	libavcodec/dnxhddec.o
+CC	libavcodec/dolby_e.o
+CC	libavcodec/dolby_e_parse.o
+CC	libavcodec/dolby_e_parser.o
+CC	libavcodec/dovi_rpu.o
+CC	libavcodec/dovi_rpudec.o
+CC	libavcodec/dovi_rpuenc.o
+CC	libavcodec/dpcm.o
+CC	libavcodec/dpx.o
+CC	libavcodec/dpx_parser.o
+CC	libavcodec/dsd.o
+CC	libavcodec/dsddec.o
+CC	libavcodec/dsicinaudio.o
+CC	libavcodec/dsicinvideo.o
+CC	libavcodec/dss_sp.o
+CC	libavcodec/dstdec.o
+CC	libavcodec/dv.o
+CC	libavcodec/dv_profile.o
+CC	libavcodec/dvaudio_parser.o
+CC	libavcodec/dvaudiodec.o
+CC	libavcodec/dvbsub_parser.o
+CC	libavcodec/dvbsubdec.o
+CC	libavcodec/dvd_nav_parser.o
+CC	libavcodec/dvdata.o
+CC	libavcodec/dvdec.o
+CC	libavcodec/dvdsub.o
+CC	libavcodec/dvdsub_parser.o
+CC	libavcodec/dvdsubdec.o
+CC	libavcodec/dxtory.o
+CC	libavcodec/dxv.o
+CC	libavcodec/dynamic_hdr_vivid.o
+src/libavcodec/dxv.c: In function ‘dxv_decompress_opcodes’:
+src/libavcodec/dxv.c:280:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  280 |         int read_size = bytestream2_get_buffer(gb, dstp, op_size);
+      |         ^~~
+CC	libavcodec/eac3_data.o
+src/libavcodec/dxv.c: In function ‘dxv_decode’:
+src/libavcodec/dxv.c:984:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  984 |     unsigned old_size = ctx->tex_data_size;
+      |     ^~~~~~~~
+CC	libavcodec/eacmv.o
+CC	libavcodec/eaidct.o
+CC	libavcodec/eamad.o
+CC	libavcodec/eatgq.o
+CC	libavcodec/eatgv.o
+CC	libavcodec/eatqi.o
+CC	libavcodec/elbg.o
+CC	libavcodec/encode.o
+CC	libavcodec/error_resilience.o
+CC	libavcodec/escape124.o
+CC	libavcodec/escape130.o
+CC	libavcodec/evc_parse.o
+CC	libavcodec/evc_parser.o
+CC	libavcodec/evc_ps.o
+CC	libavcodec/evrcdec.o
+CC	libavcodec/exif.o
+CC	libavcodec/faandct.o
+CC	libavcodec/faanidct.o
+CC	libavcodec/fastaudio.o
+CC	libavcodec/faxcompr.o
+CC	libavcodec/fdctdsp.o
+CC	libavcodec/ffmpeg_cedar.o
+src/libavcodec/ffmpeg_cedar.c: In function ‘length_prefixed_summary’:
+src/libavcodec/ffmpeg_cedar.c:143:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  143 |         int type = nal_type(codec, data + offset, bytes);
+      |         ^~~
+src/libavcodec/ffmpeg_cedar.c: In function ‘seed_parameter_sets’:
+src/libavcodec/ffmpeg_cedar.c:228:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  228 |     int ret = av_grow_packet(packet, prefix_size);
+      |     ^~~
+src/libavcodec/ffmpeg_cedar.c: In function ‘pull_frame’:
+src/libavcodec/ffmpeg_cedar.c:505:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  505 |         const uint8_t *src = s->receive_buffer->data;
+      |         ^~~~~
+src/libavcodec/ffmpeg_cedar.c:529:13: warning: ‘pkt_pos’ is deprecated [-Wdeprecated-declarations]
+  529 |             frame->pkt_pos = s->timing[i].pos;
+      |             ^~~~~
+In file included from src/libavcodec/avcodec.h:36,
+                 from src/libavcodec/ffmpeg_cedar.c:12:
+src/libavutil/frame.h:699:13: note: declared here
+  699 |     int64_t pkt_pos;
+      |             ^~~~~~~
+src/libavcodec/ffmpeg_cedar.c: In function ‘cedar_receive’:
+src/libavcodec/ffmpeg_cedar.c:749:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  749 |             AVPacket *copy = av_packet_clone(s->input);
+      |             ^~~~~~~~
+src/libavcodec/ffmpeg_cedar.c:756:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  756 |         CedarTiming *timing = &s->timing[s->timing_next++ % TIMING_PACKETS];
+      |         ^~~~~~~~~~~
+CC	libavcodec/ffv1.o
+CC	libavcodec/ffv1dec.o
+CC	libavcodec/ffwavesynth.o
+CC	libavcodec/fic.o
+CC	libavcodec/fits.o
+CC	libavcodec/fitsdec.o
+CC	libavcodec/flac.o
+CC	libavcodec/flac_parser.o
+CC	libavcodec/flacdata.o
+CC	libavcodec/flacdec.o
+CC	libavcodec/flacdsp.o
+CC	libavcodec/flicvideo.o
+CC	libavcodec/flvdec.o
+CC	libavcodec/fmtconvert.o
+CC	libavcodec/fmvc.o
+CC	libavcodec/fraps.o
+CC	libavcodec/frwu.o
+CC	libavcodec/ftr.o
+CC	libavcodec/ftr_parser.o
+CC	libavcodec/g722.o
+CC	libavcodec/g722dec.o
+CC	libavcodec/g722dsp.o
+CC	libavcodec/g723_1.o
+CC	libavcodec/g723_1_parser.o
+CC	libavcodec/g723_1dec.o
+CC	libavcodec/g726.o
+CC	libavcodec/g729_parser.o
+CC	libavcodec/g729dec.o
+CC	libavcodec/g729postfilter.o
+CC	libavcodec/gdv.o
+CC	libavcodec/gemdec.o
+CC	libavcodec/get_buffer.o
+CC	libavcodec/gif_parser.o
+CC	libavcodec/gifdec.o
+CC	libavcodec/golomb.o
+CC	libavcodec/gsm_parser.o
+CC	libavcodec/gsmdec.o
+CC	libavcodec/gsmdec_data.o
+CC	libavcodec/h261.o
+CC	libavcodec/h261_parser.o
+CC	libavcodec/h261data.o
+CC	libavcodec/h261dec.o
+CC	libavcodec/h263.o
+CC	libavcodec/h263_parser.o
+CC	libavcodec/h263data.o
+CC	libavcodec/h263dec.o
+CC	libavcodec/h263dsp.o
+CC	libavcodec/h2645_parse.o
+CC	libavcodec/h2645_sei.o
+CC	libavcodec/h2645_vui.o
+CC	libavcodec/h2645data.o
+CC	libavcodec/h264_cabac.o
+CC	libavcodec/h264_cavlc.o
+CC	libavcodec/h264_direct.o
+CC	libavcodec/h264_levels.o
+CC	libavcodec/h264_loopfilter.o
+CC	libavcodec/h264_mb.o
+CC	libavcodec/h264_parse.o
+CC	libavcodec/h264_parser.o
+CC	libavcodec/h264_picture.o
+src/libavcodec/h264_parser.c: In function ‘scan_mmco_reset’:
+src/libavcodec/h264_parser.c:229:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  229 |             MMCOOpcode opcode = get_ue_golomb_31(gb);
+      |             ^~~~~~~~~~
+CC	libavcodec/h264_ps.o
+CC	libavcodec/h264_refs.o
+CC	libavcodec/h264_sei.o
+CC	libavcodec/h264_slice.o
+CC	libavcodec/h264chroma.o
+CC	libavcodec/h264data.o
+CC	libavcodec/h264dec.o
+CC	libavcodec/h264dsp.o
+CC	libavcodec/h264idct.o
+CC	libavcodec/h264pred.o
+CC	libavcodec/h264qpel.o
+CC	libavcodec/h265_profile_level.o
+CC	libavcodec/h274.o
+CC	libavcodec/half2float.o
+CC	libavcodec/hap.o
+CC	libavcodec/hapdec.o
+CC	libavcodec/hcadec.o
+CC	libavcodec/hcom.o
+CC	libavcodec/hdr_parser.o
+CC	libavcodec/hdrdec.o
+CC	libavcodec/hevc/cabac.o
+CC	libavcodec/hevc/data.o
+CC	libavcodec/hevc/dsp.o
+CC	libavcodec/hevc/filter.o
+CC	libavcodec/hevc/hevcdec.o
+CC	libavcodec/hevc/mvs.o
+CC	libavcodec/hevc/parse.o
+CC	libavcodec/hevc/parser.o
+CC	libavcodec/hevc/pred.o
+CC	libavcodec/hevc/ps.o
+src/libavcodec/hevc/hevcdec.c: In function ‘pred_weight_table’:
+src/libavcodec/hevc/hevcdec.c:199:32: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  199 |         luma_weight_l0_flag[i] = get_bits1(gb);
+      |         ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:177:13: note: at offset 16 into destination object ‘luma_weight_l0_flag’ of size 16
+  177 |     uint8_t luma_weight_l0_flag[16];
+      |             ^~~~~~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:207:38: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  207 |             chroma_weight_l0_flag[i] = get_bits1(gb);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:178:13: note: at offset 16 into destination object ‘chroma_weight_l0_flag’ of size 16
+  178 |     uint8_t chroma_weight_l0_flag[16];
+      |             ^~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:243:36: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  243 |             luma_weight_l1_flag[i] = get_bits1(gb);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:179:13: note: at offset 16 into destination object ‘luma_weight_l1_flag’ of size 16
+  179 |     uint8_t luma_weight_l1_flag[16];
+      |             ^~~~~~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:251:42: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  251 |                 chroma_weight_l1_flag[i] = get_bits1(gb);
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+src/libavcodec/hevc/hevcdec.c:180:13: note: at offset 16 into destination object ‘chroma_weight_l1_flag’ of size 16
+  180 |     uint8_t chroma_weight_l1_flag[16];
+      |             ^~~~~~~~~~~~~~~~~~~~~
+CC	libavcodec/hevc/refs.o
+src/libavcodec/hevc/refs.c: In function ‘alloc_frame’:
+src/libavcodec/hevc/refs.c:138:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  138 |         size_t rpl_bytes;
+      |         ^~~~~~
+CC	libavcodec/hevc/sei.o
+CC	libavcodec/hnm4video.o
+CC	libavcodec/hpeldsp.o
+CC	libavcodec/hq_hqa.o
+CC	libavcodec/hq_hqadsp.o
+CC	libavcodec/hqx.o
+CC	libavcodec/hqxdsp.o
+CC	libavcodec/hqxvlc.o
+CC	libavcodec/htmlsubtitles.o
+CC	libavcodec/huffman.o
+CC	libavcodec/huffyuv.o
+CC	libavcodec/huffyuvdec.o
+CC	libavcodec/huffyuvdsp.o
+CC	libavcodec/idcinvideo.o
+CC	libavcodec/idctdsp.o
+CC	libavcodec/iff.o
+CC	libavcodec/ilbcdec.o
+CC	libavcodec/imc.o
+CC	libavcodec/imgconvert.o
+CC	libavcodec/imm4.o
+CC	libavcodec/imm5.o
+CC	libavcodec/imx.o
+CC	libavcodec/indeo2.o
+CC	libavcodec/indeo3.o
+CC	libavcodec/indeo4.o
+CC	libavcodec/indeo5.o
+CC	libavcodec/intelh263dec.o
+CC	libavcodec/interplayacm.o
+CC	libavcodec/interplayvideo.o
+CC	libavcodec/intrax8.o
+CC	libavcodec/intrax8dsp.o
+CC	libavcodec/ipu_parser.o
+CC	libavcodec/ituh263dec.o
+CC	libavcodec/ivi.o
+CC	libavcodec/ivi_dsp.o
+CC	libavcodec/jacosubdec.o
+CC	libavcodec/jfdctfst.o
+CC	libavcodec/jfdctint.o
+CC	libavcodec/jni.o
+CC	libavcodec/jpeg2000.o
+CC	libavcodec/jpeg2000_parser.o
+CC	libavcodec/jpeg2000dec.o
+CC	libavcodec/jpeg2000dsp.o
+CC	libavcodec/jpeg2000dwt.o
+CC	libavcodec/jpeg2000htdec.o
+CC	libavcodec/jpegls.o
+CC	libavcodec/jpeglsdec.o
+CC	libavcodec/jpegquanttables.o
+src/libavcodec/jpeg2000dec.c: In function ‘get_siz’:
+src/libavcodec/jpeg2000dec.c:285:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  285 |     int cdef_used = 0;
+      |     ^~~
+src/libavcodec/jpeg2000dec.c:305:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  305 |         int i_remapped = s->cdef[i] ? s->cdef[i]-1 : (s->ncomponents-1);
+      |         ^~~
+CC	libavcodec/jpegtables.o
+CC	libavcodec/jpegxl_parse.o
+CC	libavcodec/jpegxl_parser.o
+CC	libavcodec/jrevdct.o
+src/libavcodec/jrevdct.c:215:28: warning: argument 1 of type ‘int16_t[64]’ {aka ‘short int[64]’} with mismatched bound [-Warray-parameter=]
+  215 | void ff_j_rev_dct(DCTBLOCK data)
+      |                   ~~~~~~~~~^~~~
+In file included from src/libavcodec/jrevdct.c:70:
+src/libavcodec/dct.h:30:28: note: previously declared as ‘int16_t *’ {aka ‘short int *’}
+   30 | void ff_j_rev_dct(int16_t *data);
+      |                   ~~~~~~~~~^~~~
+src/libavcodec/jrevdct.c:953:29: warning: argument 1 of type ‘int16_t[64]’ {aka ‘short int[64]’} with mismatched bound [-Warray-parameter=]
+  953 | void ff_j_rev_dct4(DCTBLOCK data)
+      |                    ~~~~~~~~~^~~~
+src/libavcodec/dct.h:31:29: note: previously declared as ‘int16_t *’ {aka ‘short int *’}
+   31 | void ff_j_rev_dct4(int16_t *data);
+      |                    ~~~~~~~~~^~~~
+src/libavcodec/jrevdct.c:1140:29: warning: argument 1 of type ‘int16_t[64]’ {aka ‘short int[64]’} with mismatched bound [-Warray-parameter=]
+ 1140 | void ff_j_rev_dct2(DCTBLOCK data){
+      |                    ~~~~~~~~~^~~~
+src/libavcodec/dct.h:32:29: note: previously declared as ‘int16_t *’ {aka ‘short int *’}
+   32 | void ff_j_rev_dct2(int16_t *data);
+      |                    ~~~~~~~~~^~~~
+src/libavcodec/jrevdct.c:1155:29: warning: argument 1 of type ‘int16_t[64]’ {aka ‘short int[64]’} with mismatched bound [-Warray-parameter=]
+ 1155 | void ff_j_rev_dct1(DCTBLOCK data){
+      |                    ~~~~~~~~~^~~~
+src/libavcodec/dct.h:33:29: note: previously declared as ‘int16_t *’ {aka ‘short int *’}
+   33 | void ff_j_rev_dct1(int16_t *data);
+      |                    ~~~~~~~~~^~~~
+CC	libavcodec/jvdec.o
+CC	libavcodec/kbdwin.o
+CC	libavcodec/kgv1dec.o
+CC	libavcodec/kmvc.o
+CC	libavcodec/lagarith.o
+CC	libavcodec/lagarithrac.o
+CC	libavcodec/latm_parser.o
+CC	libavcodec/lcldec.o
+CC	libavcodec/leaddec.o
+CC	libavcodec/loco.o
+CC	libavcodec/lossless_audiodsp.o
+CC	libavcodec/lossless_videodsp.o
+src/libavcodec/lcldec.c: In function ‘decode_frame’:
+src/libavcodec/lcldec.c:309:17: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  309 |                 unsigned uqvq = AV_RL16(encoded+pixel_ptr);
+      |                 ^~~~~~~~
+CC	libavcodec/lsp.o
+CC	libavcodec/lzf.o
+CC	libavcodec/lzw.o
+CC	libavcodec/m101.o
+CC	libavcodec/mace.o
+CC	libavcodec/magicyuv.o
+src/libavcodec/lzf.c: In function ‘ff_lzf_uncompress’:
+src/libavcodec/lzf.c:72:13: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+   72 |             int s2 = bytestream2_get_buffer(gb, p, s);
+      |             ^~~
+CC	libavcodec/mathtables.o
+CC	libavcodec/mdec.o
+CC	libavcodec/me_cmp.o
+CC	libavcodec/mediacodec.o
+CC	libavcodec/metasound.o
+CC	libavcodec/microdvddec.o
+CC	libavcodec/midivid.o
+CC	libavcodec/mimic.o
+CC	libavcodec/misc4.o
+CC	libavcodec/misc4_parser.o
+CC	libavcodec/mjpeg_parser.o
+CC	libavcodec/mjpegbdec.o
+CC	libavcodec/mjpegdec.o
+CC	libavcodec/mjpegdec_common.o
+CC	libavcodec/mlp.o
+CC	libavcodec/mlp_parse.o
+CC	libavcodec/mlp_parser.o
+CC	libavcodec/mlpdec.o
+CC	libavcodec/mlpdsp.o
+CC	libavcodec/mlz.o
+CC	libavcodec/mmvideo.o
+CC	libavcodec/mobiclip.o
+CC	libavcodec/motion_est.o
+CC	libavcodec/motionpixels.o
+CC	libavcodec/movtextdec.o
+CC	libavcodec/mpc.o
+CC	libavcodec/mpc7.o
+CC	libavcodec/mpc8.o
+CC	libavcodec/mpeg12.o
+src/libavcodec/mpc8.c: In function ‘mpc8_decode_init’:
+src/libavcodec/mpc8.c:158:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  158 |     uint8_t sample_rate_idx = get_bits(&gb, 3);
+      |     ^~~~~~~
+CC	libavcodec/mpeg12data.o
+CC	libavcodec/mpeg12dec.o
+CC	libavcodec/mpeg12framerate.o
+CC	libavcodec/mpeg4audio.o
+CC	libavcodec/mpeg4audio_sample_rates.o
+CC	libavcodec/mpeg4video.o
+CC	libavcodec/mpeg4video_parser.o
+CC	libavcodec/mpeg4videodec.o
+CC	libavcodec/mpeg4videodsp.o
+CC	libavcodec/mpeg_er.o
+CC	libavcodec/mpegaudio.o
+CC	libavcodec/mpegaudio_parser.o
+CC	libavcodec/mpegaudiodata.o
+CC	libavcodec/mpegaudiodec_common.o
+CC	libavcodec/mpegaudiodec_fixed.o
+CC	libavcodec/mpegaudiodec_float.o
+CC	libavcodec/mpegaudiodecheader.o
+CC	libavcodec/mpegaudiodsp.o
+CC	libavcodec/mpegaudiodsp_data.o
+CC	libavcodec/mpegaudiodsp_fixed.o
+CC	libavcodec/mpegaudiodsp_float.o
+CC	libavcodec/mpegaudiotabs.o
+CC	libavcodec/mpegpicture.o
+CC	libavcodec/mpegutils.o
+CC	libavcodec/mpegvideo.o
+CC	libavcodec/mpegvideo_dec.o
+CC	libavcodec/mpegvideo_enc.o
+CC	libavcodec/mpegvideo_motion.o
+src/libavcodec/mpegvideo_enc.c: In function ‘write_mb_info’:
+src/libavcodec/mpegvideo_enc.c:2805:5: warning: ‘pred_x’ is used uninitialized [-Wuninitialized]
+ 2805 |     bytestream_put_byte(&ptr, pred_x); /* hmv1 */
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/mpegvideo_enc.c:2798:9: note: ‘pred_x’ was declared here
+ 2798 |     int pred_x, pred_y;
+      |         ^~~~~~
+src/libavcodec/mpegvideo_enc.c:2806:5: warning: ‘pred_y’ is used uninitialized [-Wuninitialized]
+ 2806 |     bytestream_put_byte(&ptr, pred_y); /* vmv1 */
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/mpegvideo_enc.c:2798:17: note: ‘pred_y’ was declared here
+ 2798 |     int pred_x, pred_y;
+      |                 ^~~~~~
+CC	libavcodec/mpegvideo_parser.o
+CC	libavcodec/mpegvideodata.o
+CC	libavcodec/mpegvideoencdsp.o
+CC	libavcodec/mpl2dec.o
+CC	libavcodec/mqc.o
+CC	libavcodec/mqcdec.o
+CC	libavcodec/msgsmdec.o
+CC	libavcodec/msmpeg4.o
+CC	libavcodec/msmpeg4_vc1_data.o
+CC	libavcodec/msmpeg4data.o
+CC	libavcodec/msmpeg4dec.o
+CC	libavcodec/msp2dec.o
+CC	libavcodec/msrle.o
+CC	libavcodec/msrledec.o
+CC	libavcodec/mss1.o
+CC	libavcodec/mss12.o
+CC	libavcodec/mss2.o
+CC	libavcodec/mss2dsp.o
+CC	libavcodec/mss3.o
+CC	libavcodec/mss34dsp.o
+CC	libavcodec/mss4.o
+CC	libavcodec/msvideo1.o
+CC	libavcodec/mv30.o
+CC	libavcodec/mvcdec.o
+CC	libavcodec/mxpegdec.o
+CC	libavcodec/nellymoser.o
+CC	libavcodec/nellymoserdec.o
+CC	libavcodec/neon/mpegvideo.o
+CC	libavcodec/notchlc.o
+CC	libavcodec/null.o
+CC	libavcodec/nuv.o
+CC	libavcodec/on2avc.o
+CC	libavcodec/on2avcdata.o
+CC	libavcodec/options.o
+CC	libavcodec/opus/celt.o
+CC	libavcodec/opus/dec.o
+CC	libavcodec/opus/dec_celt.o
+CC	libavcodec/opus/dsp.o
+CC	libavcodec/opus/parse.o
+CC	libavcodec/opus/parser.o
+CC	libavcodec/opus/pvq.o
+CC	libavcodec/opus/rc.o
+CC	libavcodec/opus/silk.o
+CC	libavcodec/opus/tab.o
+CC	libavcodec/osq.o
+CC	libavcodec/packet.o
+CC	libavcodec/pafaudio.o
+CC	libavcodec/pafvideo.o
+CC	libavcodec/parser.o
+CC	libavcodec/parsers.o
+CC	libavcodec/pcm-bluray.o
+CC	libavcodec/pcm-dvd.o
+CC	libavcodec/pcm.o
+CC	libavcodec/pcx.o
+CC	libavcodec/pgssubdec.o
+src/libavcodec/pcm.c: In function ‘pcm_decode_init’:
+src/libavcodec/pcm.c:287:5: warning: ‘sample_fmts’ is deprecated [-Wdeprecated-declarations]
+  287 |     avctx->sample_fmt = avctx->codec->sample_fmts[0];
+      |     ^~~~~
+In file included from src/libavcodec/avcodec.h:41,
+                 from src/libavcodec/pcm.c:34:
+src/libavcodec/codec.h:219:32: note: declared here
+  219 |     const enum AVSampleFormat *sample_fmts; ///< @deprecated use avcodec_get_supported_config()
+      |                                ^~~~~~~~~~~
+src/libavcodec/pcm.c: At top level:
+src/libavcodec/pcm.c:96:12: warning: ‘pcm_encode_frame’ defined but not used [-Wunused-function]
+   96 | static int pcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
+      |            ^~~~~~~~~~~~~~~~
+src/libavcodec/pcm.c:41:20: warning: ‘pcm_encode_init’ defined but not used [-Wunused-function]
+   41 | static av_cold int pcm_encode_init(AVCodecContext *avctx)
+      |                    ^~~~~~~~~~~~~~~
+CC	libavcodec/pgxdec.o
+CC	libavcodec/photocd.o
+CC	libavcodec/pictordec.o
+CC	libavcodec/pixblockdsp.o
+CC	libavcodec/pixlet.o
+CC	libavcodec/png_parser.o
+CC	libavcodec/pnm.o
+CC	libavcodec/pnm_parser.o
+CC	libavcodec/pnmdec.o
+CC	libavcodec/profiles.o
+CC	libavcodec/proresdata.o
+CC	libavcodec/proresdsp.o
+CC	libavcodec/proresdec.o
+CC	libavcodec/prosumer.o
+CC	libavcodec/psd.o
+CC	libavcodec/pthread.o
+CC	libavcodec/pthread_frame.o
+CC	libavcodec/pthread_slice.o
+CC	libavcodec/ptx.o
+CC	libavcodec/qcelpdec.o
+CC	libavcodec/qdm2.o
+CC	libavcodec/qdmc.o
+CC	libavcodec/qdrw.o
+CC	libavcodec/qoadec.o
+CC	libavcodec/qoi_parser.o
+CC	libavcodec/qoidec.o
+CC	libavcodec/qpeg.o
+CC	libavcodec/qpeldsp.o
+CC	libavcodec/qsv_api.o
+CC	libavcodec/qtrle.o
+CC	libavcodec/r210dec.o
+CC	libavcodec/ra144.o
+CC	libavcodec/ra144dec.o
+CC	libavcodec/ra288.o
+CC	libavcodec/ralf.o
+CC	libavcodec/rangecoder.o
+CC	libavcodec/ratecontrol.o
+CC	libavcodec/raw.o
+CC	libavcodec/rawdec.o
+CC	libavcodec/realtextdec.o
+CC	libavcodec/refstruct.o
+CC	libavcodec/rka.o
+CC	libavcodec/rl.o
+CC	libavcodec/rl2.o
+CC	libavcodec/roqvideo.o
+CC	libavcodec/roqvideodec.o
+CC	libavcodec/rpza.o
+CC	libavcodec/rtjpeg.o
+CC	libavcodec/rtv1.o
+CC	libavcodec/rv10.o
+CC	libavcodec/rv30.o
+CC	libavcodec/rv30dsp.o
+CC	libavcodec/rv34.o
+CC	libavcodec/rv34_parser.o
+CC	libavcodec/rv34dsp.o
+CC	libavcodec/rv40.o
+CC	libavcodec/rv40dsp.o
+CC	libavcodec/s302m.o
+CC	libavcodec/samidec.o
+CC	libavcodec/sanm.o
+CC	libavcodec/sbc.o
+CC	libavcodec/sbc_parser.o
+CC	libavcodec/sbcdec.o
+CC	libavcodec/sbcdec_data.o
+CC	libavcodec/sbrdsp.o
+CC	libavcodec/sbrdsp_fixed.o
+CC	libavcodec/scpr.o
+CC	libavcodec/sga.o
+CC	libavcodec/sgidec.o
+CC	libavcodec/sgirledec.o
+CC	libavcodec/sheervideo.o
+CC	libavcodec/shorten.o
+src/libavcodec/sga.c: In function ‘decode_palmapdata’:
+src/libavcodec/sga.c:257:9: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+  257 |     int ret;
+      |         ^~~
+src/libavcodec/sga.c: In function ‘decode_tiledata’:
+src/libavcodec/sga.c:282:9: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+  282 |     int ret;
+      |         ^~~
+CC	libavcodec/simple_idct.o
+CC	libavcodec/sinewin.o
+CC	libavcodec/sipr.o
+CC	libavcodec/sipr16k.o
+CC	libavcodec/sipr_parser.o
+CC	libavcodec/siren.o
+CC	libavcodec/smacker.o
+CC	libavcodec/smc.o
+CC	libavcodec/snappy.o
+CC	libavcodec/snow.o
+CC	libavcodec/snow_dwt.o
+CC	libavcodec/snowdec.o
+CC	libavcodec/sonic.o
+CC	libavcodec/sp5xdec.o
+CC	libavcodec/speedhq.o
+CC	libavcodec/speedhqdec.o
+CC	libavcodec/speexdec.o
+CC	libavcodec/srtdec.o
+CC	libavcodec/startcode.o
+CC	libavcodec/subviewerdec.o
+CC	libavcodec/sunrast.o
+CC	libavcodec/svq1.o
+CC	libavcodec/svq1dec.o
+CC	libavcodec/svq3.o
+CC	libavcodec/synth_filter.o
+CC	libavcodec/tak.o
+CC	libavcodec/tak_parser.o
+CC	libavcodec/takdec.o
+CC	libavcodec/takdsp.o
+CC	libavcodec/targa.o
+CC	libavcodec/targa_y216dec.o
+CC	libavcodec/textdec.o
+CC	libavcodec/texturedsp.o
+CC	libavcodec/threadprogress.o
+CC	libavcodec/tiertexseqv.o
+CC	libavcodec/tiff.o
+CC	libavcodec/tiff_common.o
+CC	libavcodec/tmv.o
+CC	libavcodec/to_upper4.o
+CC	libavcodec/tpeldsp.o
+CC	libavcodec/truemotion1.o
+CC	libavcodec/truemotion2.o
+CC	libavcodec/truemotion2rt.o
+CC	libavcodec/truespeech.o
+CC	libavcodec/tscc2.o
+CC	libavcodec/tta.o
+CC	libavcodec/ttadata.o
+CC	libavcodec/ttadsp.o
+CC	libavcodec/twinvq.o
+CC	libavcodec/twinvqdec.o
+CC	libavcodec/txd.o
+CC	libavcodec/ulti.o
+CC	libavcodec/utils.o
+CC	libavcodec/utvideodec.o
+CC	libavcodec/utvideodsp.o
+CC	libavcodec/v210dec.o
+CC	libavcodec/v210x.o
+CC	libavcodec/v308dec.o
+CC	libavcodec/v408dec.o
+CC	libavcodec/v410dec.o
+CC	libavcodec/vb.o
+CC	libavcodec/vble.o
+CC	libavcodec/vbndec.o
+CC	libavcodec/vc1.o
+CC	libavcodec/vc1_block.o
+CC	libavcodec/vc1_loopfilter.o
+CC	libavcodec/vc1_mc.o
+CC	libavcodec/vc1_parser.o
+CC	libavcodec/vc1_pred.o
+CC	libavcodec/vc1data.o
+CC	libavcodec/vc1dec.o
+CC	libavcodec/vc1dsp.o
+CC	libavcodec/vcr1.o
+CC	libavcodec/version.o
+CC	libavcodec/videodsp.o
+CC	libavcodec/vima.o
+CC	libavcodec/vlc.o
+CC	libavcodec/vmdaudio.o
+CC	libavcodec/vmdvideo.o
+CC	libavcodec/vmixdec.o
+CC	libavcodec/vmnc.o
+CC	libavcodec/vorbis.o
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 3 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+In file included from src/libavcodec/vlc.c:39:
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:45:18: note: while referencing ‘val16’
+   45 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 4 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:45:18: note: while referencing ‘val16’
+   45 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 5 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:45:18: note: while referencing ‘val16’
+   45 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+CC	libavcodec/vorbis_data.o
+CC	libavcodec/vorbis_parser.o
+CC	libavcodec/vorbisdec.o
+CC	libavcodec/vorbisdsp.o
+CC	libavcodec/vp3.o
+CC	libavcodec/vp3_parser.o
+CC	libavcodec/vp3dsp.o
+CC	libavcodec/vp5.o
+CC	libavcodec/vp56.o
+CC	libavcodec/vp56data.o
+CC	libavcodec/vp56dsp.o
+CC	libavcodec/vp6.o
+CC	libavcodec/vp6dsp.o
+CC	libavcodec/vp8.o
+CC	libavcodec/vp8_parser.o
+CC	libavcodec/vp8data.o
+CC	libavcodec/vp8dsp.o
+CC	libavcodec/vp9.o
+CC	libavcodec/vp9_parser.o
+CC	libavcodec/vp9block.o
+CC	libavcodec/vp9data.o
+CC	libavcodec/vp9dsp.o
+CC	libavcodec/vp9dsp_10bpp.o
+CC	libavcodec/vp9dsp_12bpp.o
+CC	libavcodec/vp9dsp_8bpp.o
+CC	libavcodec/vp9lpf.o
+CC	libavcodec/vp9mvs.o
+CC	libavcodec/vp9prob.o
+CC	libavcodec/vp9recon.o
+CC	libavcodec/vpx_rac.o
+CC	libavcodec/vqavideo.o
+CC	libavcodec/vqcdec.o
+CC	libavcodec/vvc/cabac.o
+CC	libavcodec/vvc/ctu.o
+CC	libavcodec/vvc/data.o
+CC	libavcodec/vvc/dec.o
+CC	libavcodec/vvc/dsp.o
+CC	libavcodec/vvc/filter.o
+CC	libavcodec/vvc/inter.o
+CC	libavcodec/vvc/intra.o
+CC	libavcodec/vvc/intra_utils.o
+CC	libavcodec/vvc/itx_1d.o
+CC	libavcodec/vvc/mvs.o
+CC	libavcodec/vvc/ps.o
+CC	libavcodec/vvc/refs.o
+CC	libavcodec/vvc/thread.o
+CC	libavcodec/vvc_parser.o
+CC	libavcodec/wavarc.o
+CC	libavcodec/wavpack.o
+CC	libavcodec/wavpackdata.o
+CC	libavcodec/wbmpdec.o
+CC	libavcodec/webp.o
+CC	libavcodec/webp_parser.o
+CC	libavcodec/webvttdec.o
+CC	libavcodec/wma.o
+CC	libavcodec/wma_common.o
+CC	libavcodec/wma_freqs.o
+CC	libavcodec/wmadec.o
+CC	libavcodec/wmalosslessdec.o
+CC	libavcodec/wmaprodec.o
+In function ‘wma_decode_block’,
+    inlined from ‘wma_decode_frame’ at src/libavcodec/wmadec.c:803:15:
+src/libavcodec/wmadec.c:519:30: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  519 |         s->channel_coded[ch] = a;
+      |         ~~~~~~~~~~~~~~~~~~~~~^~~
+In file included from src/libavcodec/wmadec.c:45:
+src/libavcodec/wma.h: In function ‘wma_decode_frame’:
+src/libavcodec/wma.h:112:13: note: at offset 2 into destination object ‘channel_coded’ of size 2
+  112 |     uint8_t channel_coded[MAX_CHANNELS];    ///< true if channel is coded
+      |             ^~~~~~~~~~~~~
+CC	libavcodec/wmavoice.o
+CC	libavcodec/wmv2.o
+CC	libavcodec/wmv2data.o
+CC	libavcodec/wmv2dec.o
+CC	libavcodec/wmv2dsp.o
+CC	libavcodec/wnv1.o
+CC	libavcodec/wrapped_avframe.o
+CC	libavcodec/ws-snd1.o
+CC	libavcodec/xan.o
+CC	libavcodec/xbm_parser.o
+CC	libavcodec/xbmdec.o
+CC	libavcodec/xface.o
+CC	libavcodec/xfacedec.o
+CC	libavcodec/xiph.o
+CC	libavcodec/xl.o
+CC	libavcodec/xma_parser.o
+CC	libavcodec/xpmdec.o
+CC	libavcodec/xsubdec.o
+CC	libavcodec/xvididct.o
+CC	libavcodec/xwd_parser.o
+CC	libavcodec/xwddec.o
+CC	libavcodec/xxan.o
+CC	libavcodec/y41pdec.o
+CC	libavcodec/ylc.o
+CC	libavcodec/yop.o
+CC	libavcodec/yuv4dec.o
+CC	libswresample/aarch64/audio_convert_init.o
+AS	libswresample/aarch64/audio_convert_neon.o
+AS	libswresample/aarch64/resample.o
+CC	libswresample/aarch64/resample_init.o
+CC	libswresample/audioconvert.o
+CC	libswresample/dither.o
+CC	libswresample/options.o
+CC	libswresample/rematrix.o
+CC	libswresample/resample.o
+CC	libswresample/resample_dsp.o
+CC	libswresample/swresample.o
+CC	libswresample/swresample_frame.o
+CC	libswresample/version.o
+CC	libavutil/aarch64/cpu.o
+CC	libavutil/aarch64/float_dsp_init.o
+AS	libavutil/aarch64/float_dsp_neon.o
+CC	libavutil/aarch64/tx_float_init.o
+AS	libavutil/aarch64/tx_float_neon.o
+CC	libavutil/adler32.o
+CC	libavutil/aes.o
+CC	libavutil/aes_ctr.o
+CC	libavutil/ambient_viewing_environment.o
+CC	libavutil/audio_fifo.o
+CC	libavutil/avsscanf.o
+CC	libavutil/avstring.o
+CC	libavutil/base64.o
+CC	libavutil/blowfish.o
+CC	libavutil/bprint.o
+CC	libavutil/buffer.o
+CC	libavutil/camellia.o
+CC	libavutil/cast5.o
+CC	libavutil/channel_layout.o
+CC	libavutil/cpu.o
+CC	libavutil/crc.o
+CC	libavutil/csp.o
+CC	libavutil/des.o
+CC	libavutil/detection_bbox.o
+CC	libavutil/dict.o
+CC	libavutil/display.o
+CC	libavutil/dovi_meta.o
+CC	libavutil/downmix_info.o
+CC	libavutil/encryption_info.o
+CC	libavutil/error.o
+CC	libavutil/eval.o
+CC	libavutil/executor.o
+CC	libavutil/fifo.o
+src/libavutil/eval.c: In function ‘make_eval_expr’:
+src/libavutil/eval.c:546:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  546 |     AVExpr *e = av_mallocz(sizeof(AVExpr));
+      |     ^~~~~~
+CC	libavutil/file.o
+CC	libavutil/file_open.o
+CC	libavutil/film_grain_params.o
+CC	libavutil/fixed_dsp.o
+CC	libavutil/float_dsp.o
+CC	libavutil/frame.o
+CC	libavutil/hash.o
+CC	libavutil/hdr_dynamic_metadata.o
+CC	libavutil/hdr_dynamic_vivid_metadata.o
+CC	libavutil/hmac.o
+CC	libavutil/hwcontext.o
+CC	libavutil/hwcontext_stub.o
+CC	libavutil/iamf.o
+CC	libavutil/imgutils.o
+CC	libavutil/integer.o
+CC	libavutil/intmath.o
+CC	libavutil/lfg.o
+CC	libavutil/lls.o
+CC	libavutil/log.o
+CC	libavutil/log2_tab.o
+CC	libavutil/lzo.o
+CC	libavutil/mastering_display_metadata.o
+CC	libavutil/mathematics.o
+CC	libavutil/md5.o
+CC	libavutil/mem.o
+CC	libavutil/murmur3.o
+CC	libavutil/opt.o
+CC	libavutil/parseutils.o
+CC	libavutil/pixdesc.o
+CC	libavutil/pixelutils.o
+CC	libavutil/random_seed.o
+CC	libavutil/rational.o
+CC	libavutil/rc4.o
+CC	libavutil/reverse.o
+CC	libavutil/ripemd.o
+CC	libavutil/samplefmt.o
+CC	libavutil/sha.o
+CC	libavutil/sha512.o
+CC	libavutil/slicethread.o
+CC	libavutil/spherical.o
+CC	libavutil/stereo3d.o
+CC	libavutil/tea.o
+CC	libavutil/threadmessage.o
+CC	libavutil/time.o
+CC	libavutil/timecode.o
+CC	libavutil/timestamp.o
+CC	libavutil/tree.o
+CC	libavutil/twofish.o
+CC	libavutil/tx.o
+CC	libavutil/tx_double.o
+CC	libavutil/tx_float.o
+CC	libavutil/tx_int32.o
+CC	libavutil/utils.o
+CC	libavutil/uuid.o
+CC	libavutil/version.o
+CC	libavutil/video_enc_params.o
+CC	libavutil/video_hint.o
+CC	libavutil/xga_font_data.o
+CC	libavutil/xtea.o
+GEN	libavfilter/libavfilter.ver
+AS	libswscale/aarch64/hscale.o
+AS	libswscale/aarch64/input.o
+AS	libswscale/aarch64/output.o
+AS	libswscale/aarch64/range_convert_neon.o
+CC	libswscale/aarch64/rgb2rgb.o
+AS	libswscale/aarch64/rgb2rgb_neon.o
+CC	libswscale/aarch64/swscale.o
+CC	libswscale/aarch64/swscale_unscaled.o
+AS	libswscale/aarch64/swscale_unscaled_neon.o
+AS	libswscale/aarch64/yuv2rgb_neon.o
+CC	libswscale/alphablend.o
+CC	libswscale/gamma.o
+CC	libswscale/half2float.o
+CC	libswscale/hscale.o
+CC	libswscale/hscale_fast_bilinear.o
+CC	libswscale/input.o
+CC	libswscale/options.o
+CC	libswscale/output.o
+CC	libswscale/rgb2rgb.o
+CC	libswscale/slice.o
+CC	libswscale/swscale.o
+CC	libswscale/swscale_unscaled.o
+CC	libswscale/utils.o
+CC	libswscale/version.o
+CC	libswscale/vscale.o
+src/libswscale/utils.c: In function ‘sws_init_single_context’:
+src/libswscale/utils.c:1422:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1422 |     int64_t lumXInc      = (((int64_t)srcW << 16) + (dstW >> 1)) / dstW;
+      |     ^~~~~~~
+src/libswscale/utils.c:1594:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1594 |     int64_t chrXInc = (((int64_t)c->chrSrcW << 16) + (c->chrDstW >> 1)) / c->chrDstW;
+      |     ^~~~~~~
+src/libswscale/utils.c:1916:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+ 1916 |         int usecascade = (ret == RETCODE_USE_CASCADE);
+      |         ^~~
+CC	libswscale/yuv2rgb.o
+CC	fftools/ffplay_renderer.o
+In file included from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_config.h:4,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_stdinc.h:33,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_main.h:25,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL.h:31,
+                 from src/fftools/ffplay_renderer.h:22,
+                 from src/fftools/ffplay_renderer.c:23:
+/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/aarch64-linux-gnu/SDL2/_real_SDL_config.h:209: warning: "HAVE_PTHREAD_SETNAME_NP" redefined
+  209 | #define HAVE_PTHREAD_SETNAME_NP 1
+      | 
+In file included from src/fftools/ffplay_renderer.c:22:
+./config.h:340: note: this is the location of the previous definition
+  340 | #define HAVE_PTHREAD_SETNAME_NP 0
+      | 
+CC	fftools/cmdutils.o
+CC	fftools/opt_common.o
+CC	fftools/ffplay.o
+In file included from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_config.h:4,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_stdinc.h:33,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL_main.h:25,
+                 from /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/SDL2/SDL.h:31,
+                 from src/fftools/ffplay.c:54:
+/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/sdl/usr/include/aarch64-linux-gnu/SDL2/_real_SDL_config.h:209: warning: "HAVE_PTHREAD_SETNAME_NP" redefined
+  209 | #define HAVE_PTHREAD_SETNAME_NP 1
+      | 
+In file included from src/fftools/ffplay.c:26:
+./config.h:340: note: this is the location of the previous definition
+  340 | #define HAVE_PTHREAD_SETNAME_NP 0
+      | 
+GEN	libavcodec/libavcodec.ver
+GEN	libswresample/libswresample.ver
+GEN	libavutil/libavutil.ver
+LD	libavutil/libavutil.so.59
+LD	libswresample/libswresample.so.5
+LD	libavcodec/libavcodec.so.61
+LD	libavformat/libavformat.so.61
+LD	libavdevice/libavdevice.so.61
+GEN	libswscale/libswscale.ver
+LD	libswscale/libswscale.so.8
+LD	libavfilter/libavfilter.so.10
+LD	ffplay_g
+STRIP	ffplay
+INSTALL	libavdevice/libavdevice.so
+STRIP	install-libavdevice-shared
+INSTALL	libavfilter/libavfilter.so
+STRIP	install-libavfilter-shared
+INSTALL	libavformat/libavformat.so
+STRIP	install-libavformat-shared
+INSTALL	libavcodec/libavcodec.so
+STRIP	install-libavcodec-shared
+INSTALL	libswresample/libswresample.so
+STRIP	install-libswresample-shared
+INSTALL	libswscale/libswscale.so
+STRIP	install-libswscale-shared
+INSTALL	libavutil/libavutil.so
+STRIP	install-libavutil-shared
+INSTALL	install-progs-yes
+INSTALL	ffplay
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/presets/libvpx-1080p.ffpreset
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/presets/libvpx-1080p50_60.ffpreset
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/presets/libvpx-360p.ffpreset
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/presets/libvpx-720p.ffpreset
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/presets/libvpx-720p50_60.ffpreset
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/ffprobe.xsd
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_http_serve_files.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_list_dir.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_read_callback.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_filter_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_filter_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/demux_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/encode_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/encode_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/extract_mvs.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/filter_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/hw_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/mux.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/qsv_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/qsv_transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/remux.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/resample_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/scale_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/show_metadata.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/transcode_aac.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/vaapi_encode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/vaapi_transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/README
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/Makefile
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_http_serve_files.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_list_dir.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/avio_read_callback.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_filter_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_filter_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/decode_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/demux_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/encode_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/encode_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/extract_mvs.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/filter_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/hw_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/mux.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/qsv_decode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/qsv_transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/remux.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/resample_audio.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/scale_video.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/show_metadata.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/transcode_aac.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/vaapi_encode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/vaapi_transcode.c
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/README
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/doc/examples/Makefile
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavdevice/avdevice.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavdevice/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavdevice/version_major.h
+INSTALL	libavdevice/libavdevice.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavfilter/avfilter.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavfilter/buffersink.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavfilter/buffersrc.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavfilter/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavfilter/version_major.h
+INSTALL	libavfilter/libavfilter.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavformat/avformat.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavformat/avio.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavformat/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavformat/version_major.h
+INSTALL	libavformat/libavformat.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/ac3_parser.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/adts_parser.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/avcodec.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/avdct.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/avfft.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/bsf.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/codec.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/codec_desc.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/codec_id.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/codec_par.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/d3d11va.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/defs.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/dirac.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/dv_profile.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/dxva2.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/jni.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/mediacodec.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/packet.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/qsv.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/vdpau.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/version_major.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/videotoolbox.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavcodec/vorbis_parser.h
+INSTALL	libavcodec/libavcodec.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswresample/swresample.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswresample/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswresample/version_major.h
+INSTALL	libswresample/libswresample.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswscale/swscale.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswscale/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libswscale/version_major.h
+INSTALL	libswscale/libswscale.pc
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/adler32.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/aes.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/aes_ctr.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/ambient_viewing_environment.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/attributes.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/audio_fifo.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/avassert.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/avstring.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/avutil.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/base64.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/blowfish.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/bprint.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/bswap.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/buffer.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/cast5.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/camellia.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/channel_layout.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/common.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/cpu.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/crc.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/csp.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/des.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/detection_bbox.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/dict.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/display.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/dovi_meta.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/downmix_info.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/encryption_info.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/error.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/eval.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/executor.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/fifo.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/file.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/frame.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hash.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hdr_dynamic_metadata.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hdr_dynamic_vivid_metadata.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hmac.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_cuda.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_d3d11va.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_d3d12va.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_drm.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_dxva2.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_qsv.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_mediacodec.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_opencl.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_vaapi.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_videotoolbox.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_vdpau.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/hwcontext_vulkan.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/iamf.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/imgutils.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/intfloat.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/intreadwrite.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/lfg.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/log.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/lzo.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/macros.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/mathematics.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/mastering_display_metadata.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/md5.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/mem.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/motion_vector.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/murmur3.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/opt.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/parseutils.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/pixdesc.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/pixelutils.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/pixfmt.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/random_seed.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/rc4.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/rational.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/replaygain.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/ripemd.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/samplefmt.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/sha.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/sha512.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/spherical.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/stereo3d.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/threadmessage.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/time.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/timecode.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/timestamp.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/tree.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/twofish.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/uuid.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/version.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/video_enc_params.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/xtea.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/tea.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/tx.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/film_grain_params.h
+INSTALL	home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/ffmpeg/src/libavutil/video_hint.h
+INSTALL	libavutil/avconfig.h
+INSTALL	libavutil/ffversion.h
+INSTALL	libavutil/libavutil.pc
+patching file shm_v2/cedar_client.c
+patching file shm_v2/cedar_client.h
+patching file ffmpeg_cedar.c
+patching file shm_v2/cedar_protocol.h
+patching file shm_v2/cedar_client.h
+patching file shm_v2/cedar_client.c
+patching file ffmpeg_cedar.c
+dpkg-deb: building package 'atlasa1-player' in '/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/player/atlasa1-player_0.1-6~resolute1_arm64.deb'.
+client f34cb076927f0afc87df29da9d7c32f095ebf6979ba32fa9e5eb122730f16c1e
+package 51a01cffd4977edba8400fb4d91ebc578c3cb2730e1629f225f57d46b44ede7d
+{
+  "runtime_path": "/opt/atlasa1-img-wayland/runtime-gles",
+  "manifest_path": "/opt/atlasa1-img-wayland/runtime-gles.json",
+  "manifest_sha256": "3447705ec0d424d1b6f6f82f3a882ccffe3ff18c98564f4ec9b7e448f386c0dc",
+  "links": 43,
+  "excluded": [
+    "libvulkan.so",
+    "libvulkan.so.1",
+    "libvulkan.so.1.3.280"
+  ]
+}
+{
+  "runtime_path": "/opt/atlasa1-img-wayland/runtime-gles",
+  "manifest_path": "/opt/atlasa1-img-wayland/runtime-gles.json",
+  "manifest_sha256": "3447705ec0d424d1b6f6f82f3a882ccffe3ff18c98564f4ec9b7e448f386c0dc",
+  "links": 43,
+  "excluded": [
+    "libvulkan.so",
+    "libvulkan.so.1",
+    "libvulkan.so.1.3.280"
+  ]
+}
+dpkg-deb: building package 'atlasa1-img-wayland' in '/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb'.
+{
+  "package": "/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb",
+  "sha256": "9658446eb6801b7a39c19cbf212fb2fda9c721754674073f304ac64339af183e",
+  "files": 58,
+  "external_sonames": [
+    "ld-linux-aarch64.so.1",
+    "libc.so.6",
+    "libdl.so.2",
+    "libdrm.so.2",
+    "libexpat.so.1",
+    "libgcc_s.so.1",
+    "libm.so.6",
+    "libpthread.so.0",
+    "librt.so.1",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libwayland-client.so.0",
+    "libwayland-server.so.0",
+    "libz.so.1"
+  ]
+}
+ffmpeg_8.0.1-3ubuntu2.dsc: OK
+ffmpeg_8.0.1.orig.tar.xz: OK
+ffmpeg_8.0.1.orig.tar.xz.asc: OK
+ffmpeg_8.0.1-3ubuntu2.debian.tar.xz: OK
+dpkg-source: info: extracting ffmpeg in /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/firefox/src
+dpkg-source: info: unpacking ffmpeg_8.0.1.orig.tar.xz
+dpkg-source: info: unpacking ffmpeg_8.0.1-3ubuntu2.debian.tar.xz
+patching file ffmpeg_cedar.c
+patching file cedar_client.h
+patching file shm_v2/cedar_client.c
+Hunk #1 succeeded at 236 (offset 18 lines).
+Hunk #2 succeeded at 265 (offset 18 lines).
+Hunk #3 succeeded at 272 (offset 18 lines).
+Hunk #4 succeeded at 284 (offset 18 lines).
+patching file shm_v2/cedar_client.h
+patching file ffmpeg_cedar.c
+Hunk #9 succeeded at 857 (offset 1 line).
+Hunk #10 succeeded at 878 (offset 1 line).
+patching file shm_v2/cedar_client.c
+install prefix            /usr/local
+source path               /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/firefox/src
+C compiler                aarch64-linux-gnu-gcc
+C library                 glibc
+host C compiler           gcc
+host C library            glibc
+ARCH                      aarch64 (generic)
+big-endian                no
+runtime cpu detection     yes
+NEON enabled              yes
+DOTPROD enabled           yes
+I8MM enabled              yes
+SVE enabled               yes
+SVE2 enabled              yes
+debug symbols             no
+strip symbols             yes
+optimize for size         no
+optimizations             yes
+static                    no
+shared                    yes
+network support           no
+threading support         pthreads
+safe bitstream reader     yes
+texi2html enabled         no
+perl enabled              yes
+pod2man enabled           yes
+makeinfo enabled          yes
+makeinfo supports HTML    yes
+xmllint enabled           yes
+
+External libraries:
+iconv
+
+External libraries providing hardware acceleration:
+
+Libraries:
+avcodec                 avutil
+
+Programs:
+
+Enabled decoders:
+aac                     ffv1                    pgm
+aac_fixed               ffvhuff                 pgmyuv
+aac_latm                ffwavesynth             pgssub
+aasc                    fic                     pgx
+ac3                     fits                    phm
+ac3_fixed               flac                    photocd
+acelp_kelvin            flic                    pictor
+adpcm_4xm               flv                     pixlet
+adpcm_adx               fmvc                    pjs
+adpcm_afc               fourxm                  ppm
+adpcm_agm               fraps                   prores
+adpcm_aica              frwu                    prores_raw
+adpcm_argo              ftr                     prosumer
+adpcm_ct                g723_1                  psd
+adpcm_dtk               g728                    ptx
+adpcm_ea                g729                    qcelp
+adpcm_ea_maxis_xa       gdv                     qdm2
+adpcm_ea_r1             gem                     qdmc
+adpcm_ea_r2             gif                     qdraw
+adpcm_ea_r3             gremlin_dpcm            qoa
+adpcm_ea_xas            gsm                     qoi
+adpcm_g722              gsm_ms                  qpeg
+adpcm_g726              h261                    qtrle
+adpcm_g726le            h263                    r10k
+adpcm_ima_acorn         h263i                   r210
+adpcm_ima_alp           h263p                   ra_144
+adpcm_ima_amv           h264                    ra_288
+adpcm_ima_apc           h264_cedar              ralf
+adpcm_ima_apm           hap                     rawvideo
+adpcm_ima_cunning       hca                     realtext
+adpcm_ima_dat4          hcom                    rka
+adpcm_ima_dk3           hdr                     rl2
+adpcm_ima_dk4           hevc                    roq
+adpcm_ima_ea_eacs       hevc_cedar              roq_dpcm
+adpcm_ima_ea_sead       hnm4_video              rpza
+adpcm_ima_iss           hq_hqa                  rtv1
+adpcm_ima_moflex        hqx                     rv10
+adpcm_ima_mtf           huffyuv                 rv20
+adpcm_ima_oki           hymt                    rv30
+adpcm_ima_qt            iac                     rv40
+adpcm_ima_rad           idcin                   rv60
+adpcm_ima_smjpeg        idf                     s302m
+adpcm_ima_ssi           iff_ilbm                sami
+adpcm_ima_wav           ilbc                    sanm
+adpcm_ima_ws            imc                     sbc
+adpcm_ima_xbox          imm4                    scpr
+adpcm_ms                imm5                    sdx2_dpcm
+adpcm_mtaf              indeo2                  sga
+adpcm_psx               indeo3                  sgi
+adpcm_sanyo             indeo4                  sgirle
+adpcm_sbpro_2           indeo5                  sheervideo
+adpcm_sbpro_3           interplay_acm           shorten
+adpcm_sbpro_4           interplay_dpcm          simbiosis_imx
+adpcm_swf               interplay_video         sipr
+adpcm_thp               ipu                     siren
+adpcm_thp_le            jacosub                 smackaud
+adpcm_vima              jpeg2000                smacker
+adpcm_xa                jpegls                  smc
+adpcm_xmd               jv                      smvjpeg
+adpcm_yamaha            kgv1                    snow
+adpcm_zork              kmvc                    sol_dpcm
+agm                     lagarith                sonic
+aic                     lead                    sp5x
+alac                    loco                    speedhq
+alias_pix               m101                    speex
+als                     mace3                   srt
+amrnb                   mace6                   ssa
+amrwb                   magicyuv                stl
+amv                     mdec                    subrip
+anm                     media100                subviewer
+ansi                    metasound               subviewer1
+anull                   microdvd                sunrast
+apac                    mimic                   svq1
+ape                     misc4                   svq3
+aptx                    mjpeg                   tak
+aptx_hd                 mjpegb                  targa
+apv                     mlp                     targa_y216
+arbc                    mmvideo                 text
+argo                    mobiclip                theora
+ass                     motionpixels            thp
+asv1                    movtext                 tiertexseqvideo
+asv2                    mp1                     tiff
+atrac1                  mp1float                tmv
+atrac3                  mp2                     truehd
+atrac3al                mp2float                truemotion1
+atrac3p                 mp3                     truemotion2
+atrac3pal               mp3adu                  truemotion2rt
+atrac9                  mp3adufloat             truespeech
+aura                    mp3float                tscc2
+aura2                   mp3on4                  tta
+av1                     mp3on4float             twinvq
+avrn                    mpc7                    txd
+avrp                    mpc8                    ulti
+avs                     mpeg1video              utvideo
+avui                    mpeg2video              v210
+bethsoftvid             mpeg4                   v210x
+bfi                     mpegvideo               v308
+bink                    mpl2                    v408
+binkaudio_dct           msa1                    v410
+binkaudio_rdft          msmpeg4v1               vb
+bintext                 msmpeg4v2               vble
+bitpacked               msmpeg4v3               vbn
+bmp                     msnsiren                vc1
+bmv_audio               msp2                    vc1image
+bmv_video               msrle                   vcr1
+bonk                    mss1                    vmdaudio
+brender_pix             mss2                    vmdvideo
+c93                     msvideo1                vmix
+cavs                    mszh                    vmnc
+cbd2_dpcm               mts2                    vnull
+ccaption                mv30                    vorbis
+cdgraphics              mvc1                    vp3
+cdtoons                 mvc2                    vp4
+cdxl                    mvdv                    vp5
+cfhd                    mxpeg                   vp6
+cinepak                 nellymoser              vp6a
+clearvideo              notchlc                 vp6f
+cljr                    nuv                     vp7
+cllc                    on2avc                  vp8
+comfortnoise            osq                     vp9
+cook                    paf_audio               vplayer
+cpia                    paf_video               vqa
+cri                     pam                     vqc
+cscd                    pbm                     vvc
+cyuv                    pcm_alaw                wady_dpcm
+dca                     pcm_bluray              wavarc
+dds                     pcm_dvd                 wavpack
+derf_dpcm               pcm_f16le               wbmp
+dfa                     pcm_f24le               webp
+dfpwm                   pcm_f32be               webvtt
+dirac                   pcm_f32le               wmalossless
+dnxhd                   pcm_f64be               wmapro
+dolby_e                 pcm_f64le               wmav1
+dpx                     pcm_lxf                 wmav2
+dsd_lsbf                pcm_mulaw               wmavoice
+dsd_lsbf_planar         pcm_s16be               wmv1
+dsd_msbf                pcm_s16be_planar        wmv2
+dsd_msbf_planar         pcm_s16le               wmv3
+dsicinaudio             pcm_s16le_planar        wmv3image
+dsicinvideo             pcm_s24be               wnv1
+dss_sp                  pcm_s24daud             wrapped_avframe
+dst                     pcm_s24le               ws_snd1
+dvaudio                 pcm_s24le_planar        xan_dpcm
+dvbsub                  pcm_s32be               xan_wc3
+dvdsub                  pcm_s32le               xan_wc4
+dvvideo                 pcm_s32le_planar        xbin
+dxtory                  pcm_s64be               xbm
+dxv                     pcm_s64le               xface
+eac3                    pcm_s8                  xl
+eacmv                   pcm_s8_planar           xma1
+eamad                   pcm_sga                 xma2
+eatgq                   pcm_u16be               xpm
+eatgv                   pcm_u16le               xsub
+eatqi                   pcm_u24be               xwd
+eightbps                pcm_u24le               y41p
+eightsvx_exp            pcm_u32be               ylc
+eightsvx_fib            pcm_u32le               yop
+escape124               pcm_u8                  yuv4
+escape130               pcm_vidc                zero12v
+evrc                    pcx
+fastaudio               pfm
+
+Enabled encoders:
+
+Enabled hwaccels:
+
+Enabled parsers:
+aac                     dvdsub                  mpegvideo
+aac_latm                evc                     opus
+ac3                     ffv1                    png
+adx                     flac                    pnm
+amr                     ftr                     prores_raw
+apv                     g723_1                  qoi
+av1                     g729                    rv34
+avs2                    gif                     sbc
+avs3                    gsm                     sipr
+bmp                     h261                    tak
+cavsvideo               h263                    vc1
+cook                    h264                    vorbis
+cri                     hdr                     vp3
+dca                     hevc                    vp8
+dirac                   ipu                     vp9
+dnxhd                   jpeg2000                vvc
+dnxuc                   jpegxl                  webp
+dolby_e                 misc4                   xbm
+dpx                     mjpeg                   xma
+dvaudio                 mlp                     xwd
+dvbsub                  mpeg4video
+dvd_nav                 mpegaudio
+
+Enabled demuxers:
+
+Enabled muxers:
+
+Enabled protocols:
+
+Enabled filters:
+
+Enabled bsfs:
+aac_adtstoasc           h264_metadata           pcm_rechunk
+apv_metadata            h264_mp4toannexb        pgs_frame_merge
+av1_frame_merge         h264_redundant_pps      prores_metadata
+av1_frame_split         hapqa_extract           remove_extradata
+av1_metadata            hevc_metadata           setts
+chomp                   hevc_mp4toannexb        showinfo
+dca_core                imx_dump_header         smpte436m_to_eia608
+dovi_rpu                media100_to_mjpegb      text2movsub
+dts2pts                 mjpeg2jpeg              trace_headers
+dump_extradata          mjpega_dump_header      truehd_core
+dv_error_marker         mov2textsub             vp9_metadata
+eac3_core               mpeg2_metadata          vp9_raw_reorder
+eia608_to_smpte436m     mpeg4_unpack_bframes    vp9_superframe
+evc_frame_merge         noise                   vp9_superframe_split
+extract_extradata       null                    vvc_metadata
+filter_units            opus_metadata           vvc_mp4toannexb
+
+Enabled indevs:
+
+Enabled outdevs:
+
+License: LGPL version 2.1 or later
+
+WARNING: aarch64-linux-gnu-pkg-config not found, library detection may fail.
+GEN	libavutil/libavutil.version
+GEN	libavcodec/libavcodec.version
+CC	libavcodec/ffmpeg_cedar.o
+CC	libavcodec/012v.o
+CC	libavcodec/4xm.o
+CC	libavcodec/8bps.o
+CC	libavcodec/8svx.o
+CC	libavcodec/aac/aacdec.o
+CC	libavcodec/aac/aacdec_ac.o
+CC	libavcodec/aac/aacdec_fixed.o
+CC	libavcodec/aac/aacdec_float.o
+CC	libavcodec/aac/aacdec_lpd.o
+CC	libavcodec/aac/aacdec_tab.o
+CC	libavcodec/aac/aacdec_usac.o
+CC	libavcodec/aac_ac3_parser.o
+CC	libavcodec/aac_parser.o
+CC	libavcodec/aacps_common.o
+CC	libavcodec/aacps_fixed.o
+CC	libavcodec/aacps_float.o
+CC	libavcodec/aacpsdsp_fixed.o
+CC	libavcodec/aacpsdsp_float.o
+CC	libavcodec/aacsbr.o
+CC	libavcodec/aacsbr_fixed.o
+CC	libavcodec/aactab.o
+CC	libavcodec/aandcttab.o
+CC	libavcodec/aarch64/aacpsdsp_init_aarch64.o
+AS	libavcodec/aarch64/aacpsdsp_neon.o
+CC	libavcodec/aarch64/ac3dsp_init_aarch64.o
+AS	libavcodec/aarch64/ac3dsp_neon.o
+CC	libavcodec/aarch64/fdctdsp_init_aarch64.o
+AS	libavcodec/aarch64/fdctdsp_neon.o
+CC	libavcodec/aarch64/fmtconvert_init.o
+AS	libavcodec/aarch64/fmtconvert_neon.o
+CC	libavcodec/aarch64/h264chroma_init_aarch64.o
+AS	libavcodec/aarch64/h264cmc_neon.o
+CC	libavcodec/aarch64/h264dsp_init_aarch64.o
+AS	libavcodec/aarch64/h264dsp_neon.o
+AS	libavcodec/aarch64/h264idct_neon.o
+CC	libavcodec/aarch64/h264pred_init.o
+AS	libavcodec/aarch64/h264pred_neon.o
+CC	libavcodec/aarch64/h264qpel_init_aarch64.o
+AS	libavcodec/aarch64/h264qpel_neon.o
+AS	libavcodec/aarch64/h26x/epel_neon.o
+AS	libavcodec/aarch64/h26x/qpel_neon.o
+AS	libavcodec/aarch64/h26x/sao_neon.o
+AS	libavcodec/aarch64/hevcdsp_deblock_neon.o
+AS	libavcodec/aarch64/hevcdsp_idct_neon.o
+CC	libavcodec/aarch64/hevcdsp_init_aarch64.o
+CC	libavcodec/aarch64/hpeldsp_init_aarch64.o
+AS	libavcodec/aarch64/hpeldsp_neon.o
+CC	libavcodec/aarch64/idctdsp_init_aarch64.o
+AS	libavcodec/aarch64/idctdsp_neon.o
+CC	libavcodec/aarch64/me_cmp_init_aarch64.o
+AS	libavcodec/aarch64/me_cmp_neon.o
+CC	libavcodec/aarch64/mpegaudiodsp_init.o
+AS	libavcodec/aarch64/mpegaudiodsp_neon.o
+CC	libavcodec/aarch64/mpegvideoencdsp_init.o
+AS	libavcodec/aarch64/mpegvideoencdsp_neon.o
+CC	libavcodec/aarch64/rv40dsp_init_aarch64.o
+CC	libavcodec/aarch64/sbrdsp_init_aarch64.o
+AS	libavcodec/aarch64/sbrdsp_neon.o
+AS	libavcodec/aarch64/simple_idct_neon.o
+CC	libavcodec/aarch64/synth_filter_init.o
+AS	libavcodec/aarch64/synth_filter_neon.o
+CC	libavcodec/aarch64/vc1dsp_init_aarch64.o
+AS	libavcodec/aarch64/vc1dsp_neon.o
+AS	libavcodec/aarch64/videodsp.o
+CC	libavcodec/aarch64/videodsp_init.o
+CC	libavcodec/aarch64/vorbisdsp_init.o
+AS	libavcodec/aarch64/vorbisdsp_neon.o
+CC	libavcodec/aarch64/vp8dsp_init_aarch64.o
+AS	libavcodec/aarch64/vp8dsp_neon.o
+CC	libavcodec/aarch64/vp9dsp_init_10bpp_aarch64.o
+CC	libavcodec/aarch64/vp9dsp_init_12bpp_aarch64.o
+CC	libavcodec/aarch64/vp9dsp_init_aarch64.o
+AS	libavcodec/aarch64/vp9itxfm_16bpp_neon.o
+AS	libavcodec/aarch64/vp9itxfm_neon.o
+AS	libavcodec/aarch64/vp9lpf_16bpp_neon.o
+AS	libavcodec/aarch64/vp9lpf_neon.o
+AS	libavcodec/aarch64/vp9mc_16bpp_neon.o
+AS	libavcodec/aarch64/vp9mc_aarch64.o
+AS	libavcodec/aarch64/vp9mc_neon.o
+AS	libavcodec/aarch64/vvc/alf.o
+CC	libavcodec/aarch64/vvc/dsp_init.o
+AS	libavcodec/aarch64/vvc/inter.o
+AS	libavcodec/aarch64/vvc/sad.o
+CC	libavcodec/aasc.o
+CC	libavcodec/ac3.o
+CC	libavcodec/ac3_channel_layout_tab.o
+CC	libavcodec/ac3_parser.o
+CC	libavcodec/ac3dec_data.o
+CC	libavcodec/ac3dec_fixed.o
+CC	libavcodec/ac3dec_float.o
+CC	libavcodec/ac3dsp.o
+CC	libavcodec/ac3tab.o
+CC	libavcodec/acelp_filters.o
+CC	libavcodec/acelp_pitch_delay.o
+CC	libavcodec/acelp_vectors.o
+CC	libavcodec/adpcm.o
+CC	libavcodec/adpcm_data.o
+CC	libavcodec/adts_header.o
+CC	libavcodec/adts_parser.o
+CC	libavcodec/adx.o
+CC	libavcodec/adx_parser.o
+CC	libavcodec/adxdec.o
+CC	libavcodec/agm.o
+CC	libavcodec/aic.o
+CC	libavcodec/alac.o
+CC	libavcodec/alac_data.o
+CC	libavcodec/alacdsp.o
+CC	libavcodec/aliaspixdec.o
+CC	libavcodec/allcodecs.o
+CC	libavcodec/alsdec.o
+CC	libavcodec/amr_parser.o
+CC	libavcodec/amrnbdec.o
+CC	libavcodec/amrwbdec.o
+CC	libavcodec/anm.o
+CC	libavcodec/ansi.o
+CC	libavcodec/aom_film_grain.o
+CC	libavcodec/apac.o
+CC	libavcodec/apedec.o
+CC	libavcodec/aptx.o
+CC	libavcodec/aptxdec.o
+CC	libavcodec/apv_decode.o
+CC	libavcodec/apv_dsp.o
+CC	libavcodec/apv_entropy.o
+CC	libavcodec/apv_parser.o
+CC	libavcodec/arbc.o
+CC	libavcodec/argo.o
+CC	libavcodec/ass.o
+CC	libavcodec/assdec.o
+CC	libavcodec/asv.o
+CC	libavcodec/asvdec.o
+CC	libavcodec/atrac.o
+CC	libavcodec/atrac1.o
+CC	libavcodec/atrac3.o
+CC	libavcodec/atrac3plus.o
+CC	libavcodec/atrac3plusdec.o
+CC	libavcodec/atrac3plusdsp.o
+CC	libavcodec/atrac9dec.o
+CC	libavcodec/atsc_a53.o
+CC	libavcodec/audiodsp.o
+CC	libavcodec/aura.o
+CC	libavcodec/av1_parse.o
+CC	libavcodec/av1_parser.o
+CC	libavcodec/av1dec.o
+CC	libavcodec/avcodec.o
+CC	libavcodec/avdct.o
+CC	libavcodec/avrndec.o
+CC	libavcodec/avs.o
+CC	libavcodec/avs2.o
+CC	libavcodec/avs2_parser.o
+CC	libavcodec/avs3_parser.o
+CC	libavcodec/avuidec.o
+CC	libavcodec/bethsoftvideo.o
+CC	libavcodec/bfi.o
+CC	libavcodec/bgmc.o
+CC	libavcodec/bink.o
+CC	libavcodec/binkaudio.o
+CC	libavcodec/binkdsp.o
+CC	libavcodec/bintext.o
+CC	libavcodec/bitpacked_dec.o
+CC	libavcodec/bitstream.o
+CC	libavcodec/bitstream_filters.o
+CC	libavcodec/blockdsp.o
+CC	libavcodec/bmp.o
+CC	libavcodec/bmp_parser.o
+CC	libavcodec/bmvaudio.o
+CC	libavcodec/bmvvideo.o
+CC	libavcodec/bonk.o
+CC	libavcodec/brenderpix.o
+CC	libavcodec/bsf.o
+CC	libavcodec/bsf/aac_adtstoasc.o
+CC	libavcodec/bsf/apv_metadata.o
+CC	libavcodec/bsf/av1_frame_merge.o
+CC	libavcodec/bsf/av1_frame_split.o
+CC	libavcodec/bsf/av1_metadata.o
+CC	libavcodec/bsf/chomp.o
+CC	libavcodec/bsf/dca_core.o
+CC	libavcodec/bsf/dovi_rpu.o
+CC	libavcodec/bsf/dts2pts.o
+CC	libavcodec/bsf/dump_extradata.o
+CC	libavcodec/bsf/dv_error_marker.o
+CC	libavcodec/bsf/eac3_core.o
+CC	libavcodec/bsf/eia608_to_smpte436m.o
+CC	libavcodec/bsf/evc_frame_merge.o
+CC	libavcodec/bsf/extract_extradata.o
+CC	libavcodec/bsf/filter_units.o
+CC	libavcodec/bsf/h264_metadata.o
+CC	libavcodec/bsf/h264_mp4toannexb.o
+CC	libavcodec/bsf/h264_redundant_pps.o
+CC	libavcodec/bsf/h265_metadata.o
+CC	libavcodec/bsf/h266_metadata.o
+CC	libavcodec/bsf/hapqa_extract.o
+CC	libavcodec/bsf/hevc_mp4toannexb.o
+CC	libavcodec/bsf/imx_dump_header.o
+CC	libavcodec/bsf/media100_to_mjpegb.o
+CC	libavcodec/bsf/mjpeg2jpeg.o
+CC	libavcodec/bsf/mjpega_dump_header.o
+CC	libavcodec/bsf/movsub.o
+CC	libavcodec/bsf/mpeg2_metadata.o
+CC	libavcodec/bsf/mpeg4_unpack_bframes.o
+CC	libavcodec/bsf/noise.o
+CC	libavcodec/bsf/null.o
+CC	libavcodec/bsf/opus_metadata.o
+CC	libavcodec/bsf/pcm_rechunk.o
+CC	libavcodec/bsf/pgs_frame_merge.o
+CC	libavcodec/bsf/prores_metadata.o
+CC	libavcodec/bsf/remove_extradata.o
+CC	libavcodec/bsf/setts.o
+CC	libavcodec/bsf/showinfo.o
+CC	libavcodec/bsf/smpte436m_to_eia608.o
+CC	libavcodec/bsf/trace_headers.o
+CC	libavcodec/bsf/truehd_core.o
+CC	libavcodec/bsf/vp9_metadata.o
+CC	libavcodec/bsf/vp9_raw_reorder.o
+CC	libavcodec/bsf/vp9_superframe.o
+CC	libavcodec/bsf/vp9_superframe_split.o
+CC	libavcodec/bsf/vvc_mp4toannexb.o
+CC	libavcodec/bswapdsp.o
+CC	libavcodec/c93.o
+CC	libavcodec/cabac.o
+CC	libavcodec/canopus.o
+CC	libavcodec/cavs.o
+CC	libavcodec/cavs_parser.o
+CC	libavcodec/cavsdata.o
+CC	libavcodec/cavsdec.o
+CC	libavcodec/cavsdsp.o
+CC	libavcodec/cbrt_data.o
+CC	libavcodec/cbrt_data_fixed.o
+CC	libavcodec/cbs.o
+CC	libavcodec/cbs_apv.o
+CC	libavcodec/cbs_av1.o
+CC	libavcodec/cbs_bsf.o
+CC	libavcodec/cbs_h2645.o
+CC	libavcodec/cbs_mpeg2.o
+CC	libavcodec/cbs_sei.o
+CC	libavcodec/cbs_vp8.o
+CC	libavcodec/cbs_vp9.o
+CC	libavcodec/ccaption_dec.o
+CC	libavcodec/cdgraphics.o
+CC	libavcodec/cdtoons.o
+CC	libavcodec/cdxl.o
+CC	libavcodec/celp_filters.o
+CC	libavcodec/celp_math.o
+CC	libavcodec/cfhd.o
+CC	libavcodec/cfhddata.o
+CC	libavcodec/cfhddsp.o
+CC	libavcodec/cga_data.o
+CC	libavcodec/cinepak.o
+CC	libavcodec/clearvideo.o
+CC	libavcodec/cljrdec.o
+CC	libavcodec/cllc.o
+CC	libavcodec/cngdec.o
+CC	libavcodec/codec_desc.o
+CC	libavcodec/codec_par.o
+CC	libavcodec/cook.o
+CC	libavcodec/cook_parser.o
+CC	libavcodec/cpia.o
+CC	libavcodec/cri.o
+CC	libavcodec/cri_parser.o
+CC	libavcodec/cscd.o
+CC	libavcodec/cyuv.o
+CC	libavcodec/d3d11va.o
+CC	libavcodec/dca.o
+CC	libavcodec/dca_core.o
+CC	libavcodec/dca_exss.o
+CC	libavcodec/dca_lbr.o
+CC	libavcodec/dca_parser.o
+CC	libavcodec/dca_sample_rate_tab.o
+CC	libavcodec/dca_xll.o
+CC	libavcodec/dcadata.o
+CC	libavcodec/dcadct.o
+CC	libavcodec/dcadec.o
+CC	libavcodec/dcadsp.o
+CC	libavcodec/dcahuff.o
+CC	libavcodec/dct32_fixed.o
+CC	libavcodec/dct32_float.o
+CC	libavcodec/dds.o
+CC	libavcodec/decode.o
+CC	libavcodec/dfa.o
+CC	libavcodec/dfpwmdec.o
+CC	libavcodec/dirac.o
+CC	libavcodec/dirac_arith.o
+CC	libavcodec/dirac_dwt.o
+CC	libavcodec/dirac_parser.o
+CC	libavcodec/dirac_vlc.o
+CC	libavcodec/diracdec.o
+CC	libavcodec/diracdsp.o
+CC	libavcodec/diractab.o
+CC	libavcodec/dnxhd_parser.o
+CC	libavcodec/dnxhddata.o
+CC	libavcodec/dnxhddec.o
+CC	libavcodec/dnxuc_parser.o
+CC	libavcodec/dolby_e.o
+CC	libavcodec/dolby_e_parse.o
+CC	libavcodec/dolby_e_parser.o
+CC	libavcodec/dovi_rpu.o
+CC	libavcodec/dovi_rpudec.o
+CC	libavcodec/dovi_rpuenc.o
+CC	libavcodec/dpcm.o
+CC	libavcodec/dpx.o
+CC	libavcodec/dpx_parser.o
+CC	libavcodec/dsd.o
+CC	libavcodec/dsddec.o
+CC	libavcodec/dsicinaudio.o
+CC	libavcodec/dsicinvideo.o
+CC	libavcodec/dss_sp.o
+CC	libavcodec/dstdec.o
+CC	libavcodec/dv.o
+CC	libavcodec/dv_profile.o
+CC	libavcodec/dvaudio_parser.o
+CC	libavcodec/dvaudiodec.o
+CC	libavcodec/dvbsub_parser.o
+CC	libavcodec/dvbsubdec.o
+CC	libavcodec/dvd_nav_parser.o
+CC	libavcodec/dvdata.o
+CC	libavcodec/dvdec.o
+CC	libavcodec/dvdsub.o
+CC	libavcodec/dvdsub_parser.o
+CC	libavcodec/dvdsubdec.o
+CC	libavcodec/dxtory.o
+CC	libavcodec/dxv.o
+CC	libavcodec/dynamic_hdr_vivid.o
+CC	libavcodec/eac3_data.o
+CC	libavcodec/eacmv.o
+CC	libavcodec/eaidct.o
+CC	libavcodec/eamad.o
+CC	libavcodec/eatgq.o
+CC	libavcodec/eatgv.o
+CC	libavcodec/eatqi.o
+CC	libavcodec/encode.o
+CC	libavcodec/error_resilience.o
+CC	libavcodec/escape124.o
+CC	libavcodec/escape130.o
+CC	libavcodec/evc_parse.o
+CC	libavcodec/evc_parser.o
+CC	libavcodec/evc_ps.o
+CC	libavcodec/evrcdec.o
+CC	libavcodec/executor.o
+CC	libavcodec/exif.o
+CC	libavcodec/faandct.o
+CC	libavcodec/faanidct.o
+CC	libavcodec/fastaudio.o
+CC	libavcodec/faxcompr.o
+CC	libavcodec/fdctdsp.o
+CC	libavcodec/ffv1.o
+CC	libavcodec/ffv1_parse.o
+CC	libavcodec/ffv1_parser.o
+CC	libavcodec/ffv1dec.o
+CC	libavcodec/ffwavesynth.o
+CC	libavcodec/fic.o
+CC	libavcodec/fits.o
+CC	libavcodec/fitsdec.o
+CC	libavcodec/flac.o
+CC	libavcodec/flac_parser.o
+CC	libavcodec/flacdata.o
+CC	libavcodec/flacdec.o
+CC	libavcodec/flacdsp.o
+CC	libavcodec/flicvideo.o
+CC	libavcodec/flvdec.o
+CC	libavcodec/fmtconvert.o
+CC	libavcodec/fmvc.o
+CC	libavcodec/fraps.o
+CC	libavcodec/frwu.o
+CC	libavcodec/ftr.o
+CC	libavcodec/ftr_parser.o
+CC	libavcodec/g722.o
+CC	libavcodec/g722dec.o
+CC	libavcodec/g722dsp.o
+CC	libavcodec/g723_1.o
+CC	libavcodec/g723_1_parser.o
+CC	libavcodec/g723_1dec.o
+CC	libavcodec/g726.o
+CC	libavcodec/g728dec.o
+CC	libavcodec/g729_parser.o
+CC	libavcodec/g729dec.o
+CC	libavcodec/g729postfilter.o
+CC	libavcodec/gdv.o
+CC	libavcodec/gemdec.o
+CC	libavcodec/get_buffer.o
+CC	libavcodec/gif_parser.o
+CC	libavcodec/gifdec.o
+CC	libavcodec/golomb.o
+CC	libavcodec/gsm_parser.o
+CC	libavcodec/gsmdec.o
+CC	libavcodec/gsmdec_data.o
+CC	libavcodec/h261.o
+CC	libavcodec/h261_parser.o
+CC	libavcodec/h261data.o
+CC	libavcodec/h261dec.o
+CC	libavcodec/h263.o
+CC	libavcodec/h263_parser.o
+CC	libavcodec/h263data.o
+CC	libavcodec/h263dec.o
+CC	libavcodec/h263dsp.o
+CC	libavcodec/h2645_parse.o
+CC	libavcodec/h2645_sei.o
+CC	libavcodec/h2645_vui.o
+CC	libavcodec/h2645data.o
+CC	libavcodec/h264_cabac.o
+CC	libavcodec/h264_cavlc.o
+CC	libavcodec/h264_direct.o
+CC	libavcodec/h264_levels.o
+CC	libavcodec/h264_loopfilter.o
+CC	libavcodec/h264_mb.o
+CC	libavcodec/h264_parse.o
+CC	libavcodec/h264_parser.o
+CC	libavcodec/h264_picture.o
+CC	libavcodec/h264_ps.o
+CC	libavcodec/h264_refs.o
+CC	libavcodec/h264_sei.o
+CC	libavcodec/h264_slice.o
+CC	libavcodec/h264chroma.o
+CC	libavcodec/h264data.o
+CC	libavcodec/h264dec.o
+CC	libavcodec/h264dsp.o
+CC	libavcodec/h264idct.o
+CC	libavcodec/h264pred.o
+CC	libavcodec/h264qpel.o
+CC	libavcodec/h265_profile_level.o
+CC	libavcodec/h274.o
+CC	libavcodec/hap.o
+CC	libavcodec/hapdec.o
+CC	libavcodec/hcadec.o
+CC	libavcodec/hcom.o
+CC	libavcodec/hdr_parser.o
+CC	libavcodec/hdrdec.o
+CC	libavcodec/hevc/cabac.o
+CC	libavcodec/hevc/data.o
+CC	libavcodec/hevc/dsp.o
+CC	libavcodec/hevc/filter.o
+CC	libavcodec/hevc/hevcdec.o
+CC	libavcodec/hevc/mvs.o
+CC	libavcodec/hevc/parse.o
+CC	libavcodec/hevc/parser.o
+CC	libavcodec/hevc/pred.o
+CC	libavcodec/hevc/ps.o
+CC	libavcodec/hevc/refs.o
+CC	libavcodec/hevc/sei.o
+CC	libavcodec/hnm4video.o
+CC	libavcodec/hpeldsp.o
+CC	libavcodec/hq_common.o
+CC	libavcodec/hq_hqa.o
+CC	libavcodec/hq_hqadsp.o
+CC	libavcodec/hqx.o
+CC	libavcodec/hqxdsp.o
+CC	libavcodec/htmlsubtitles.o
+CC	libavcodec/huffman.o
+CC	libavcodec/huffyuv.o
+CC	libavcodec/huffyuvdec.o
+CC	libavcodec/huffyuvdsp.o
+CC	libavcodec/idcinvideo.o
+CC	libavcodec/idctdsp.o
+CC	libavcodec/iff.o
+CC	libavcodec/ilbcdec.o
+CC	libavcodec/imc.o
+CC	libavcodec/imgconvert.o
+CC	libavcodec/imm4.o
+CC	libavcodec/imm5.o
+CC	libavcodec/imx.o
+CC	libavcodec/indeo2.o
+CC	libavcodec/indeo3.o
+CC	libavcodec/indeo4.o
+CC	libavcodec/indeo5.o
+CC	libavcodec/intelh263dec.o
+CC	libavcodec/interplayacm.o
+CC	libavcodec/interplayvideo.o
+CC	libavcodec/intrax8.o
+CC	libavcodec/intrax8dsp.o
+CC	libavcodec/ipu_parser.o
+CC	libavcodec/ituh263dec.o
+CC	libavcodec/ivi.o
+CC	libavcodec/ivi_dsp.o
+CC	libavcodec/jacosubdec.o
+CC	libavcodec/jfdctfst.o
+CC	libavcodec/jfdctint.o
+CC	libavcodec/jni.o
+CC	libavcodec/jpeg2000.o
+CC	libavcodec/jpeg2000_parser.o
+CC	libavcodec/jpeg2000dec.o
+CC	libavcodec/jpeg2000dsp.o
+CC	libavcodec/jpeg2000dwt.o
+CC	libavcodec/jpeg2000htdec.o
+CC	libavcodec/jpegls.o
+CC	libavcodec/jpeglsdec.o
+CC	libavcodec/jpegquanttables.o
+CC	libavcodec/jpegxl_parse.o
+CC	libavcodec/jpegtables.o
+CC	libavcodec/jpegxl_parser.o
+CC	libavcodec/jrevdct.o
+CC	libavcodec/jvdec.o
+CC	libavcodec/kbdwin.o
+CC	libavcodec/kgv1dec.o
+CC	libavcodec/kmvc.o
+CC	libavcodec/lagarith.o
+CC	libavcodec/lagarithrac.o
+CC	libavcodec/latm_parser.o
+CC	libavcodec/lcevcdec.o
+CC	libavcodec/lcldec.o
+CC	libavcodec/leaddec.o
+CC	libavcodec/loco.o
+CC	libavcodec/lossless_audiodsp.o
+CC	libavcodec/lossless_videodsp.o
+CC	libavcodec/lsp.o
+CC	libavcodec/lzf.o
+CC	libavcodec/lzw.o
+CC	libavcodec/m101.o
+CC	libavcodec/mace.o
+CC	libavcodec/magicyuv.o
+CC	libavcodec/mathtables.o
+CC	libavcodec/mdec.o
+CC	libavcodec/me_cmp.o
+CC	libavcodec/mediacodec.o
+CC	libavcodec/metasound.o
+CC	libavcodec/microdvddec.o
+CC	libavcodec/midivid.o
+CC	libavcodec/mimic.o
+CC	libavcodec/misc4.o
+CC	libavcodec/misc4_parser.o
+CC	libavcodec/mjpeg_parser.o
+CC	libavcodec/mjpegbdec.o
+CC	libavcodec/mjpegdec.o
+CC	libavcodec/mjpegdec_common.o
+CC	libavcodec/mlp.o
+CC	libavcodec/mlp_parse.o
+CC	libavcodec/mlp_parser.o
+CC	libavcodec/mlpdec.o
+CC	libavcodec/mlpdsp.o
+CC	libavcodec/mlz.o
+CC	libavcodec/mmvideo.o
+CC	libavcodec/mobiclip.o
+CC	libavcodec/motionpixels.o
+CC	libavcodec/movtextdec.o
+CC	libavcodec/mpc.o
+CC	libavcodec/mpc7.o
+CC	libavcodec/mpc8.o
+CC	libavcodec/mpeg12.o
+CC	libavcodec/mpeg12data.o
+CC	libavcodec/mpeg12dec.o
+CC	libavcodec/mpeg12framerate.o
+CC	libavcodec/mpeg4audio.o
+CC	libavcodec/mpeg4audio_sample_rates.o
+CC	libavcodec/mpeg4video.o
+CC	libavcodec/mpeg4video_parser.o
+CC	libavcodec/mpeg4videodec.o
+CC	libavcodec/mpeg4videodsp.o
+CC	libavcodec/mpeg_er.o
+CC	libavcodec/mpegaudio.o
+CC	libavcodec/mpegaudio_parser.o
+CC	libavcodec/mpegaudiodata.o
+CC	libavcodec/mpegaudiodec_common.o
+CC	libavcodec/mpegaudiodec_fixed.o
+CC	libavcodec/mpegaudiodec_float.o
+CC	libavcodec/mpegaudiodecheader.o
+CC	libavcodec/mpegaudiodsp.o
+CC	libavcodec/mpegaudiodsp_data.o
+CC	libavcodec/mpegaudiodsp_fixed.o
+CC	libavcodec/mpegaudiodsp_float.o
+CC	libavcodec/mpegaudiotabs.o
+CC	libavcodec/mpegpicture.o
+CC	libavcodec/mpegutils.o
+CC	libavcodec/mpegvideo.o
+CC	libavcodec/mpegvideo_dec.o
+CC	libavcodec/mpegvideo_motion.o
+CC	libavcodec/mpegvideo_parser.o
+CC	libavcodec/mpegvideo_unquantize.o
+CC	libavcodec/mpegvideodata.o
+CC	libavcodec/mpegvideoencdsp.o
+CC	libavcodec/mpl2dec.o
+CC	libavcodec/mqc.o
+CC	libavcodec/mqcdec.o
+CC	libavcodec/msgsmdec.o
+CC	libavcodec/msmpeg4.o
+CC	libavcodec/msmpeg4_vc1_data.o
+CC	libavcodec/msmpeg4data.o
+CC	libavcodec/msmpeg4dec.o
+CC	libavcodec/msp2dec.o
+CC	libavcodec/msrle.o
+CC	libavcodec/msrledec.o
+CC	libavcodec/mss1.o
+CC	libavcodec/mss12.o
+CC	libavcodec/mss2.o
+CC	libavcodec/mss2dsp.o
+CC	libavcodec/mss3.o
+CC	libavcodec/mss34dsp.o
+CC	libavcodec/mss4.o
+CC	libavcodec/msvideo1.o
+CC	libavcodec/mv30.o
+CC	libavcodec/mvcdec.o
+CC	libavcodec/mxpegdec.o
+CC	libavcodec/nellymoser.o
+CC	libavcodec/nellymoserdec.o
+CC	libavcodec/neon/mpegvideo.o
+CC	libavcodec/notchlc.o
+CC	libavcodec/null.o
+CC	libavcodec/nuv.o
+CC	libavcodec/on2avc.o
+CC	libavcodec/on2avcdata.o
+CC	libavcodec/options.o
+CC	libavcodec/opus/parse.o
+CC	libavcodec/opus/parser.o
+CC	libavcodec/osq.o
+CC	libavcodec/packet.o
+CC	libavcodec/pafaudio.o
+CC	libavcodec/pafvideo.o
+CC	libavcodec/parser.o
+CC	libavcodec/parsers.o
+CC	libavcodec/pcm-bluray.o
+CC	libavcodec/pcm-dvd.o
+CC	libavcodec/pcm.o
+CC	libavcodec/pcx.o
+CC	libavcodec/pgssubdec.o
+src/libavcodec/pcm.c:96:12: warning: ‘pcm_encode_frame’ defined but not used [-Wunused-function]
+   96 | static int pcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
+      |            ^~~~~~~~~~~~~~~~
+src/libavcodec/pcm.c:41:20: warning: ‘pcm_encode_init’ defined but not used [-Wunused-function]
+   41 | static av_cold int pcm_encode_init(AVCodecContext *avctx)
+      |                    ^~~~~~~~~~~~~~~
+CC	libavcodec/pgxdec.o
+CC	libavcodec/photocd.o
+CC	libavcodec/pictordec.o
+CC	libavcodec/pixlet.o
+CC	libavcodec/png_parser.o
+CC	libavcodec/pnm.o
+CC	libavcodec/pnm_parser.o
+CC	libavcodec/pnmdec.o
+CC	libavcodec/profiles.o
+CC	libavcodec/prores_raw.o
+CC	libavcodec/prores_raw_parser.o
+CC	libavcodec/proresdata.o
+CC	libavcodec/proresdec.o
+CC	libavcodec/proresdsp.o
+CC	libavcodec/prosumer.o
+CC	libavcodec/psd.o
+CC	libavcodec/pthread.o
+CC	libavcodec/pthread_frame.o
+CC	libavcodec/pthread_slice.o
+CC	libavcodec/ptx.o
+CC	libavcodec/qcelpdec.o
+CC	libavcodec/qdm2.o
+CC	libavcodec/qdmc.o
+CC	libavcodec/qdrw.o
+CC	libavcodec/qoadec.o
+CC	libavcodec/qoi_parser.o
+CC	libavcodec/qoidec.o
+CC	libavcodec/qpeg.o
+CC	libavcodec/qpeldsp.o
+CC	libavcodec/qsv_api.o
+CC	libavcodec/qtrle.o
+CC	libavcodec/r210dec.o
+CC	libavcodec/ra144.o
+CC	libavcodec/ra144dec.o
+CC	libavcodec/ra288.o
+CC	libavcodec/ralf.o
+CC	libavcodec/rangecoder.o
+CC	libavcodec/raw.o
+CC	libavcodec/rawdec.o
+CC	libavcodec/realtextdec.o
+CC	libavcodec/rka.o
+CC	libavcodec/rl.o
+CC	libavcodec/rl2.o
+CC	libavcodec/roqvideo.o
+CC	libavcodec/roqvideodec.o
+CC	libavcodec/rpza.o
+CC	libavcodec/rtjpeg.o
+CC	libavcodec/rtv1.o
+CC	libavcodec/rv10.o
+CC	libavcodec/rv30.o
+CC	libavcodec/rv30dsp.o
+CC	libavcodec/rv34.o
+CC	libavcodec/rv34_parser.o
+CC	libavcodec/rv34dsp.o
+CC	libavcodec/rv40.o
+CC	libavcodec/rv40dsp.o
+CC	libavcodec/rv60dec.o
+CC	libavcodec/rv60dsp.o
+CC	libavcodec/s302m.o
+CC	libavcodec/samidec.o
+CC	libavcodec/sanm.o
+CC	libavcodec/sbc.o
+CC	libavcodec/sbc_parser.o
+CC	libavcodec/sbcdec.o
+CC	libavcodec/sbrdsp.o
+CC	libavcodec/sbrdsp_fixed.o
+CC	libavcodec/scpr.o
+CC	libavcodec/sga.o
+CC	libavcodec/sgidec.o
+CC	libavcodec/sgirledec.o
+CC	libavcodec/sheervideo.o
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:748:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 15 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 81 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:748:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 97 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:748:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 113 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:748:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 129 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:748:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 145 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:671:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 15 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 81 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:671:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 97 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:671:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 113 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:671:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 129 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+In function ‘filter_weak’,
+    inlined from ‘pred_angle’ at src/libavcodec/rv60dec.c:671:13:
+src/libavcodec/rv60dec.c:604:16: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  604 |         dst[i] = (src[i - 1] + 2*src[i] + src[i + 1] + 2) >> 2;
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/libavcodec/rv60dec.c: In function ‘pred_angle’:
+src/libavcodec/rv60dec.c:661:13: note: at offset 145 into destination object ‘filtered1’ of size 96
+  661 |     uint8_t filtered1[96], filtered2[96];
+      |             ^~~~~~~~~
+CC	libavcodec/shorten.o
+CC	libavcodec/simple_idct.o
+CC	libavcodec/sinewin.o
+CC	libavcodec/sipr.o
+CC	libavcodec/sipr16k.o
+CC	libavcodec/sipr_parser.o
+CC	libavcodec/siren.o
+CC	libavcodec/smacker.o
+CC	libavcodec/smc.o
+CC	libavcodec/smpte_436m.o
+CC	libavcodec/snappy.o
+CC	libavcodec/snow.o
+CC	libavcodec/snow_dwt.o
+CC	libavcodec/snowdec.o
+CC	libavcodec/sonic.o
+CC	libavcodec/sp5xdec.o
+CC	libavcodec/speedhq.o
+CC	libavcodec/speedhqdec.o
+CC	libavcodec/speexdec.o
+CC	libavcodec/srtdec.o
+CC	libavcodec/startcode.o
+CC	libavcodec/subviewerdec.o
+CC	libavcodec/sunrast.o
+CC	libavcodec/svq1.o
+CC	libavcodec/svq1dec.o
+CC	libavcodec/svq3.o
+CC	libavcodec/synth_filter.o
+CC	libavcodec/tak.o
+CC	libavcodec/tak_parser.o
+CC	libavcodec/takdec.o
+CC	libavcodec/takdsp.o
+CC	libavcodec/targa.o
+CC	libavcodec/targa_y216dec.o
+CC	libavcodec/textdec.o
+CC	libavcodec/texturedsp.o
+CC	libavcodec/threadprogress.o
+CC	libavcodec/tiertexseqv.o
+CC	libavcodec/tiff.o
+CC	libavcodec/tiff_common.o
+CC	libavcodec/tmv.o
+CC	libavcodec/to_upper4.o
+CC	libavcodec/tpeldsp.o
+CC	libavcodec/truemotion1.o
+CC	libavcodec/truemotion2.o
+CC	libavcodec/truemotion2rt.o
+CC	libavcodec/truespeech.o
+CC	libavcodec/tscc2.o
+CC	libavcodec/tta.o
+CC	libavcodec/ttadata.o
+CC	libavcodec/ttadsp.o
+CC	libavcodec/twinvq.o
+CC	libavcodec/twinvqdec.o
+CC	libavcodec/txd.o
+CC	libavcodec/ulti.o
+CC	libavcodec/utils.o
+CC	libavcodec/utvideodec.o
+CC	libavcodec/utvideodsp.o
+CC	libavcodec/v210dec.o
+CC	libavcodec/v210x.o
+CC	libavcodec/v308dec.o
+CC	libavcodec/v408dec.o
+CC	libavcodec/v410dec.o
+CC	libavcodec/vb.o
+CC	libavcodec/vble.o
+CC	libavcodec/vbndec.o
+CC	libavcodec/vc1.o
+CC	libavcodec/vc1_block.o
+CC	libavcodec/vc1_loopfilter.o
+CC	libavcodec/vc1_mc.o
+CC	libavcodec/vc1_parser.o
+CC	libavcodec/vc1_pred.o
+CC	libavcodec/vc1data.o
+CC	libavcodec/vc1dec.o
+CC	libavcodec/vc1dsp.o
+CC	libavcodec/vcr1.o
+CC	libavcodec/version.o
+CC	libavcodec/videodsp.o
+CC	libavcodec/vima.o
+CC	libavcodec/vlc.o
+CC	libavcodec/vmdaudio.o
+CC	libavcodec/vmdvideo.o
+CC	libavcodec/vmixdec.o
+CC	libavcodec/vmnc.o
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 3 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+In file included from src/libavcodec/vlc.c:39:
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:59:18: note: while referencing ‘val16’
+   59 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 4 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:59:18: note: while referencing ‘val16’
+   59 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+In function ‘add_level’,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘add_level’ at src/libavcodec/vlc.c:457:17,
+    inlined from ‘vlc_multi_gen’ at src/libavcodec/vlc.c:508:5,
+    inlined from ‘ff_vlc_init_multi_from_lengths’ at src/libavcodec/vlc.c:564:11:
+src/libavcodec/vlc.c:443:36: warning: array subscript 5 is above array bounds of ‘uint16_t[3]’ {aka ‘short unsigned int[3]’} [-Warray-bounds=]
+  443 |             if (is16bit) info.val16[curlevel] = sym;
+      |                          ~~~~~~~~~~^~~~~~~~~~
+src/libavcodec/vlc.h: In function ‘ff_vlc_init_multi_from_lengths’:
+src/libavcodec/vlc.h:59:18: note: while referencing ‘val16’
+   59 |         uint16_t val16[VLC_MULTI_MAX_SYMBOLS / 2];
+      |                  ^~~~~
+CC	libavcodec/vorbis.o
+CC	libavcodec/vorbis_data.o
+CC	libavcodec/vorbis_parser.o
+CC	libavcodec/vorbisdec.o
+CC	libavcodec/vorbisdsp.o
+CC	libavcodec/vp3.o
+CC	libavcodec/vp3_parser.o
+CC	libavcodec/vp3dsp.o
+CC	libavcodec/vp5.o
+CC	libavcodec/vp56.o
+CC	libavcodec/vp56data.o
+CC	libavcodec/vp56dsp.o
+CC	libavcodec/vp6.o
+CC	libavcodec/vp6dsp.o
+CC	libavcodec/vp8.o
+CC	libavcodec/vp8_parser.o
+CC	libavcodec/vp8data.o
+CC	libavcodec/vp8dsp.o
+CC	libavcodec/vp9.o
+CC	libavcodec/vp9_parser.o
+CC	libavcodec/vp9block.o
+CC	libavcodec/vp9data.o
+CC	libavcodec/vp9dsp.o
+CC	libavcodec/vp9dsp_10bpp.o
+CC	libavcodec/vp9dsp_12bpp.o
+CC	libavcodec/vp9dsp_8bpp.o
+CC	libavcodec/vp9lpf.o
+CC	libavcodec/vp9mvs.o
+CC	libavcodec/vp9prob.o
+CC	libavcodec/vp9recon.o
+CC	libavcodec/vpx_rac.o
+CC	libavcodec/vqavideo.o
+CC	libavcodec/vqcdec.o
+CC	libavcodec/vvc/cabac.o
+CC	libavcodec/vvc/ctu.o
+CC	libavcodec/vvc/data.o
+CC	libavcodec/vvc/dec.o
+CC	libavcodec/vvc/dsp.o
+CC	libavcodec/vvc/filter.o
+CC	libavcodec/vvc/inter.o
+CC	libavcodec/vvc/intra.o
+CC	libavcodec/vvc/intra_utils.o
+CC	libavcodec/vvc/itx_1d.o
+CC	libavcodec/vvc/mvs.o
+CC	libavcodec/vvc/ps.o
+CC	libavcodec/vvc/refs.o
+CC	libavcodec/vvc/sei.o
+CC	libavcodec/vvc/thread.o
+CC	libavcodec/vvc_parser.o
+CC	libavcodec/wavarc.o
+CC	libavcodec/wavpack.o
+CC	libavcodec/wavpackdata.o
+CC	libavcodec/wbmpdec.o
+CC	libavcodec/webp.o
+CC	libavcodec/webp_parser.o
+CC	libavcodec/webvttdec.o
+CC	libavcodec/wma.o
+CC	libavcodec/wma_common.o
+CC	libavcodec/wma_freqs.o
+CC	libavcodec/wmadec.o
+CC	libavcodec/wmalosslessdec.o
+CC	libavcodec/wmaprodec.o
+In function ‘wma_decode_block’,
+    inlined from ‘wma_decode_frame’ at src/libavcodec/wmadec.c:805:15:
+src/libavcodec/wmadec.c:521:30: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  521 |         s->channel_coded[ch] = a;
+      |         ~~~~~~~~~~~~~~~~~~~~~^~~
+In file included from src/libavcodec/wmadec.c:45:
+src/libavcodec/wma.h: In function ‘wma_decode_frame’:
+src/libavcodec/wma.h:112:13: note: at offset 2 into destination object ‘channel_coded’ of size 2
+  112 |     uint8_t channel_coded[MAX_CHANNELS];    ///< true if channel is coded
+      |             ^~~~~~~~~~~~~
+CC	libavcodec/wmavoice.o
+CC	libavcodec/wmv2.o
+CC	libavcodec/wmv2data.o
+CC	libavcodec/wmv2dec.o
+CC	libavcodec/wmv2dsp.o
+CC	libavcodec/wnv1.o
+CC	libavcodec/wrapped_avframe.o
+CC	libavcodec/ws-snd1.o
+CC	libavcodec/xan.o
+CC	libavcodec/xbm_parser.o
+CC	libavcodec/xbmdec.o
+CC	libavcodec/xface.o
+CC	libavcodec/xfacedec.o
+CC	libavcodec/xiph.o
+CC	libavcodec/xl.o
+CC	libavcodec/xma_parser.o
+CC	libavcodec/xpmdec.o
+CC	libavcodec/xsubdec.o
+CC	libavcodec/xvididct.o
+CC	libavcodec/xwd_parser.o
+CC	libavcodec/xwddec.o
+CC	libavcodec/xxan.o
+CC	libavcodec/y41pdec.o
+CC	libavcodec/ylc.o
+CC	libavcodec/yop.o
+CC	libavcodec/yuv4dec.o
+CC	libavcodec/float_scalarproduct.o
+CC	libavcodec/half2float.o
+CC	libavcodec/log2_tab.o
+CC	libavcodec/reverse.o
+CC	libavcodec/timecode_internal.o
+CC	libavutil/aarch64/cpu.o
+AS	libavutil/aarch64/cpu_sve.o
+CC	libavutil/aarch64/float_dsp_init.o
+AS	libavutil/aarch64/float_dsp_neon.o
+CC	libavutil/aarch64/tx_float_init.o
+AS	libavutil/aarch64/tx_float_neon.o
+CC	libavutil/adler32.o
+CC	libavutil/aes.o
+CC	libavutil/aes_ctr.o
+CC	libavutil/ambient_viewing_environment.o
+CC	libavutil/audio_fifo.o
+CC	libavutil/avsscanf.o
+CC	libavutil/avstring.o
+CC	libavutil/base64.o
+CC	libavutil/blowfish.o
+CC	libavutil/bprint.o
+CC	libavutil/buffer.o
+CC	libavutil/camellia.o
+CC	libavutil/cast5.o
+CC	libavutil/channel_layout.o
+CC	libavutil/container_fifo.o
+CC	libavutil/cpu.o
+CC	libavutil/crc.o
+CC	libavutil/csp.o
+CC	libavutil/des.o
+CC	libavutil/detection_bbox.o
+CC	libavutil/dict.o
+CC	libavutil/display.o
+CC	libavutil/dovi_meta.o
+CC	libavutil/downmix_info.o
+CC	libavutil/encryption_info.o
+CC	libavutil/error.o
+CC	libavutil/eval.o
+CC	libavutil/executor.o
+CC	libavutil/fifo.o
+CC	libavutil/file.o
+CC	libavutil/file_open.o
+CC	libavutil/film_grain_params.o
+CC	libavutil/fixed_dsp.o
+CC	libavutil/float_dsp.o
+CC	libavutil/float_scalarproduct.o
+CC	libavutil/frame.o
+CC	libavutil/hash.o
+CC	libavutil/hdr_dynamic_metadata.o
+CC	libavutil/hdr_dynamic_vivid_metadata.o
+CC	libavutil/hmac.o
+CC	libavutil/hwcontext.o
+CC	libavutil/hwcontext_stub.o
+CC	libavutil/iamf.o
+CC	libavutil/imgutils.o
+CC	libavutil/integer.o
+CC	libavutil/intmath.o
+CC	libavutil/lfg.o
+CC	libavutil/lls.o
+CC	libavutil/log.o
+CC	libavutil/log2_tab.o
+CC	libavutil/lzo.o
+CC	libavutil/mastering_display_metadata.o
+CC	libavutil/mathematics.o
+CC	libavutil/md5.o
+CC	libavutil/mem.o
+CC	libavutil/murmur3.o
+CC	libavutil/opt.o
+CC	libavutil/parseutils.o
+CC	libavutil/pixdesc.o
+CC	libavutil/pixelutils.o
+CC	libavutil/random_seed.o
+CC	libavutil/rational.o
+CC	libavutil/rc4.o
+CC	libavutil/refstruct.o
+CC	libavutil/reverse.o
+CC	libavutil/ripemd.o
+CC	libavutil/samplefmt.o
+CC	libavutil/sha.o
+CC	libavutil/sha512.o
+CC	libavutil/side_data.o
+CC	libavutil/slicethread.o
+CC	libavutil/spherical.o
+CC	libavutil/stereo3d.o
+CC	libavutil/tdrdi.o
+CC	libavutil/tea.o
+CC	libavutil/threadmessage.o
+CC	libavutil/time.o
+CC	libavutil/timecode.o
+CC	libavutil/timecode_internal.o
+CC	libavutil/timestamp.o
+CC	libavutil/tree.o
+CC	libavutil/twofish.o
+CC	libavutil/tx.o
+CC	libavutil/tx_double.o
+CC	libavutil/tx_float.o
+CC	libavutil/tx_int32.o
+CC	libavutil/utils.o
+CC	libavutil/uuid.o
+CC	libavutil/version.o
+CC	libavutil/video_enc_params.o
+CC	libavutil/video_hint.o
+CC	libavutil/xga_font_data.o
+CC	libavutil/xtea.o
+In file included from src/libavcodec/vvc/dsp_template.c:29,
+                 from src/libavcodec/vvc/dsp.c:75:
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -9 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -25 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -41 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -57 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -73 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -89 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -105 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -121 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -137 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -153 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:536:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  536 |             left[i] = top[i] = top[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -169 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -9 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -25 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -41 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -57 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -73 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -89 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -105 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -121 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -137 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -153 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+In function ‘prepare_intra_edge_params_8’,
+    inlined from ‘intra_pred_8’ at src/libavcodec/vvc/intra_template.c:626:5:
+src/libavcodec/vvc/intra_template.c:534:21: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+  534 |             left[i] = top[i] = left[0];
+      |             ~~~~~~~~^~~~~~~~~~~~~~~~~~
+src/libavcodec/vvc/intra_template.c: In function ‘intra_pred_8’:
+src/libavcodec/vvc/intra_template.c:624:21: note: at offset -169 into destination object ‘edge’ of size 3136
+  624 |     IntraEdgeParams edge;
+      |                     ^~~~
+GEN	libavutil/libavutil.ver
+LD	libavutil/libavutil.so.60
+make: 'libavutil/libavutil.so' is up to date.
+GEN	libavcodec/libavcodec.ver
+LD	libavcodec/libavcodec.so.62
+dpkg-deb: building package 'atlasa1-firefox-cedar' in '/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb'.
+patching file cedar_backend.h
+patching file shm_v2/cedar_backend.h
+patching file cedar_backend.c
+patching file shm_v2/cedar_protocol.h
+patching file shm_v2/cedar_broker.c
+patching file shm_v2/cedar_client.h
+patching file shm_v2/cedar_client.c
+patching file ffmpeg_cedar.c
+patching file shm_v2/cedar_broker.c
+patching file tools/browser/cedar_backend.c
+Hunk #4 succeeded at 507 (offset 23 lines).
+Hunk #5 succeeded at 524 (offset 23 lines).
+Hunk #6 succeeded at 718 (offset 23 lines).
+==> /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/service/transport-host.log <==
+Passed full-size transport regression, 4K OPEN / 1080p PULL over SHM, opt-in, PTS/color/pixels, short buffer, retained-mode separation and scaled reopen
+
+==> /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/service/transport-arm.log <==
+Passed full-size transport regression, 4K OPEN / 1080p PULL over SHM, opt-in, PTS/color/pixels, short buffer, retained-mode separation and scaled reopen
+2a2790b05dd55a7463e8b11f6eed165cb4f2d904906c5ae8957527054de04f98  cedar-broker
+2185f2019b4aea60933c34d387d290e808848e420f8899b0b401783293145583  libcedar_backend.so
+patching file openmax/vdec/src/omx_vdec_aw_decoder_linux.c
+55702fa63c7184471798f6f710bd6484d9a8c2efbc70ef8169a0e82ddd0bc2e4  /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/media.1T5gUVEv/components/omx/libOmxVdec.so
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following NEW packages will be installed:
+  atlasa1-firefox-cedar atlasa1-player t736-img-userspace-candidate
+0 upgraded, 3 newly installed, 0 to remove and 75 not upgraded.
+Need to get 0 B/47.8 MB of archives.
+After this operation, 0 B of additional disk space will be used.
+Get:1 /var/tmp/atlasa1-packages.0O8aUWrO/atlasa1-player_0.1-6~resolute1_arm64.deb atlasa1-player arm64 0.1-6~resolute1 [6256 kB]
+Get:2 /var/tmp/atlasa1-packages.0O8aUWrO/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb atlasa1-firefox-cedar arm64 8.0.1-1~resolute1+panel2 [4861 kB]
+Get:3 /var/tmp/atlasa1-packages.0O8aUWrO/t736-img-userspace-candidate_24.2.6603887-2_arm64.deb t736-img-userspace-candidate arm64 24.2.6603887-2 [36.7 MB]
+Selecting previously unselected package atlasa1-player.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 120366 files and directories currently installed.)
+Preparing to unpack .../atlasa1-player_0.1-6~resolute1_arm64.deb ...
+Unpacking atlasa1-player (0.1-6~resolute1) ...
+Selecting previously unselected package atlasa1-firefox-cedar.
+Preparing to unpack .../atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb ...
+Unpacking atlasa1-firefox-cedar (8.0.1-1~resolute1+panel2) ...
+Selecting previously unselected package t736-img-userspace-candidate.
+Preparing to unpack .../t736-img-userspace-candidate_24.2.6603887-2_arm64.deb ...
+Unpacking t736-img-userspace-candidate (24.2.6603887-2) ...
+Setting up atlasa1-player (0.1-6~resolute1) ...
+Setting up atlasa1-firefox-cedar (8.0.1-1~resolute1+panel2) ...
+Setting up t736-img-userspace-candidate (24.2.6603887-2) ...
+Processing triggers for desktop-file-utils (0.28-1build1) ...
+Selecting previously unselected package atlasa1-img-wayland.
+(Reading database ... 120513 files and directories currently installed.)
+Preparing to unpack .../atlasa1-wayland.d8ZbWWHn.deb ...
+Unpacking atlasa1-img-wayland (24.2.6603887-3) ...
+Setting up atlasa1-img-wayland (24.2.6603887-3) ...
+Adding 'local diversion of /usr/libexec/mutter-x11-frames to /usr/libexec/mutter-x11-frames.atlasa1-real'
+Reading package lists...
+Building dependency tree...
+Reading state information...
+update-alternatives: using /usr/share/plymouth/themes/atlasa1/atlasa1.plymouth to provide /usr/share/plymouth/themes/default.plymouth (default.plymouth) in auto mode
+Reading package lists...
+Building dependency tree...
+Reading state information...

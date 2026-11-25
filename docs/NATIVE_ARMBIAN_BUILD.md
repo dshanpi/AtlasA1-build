@@ -38,7 +38,8 @@ PowerVR 在内核源码目录外的独立临时目录编译，结束后自动清
 | `full` | 再增加办公、创作和开发工具 |
 
 板级适配仍会加入 GPU、Cedar、播放器和适配的 Firefox。
-目前完整镜像验证使用 `minimal`。其他档位尚未完整构建验证。
+GNOME 的 `minimal`、`full` 和 Xfce 的 `minimal` 已完成镜像构建及离线检查。
+其他组合尚未完整构建验证。
 镜像固定为 8 GiB；扩展软件超过根分区容量时，构建会明确报错。
 
 ## 自定义预装软件
@@ -142,7 +143,7 @@ git apply --whitespace=nowarn /path/to/atlasa1-resolute-armbian.patch
 单文件补丁重建的 Linux、U-Boot 和 PowerVR 源码树与原生构建输入完全一致。
 `kernel-config` 菜单已实测保存退出，保存的配置通过重装保留检查。
 Wi-Fi、蓝牙及浏览器高帧率播放的现有限制不会因更换构建入口而消失。
-完整 GNOME 构建退出码为 0。根文件系统包含 1,278 个已安装软件包。
+此前 GNOME `minimal` 构建退出码为 0。根文件系统包含 1,278 个已安装软件包。
 GPT、ext4、启动区读回、启动文件和 initramfs 检查通过。
 GNOME 50.1、Firefox 160、PowerVR 和 Cedar 文件检查通过。
 默认用户为 `t736`，密码为 `1234`。root 密码为 `1234`，首次登录需修改。
@@ -174,3 +175,33 @@ GitHub 连接缓慢，部分官方输入由另一台主机下载、校验后传�
 后续验证使用 `OFFLINE_WORK=yes` 复用源码缓存；根文件系统安装仍访问软件源。
 正常入口会自动联网获取这些输入，无需另一台主机或私有 SDK。
 无缓存主机全程无人值守构建尚未验证。
+
+## 2026-11-25 GNOME full 构建结果
+
+服务器用户目录中的 GNOME `full` 构建已正常结束，退出码为 0。
+包含 1,548 个已安装软件包：GNOME 50.1、Firefox 161、LibreOffice、GIMP、
+Inkscape、Audacity 和 VS Code，以及 PowerVR、Cedar、播放器和 Firefox 编解码适配。
+Linux 6.18.63、U-Boot 和 PowerVR 模块编译打包通过。
+GPT、ext4、启动区读回、initramfs、组件文件及 dpkg 完整性检查通过。
+构建锁已释放，临时挂载已解除。
+
+```text
+/home/ubuntu/t736/AtlasA1-build/output/armbian/output/images/
+Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img
+Size: 8589934592 bytes (8 GiB)
+SHA256: 917b4647c3937dd65828f0ecb7e3b8dc0ab89ed58fd6b3ad08acae2ea3f15cfd
+```
+
+本次修复了并发构建清理 PowerVR 工作区的问题，并复用官方 APT 缓存。
+最终运行使用 `OFFLINE_WORK=yes` 复用已准备好的源码，部分公开下载经另一台主机校验后传入缓存。
+这证明当前构建流程能产出完整镜像，不等于无缓存主机全程无人值守验证。
+镜像尚未烧录或实板启动；文件检查不能替代 GPU、视频播放及无线功能验收。
+Firefox 随软件源从 160 更新至 161，本次没有进行浏览器播放性能测试。
+
+[结果](../evidence/native-armbian-20261124/gnome-full/result.json) ·
+[布局检查](../evidence/native-armbian-20261124/gnome-full/image-layout.json) ·
+[内容检查](../evidence/native-armbian-20261124/gnome-full/image-content.json) ·
+[软件包清单](../evidence/native-armbian-20261124/gnome-full/installed-packages.tsv) ·
+[构建日志](../evidence/native-armbian-20261124/gnome-full/build.log) ·
+[组件日志](../evidence/native-armbian-20261124/gnome-full/components.log) ·
+[下载缓存记录](../evidence/native-armbian-20261124/gnome-full/download-cache.json)

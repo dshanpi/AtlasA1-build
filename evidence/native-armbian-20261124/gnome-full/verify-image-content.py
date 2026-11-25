@@ -63,6 +63,7 @@ try:
             assert (root/'etc/systemd/system/sockets.target.wants/t736-cedar.socket').is_symlink()
             packages = run('dpkg-query', '--admindir='+str(root/'var/lib/dpkg'), '-W',
                            '-f=${binary:Package}\t${Version}\t${db:Status-Abbrev}\n')
+            assert not run('dpkg', '--admindir='+str(root/'var/lib/dpkg'), '--audit')
             (output/'native-installed-packages.tsv').write_text(packages+'\n')
             installed = {parts[0].split(':')[0]: parts[1] for line in packages.splitlines()
                          if len(parts := line.split('\t')) == 3 and parts[2].startswith('ii')}
@@ -80,6 +81,7 @@ try:
             result = dict(image=image.name, required_file_sha256=hashes, installed_packages=len(installed),
                           package_versions=versions, pvr_vermagic=vermagic, t736_home_preserved=True,
                           default_passwords_match=True, initrd_files=initrd_required,
+                          dpkg_audit_clean=True,
                           cedar_decoders_present=True, gdm_selected=True, cedar_socket_enabled=True,
                           hardware_boot='not tested')
             (output/'native-image-content.json').write_text(json.dumps(result, indent=2)+'\n')
