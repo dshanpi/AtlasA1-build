@@ -1,0 +1,12 @@
+Cloning into '/tmp/tmp.jebFPTsQZ0/framework/cache/git-bare/u-boot-local'...
+done.
+Using local u-boot source cache /tmp/tmp.jebFPTsQZ0/framework/cache/git-bare/u-boot-local info
+Using local u-boot source cache /tmp/tmp.jebFPTsQZ0/framework/cache/git-bare/u-boot-local info
+Preparing worktree (checking out 'master')
+HEAD is now at e030b7d initial
+Your branch is up to date with 'origin/atlasa1-v47'.
+Preparing worktree (detached HEAD e030b7d)
+HEAD is now at e030b7d initial
+Using local u-boot source cache /tmp/tmp.jebFPTsQZ0/framework/cache/git-bare/u-boot info
+Preparing u-boot bare git tree ~390 MiB download, first use only info
+PASS: empty cache, repeated preparation, worktree checkout, legacy worktree reuse, and upstream fallback.

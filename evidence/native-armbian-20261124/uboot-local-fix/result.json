@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-25",
+  "framework_revision": "2d3dd98fb4a86d4d884cec4fc2f5de28a37a8736",
+  "issue": "U-Boot attempted redundant 391 MB OCI source download; three HTTP/2 PROTOCOL_ERROR failures",
+  "fix": "Use verified local BOOTSOURCE, preserve existing worktree registration, retain upstream remote-source fallback",
+  "validation": {
+    "isolated_empty_cache_and_legacy_worktree": "passed",
+    "installer_idempotence": "passed",
+    "single_patch_apply_check": "passed",
+    "server_uboot_source_compile_and_deb": "passed",
+    "server_build_options": "BOARD=atlasa1 BRANCH=current BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=full KERNEL_CONFIGURE=no RELEASE=resolute",
+    "full_image": "in progress; kernel stage",
+    "board_operations": false
+  }
+}

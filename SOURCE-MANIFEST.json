@@ -1106,8 +1106,8 @@
       "path": "docs/NATIVE_ARMBIAN_BUILD.md",
       "kind": "source",
       "source": "mainline/docs/NATIVE_ARMBIAN_BUILD.md",
-      "size": 7480,
-      "sha256": "40dfa83c524b5bd9d41344b7e794115dd39049b42ecb0c28ef836df7b3438a56"
+      "size": 7693,
+      "sha256": "36b69c0a798a2d1d5468aefa437d4078c5a9dcd5060dfd9d765b904e18867616"
     },
     {
       "path": "docs/UBUNTU_26_04.md",
@@ -3385,6 +3385,27 @@
       "sha256": "3eeceb70379661fceae80f07d3db247f2f1d0205742d04134c896585c0f76427"
     },
     {
+      "path": "evidence/native-armbian-20261124/uboot-local-fix/build-progress.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/uboot-local-fix/build-progress.log",
+      "size": 18035,
+      "sha256": "792665411c28cce8c9a56c486cd865f591929778055dc0de83a719445260cb95"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/uboot-local-fix/cache-test.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/uboot-local-fix/cache-test.log",
+      "size": 738,
+      "sha256": "62a3870e1be581eb2839c79ed3a81eedd2e5b581e3229e67ef05479a8673a517"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/uboot-local-fix/result.json",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/uboot-local-fix/result.json",
+      "size": 792,
+      "sha256": "f163b75940acfb80d5b3e50f4e4522104d373e7b575e4401e3528ed15bcc789b"
+    },
+    {
       "path": "evidence/native-armbian-20261124/uboot-oci.json",
       "kind": "source",
       "source": "mainline/evidence/native-armbian-20261124/uboot-oci.json",
@@ -3665,11 +3686,18 @@
       "sha256": "6b1223dfabbbf9daf91afb1c160f9f4c147d7309530255d0036b57129aa0c8f5"
     },
     {
+      "path": "patches/armbian/uboot-local-source.patch",
+      "kind": "source",
+      "source": "mainline/patches/armbian/uboot-local-source.patch",
+      "size": 1762,
+      "sha256": "3b41a2ab6ede174832653f62d5347d78bfc9aebeecb22ebcc59112d47a6e6abe"
+    },
+    {
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8771707,
-      "sha256": "42e65863037fb8b4a5792a939552fbf5769787e8e6563627ae9724944c8ef50f"
+      "size": 8776120,
+      "sha256": "f7ceca71fb7d9adc0282ad9087b7e03bad3975ff787c98ff6f9a1ab4d59ba5a9"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5642,8 +5670,8 @@
       "path": "tests/test_atlasa1_native_install.py",
       "kind": "source",
       "source": "mainline/tests/test_atlasa1_native_install.py",
-      "size": 2789,
-      "sha256": "2ee145a85ab6d79912b7d6f0c93f1232448c28df68583c6251732e4916cc21f3"
+      "size": 2833,
+      "sha256": "3a2ae5dca7304d540e3e95552eb532a7c7e4381a62ddded98129e95ceec6635e"
     },
     {
       "path": "tests/test_atlasa1_player.py",
@@ -7119,15 +7147,15 @@
       "path": "tools/export_atlas_repositories.py",
       "kind": "source",
       "source": "mainline/tools/export_atlas_repositories.py",
-      "size": 36775,
-      "sha256": "9d92e8b0d66e545485519135807020ed4f69c14a5c3f921ae9f9697904488364"
+      "size": 36919,
+      "sha256": "8d1c982e9977b86514f7b0aa73c72f725eef02ddabc32e73e3456c3ea1f4a5ac"
     },
     {
       "path": "tools/export_atlasa1_resolute_patch.py",
       "kind": "source",
       "source": "mainline/tools/export_atlasa1_resolute_patch.py",
-      "size": 10585,
-      "sha256": "059114fee5c0c49370b416e8aa6ece9e64148b5daea4c80516ff6a454a0331e9"
+      "size": 10741,
+      "sha256": "fc944ab7b21d59c16876aad1a5160eec71af6b8fb695fd66246ecba9268a5cb7"
     },
     {
       "path": "tools/export_display_compat.py",
@@ -7196,8 +7224,8 @@
       "path": "tools/install_atlasa1_armbian.py",
       "kind": "source",
       "source": "mainline/tools/install_atlasa1_armbian.py",
-      "size": 2993,
-      "sha256": "e6c7b5af80d727b09c3d540f8b4d847cc2e330c92dbe06d0db095a7899e312b0"
+      "size": 3212,
+      "sha256": "66eb75d19048f44ad994a8cf385ae6b3bf1a573b4738553b4d7fff6ece6c1328"
     },
     {
       "path": "tools/install_ethernet_v6.sh",
@@ -7737,6 +7765,13 @@
       "source": "mainline/tools/validation/summarize_dmabuf_timing.py",
       "size": 1471,
       "sha256": "0e72f5f275ec5833cecd73e226730de2caf9f9b882dfaa5332c1f47f5c25feb9"
+    },
+    {
+      "path": "tools/validation/test_atlasa1_local_uboot.sh",
+      "kind": "source",
+      "source": "mainline/tools/validation/test_atlasa1_local_uboot.sh",
+      "size": 2076,
+      "sha256": "e737355dc44cd260216b614bb1174f6a6b650a7ef3b661538bfb47d27852d709"
     },
     {
       "path": "tools/validation/update_t736_media_v29.py",

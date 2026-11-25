@@ -1,0 +1,152 @@
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'full' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🚸[0m] [0mThis script requires root privileges; Docker is unavailable [[1;35m trying to use sudo [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'PREFER_DOCKER': already set to 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'ARMBIAN_RELAUNCHED': already set to 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'SET_OWNER_TO_UID': '(unset)' --> '1000' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'full' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🌱[0m] [0mStarting single build process [[1;32m atlasa1 [0m][0m
+[0m[🌱[0m] [0mSourcing board configuration [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/config/boards/atlasa1.conf [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m atlasa1 [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOARDFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOOTCONFIG[0m=[0;34m'[1;34matlasa1_defconfig[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after defaulting LINUXFAMILY to BOARDFAMILY [[1;36m [1;34mLINUXFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[🌱[0m] [0mStarting main configuration[0m
+[0m[🌱[0m] [0mUsing REVISION from [[1;32m main VERSION file: '26.11.0-trunk' [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m armbian-config [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-binman-fix-pkg-resources [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-fix-pylibfdt-swig [0m][0m
+[0m[🌱[0m] [0mSourcing family configuration [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/config/sources/families/atlasa1.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNEL_MAJOR_MINOR[0m=[0;34m'[1;34m6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mLINUXCONFIG[0m=[0;34m'[1;34mlinux-atlasa1-current[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELPATCHDIR[0m=[0;34m'[1;34matlasa1-6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTPATCHDIR[0m=[0;34m'[1;34mu-boot-atlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mATF_COMPILE[0m=[0;34m'[1;34mno[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mNETWORKING_STACK[0m=[0;34m'[1;34mnetwork-manager[0;34m' [0m][0m
+[0m[🌱[0m] [0mSourcing arch configuration [[1;32m arm64.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mATF_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mKERNEL_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mUBOOT_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[🌱[0m] [0mUsing NETWORKING_STACK [[1;32m NETWORKING_STACK: network-manager [0m][0m
+[0m[🌱[0m] [0mAdding networking extensions [[1;32m net-network-manager, net-chrony [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-network-manager [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-chrony [0m][0m
+[0m[🌱[0m] [0mExtension manager [[1;32m processed 23 Extension Methods calls and 45 Extension Method implementations [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mKERNELSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mBOOTSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot[0;34m' [0m][0m
+[0m[🌱[0m] [0mGetting sources from Git [[1;32m armbian-configng main [0m][0m
+[0m[🌿[0m] [0mFetching updates from remote repository [[1;39m armbian-configng main [0m][0m
+From https://github.com/armbian/configng
+ * branch            main       -> FETCH_HEAD
+[0m[🌱[0m] [0mgit: Fetch from remote completed, rev-parsing... [[1;32m 'armbian-configng' 'main' 'FETCH_HEAD' [0m][0m
+[0m[🌱[0m] [0mExtension: net-chrony: Adding extra package to image [[1;32m chrony [0m][0m
+[0m[🌱[0m] [0mExtension: net-network-manager: Adding extra packages to image [[1;32m network-manager network-manager-openvpn netplan.io [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mKERNEL_PATCH_ARCHIVE_BASE[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mBOOTDIR[0m=[0;34m'[1;34mu-boot[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before handling KERNEL_MAJOR_MINOR in config_post_main [[1;36m [1;34mBOOTSOURCEDIR[0m=[0;34m'[1;34mu-boot-worktree/u-boot/atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before calling extension_finish_config [[1;36m [1;34mLINUXSOURCEDIR[0m=[0;34m'[1;34mlinux-kernel-worktree/6.18__atlasa1__arm64[0;34m' [0m][0m
+[0m[🌱[0m] [0mChecking [[1;32m basic host setup [0m][0m
+[0m[🌱[0m] [0mBuild host OS release [[1;32m noble [0m][0m
+[0m[🌱[0m] [0mBuild host architecture [[1;32m amd64 [0m][0m
+[0m[🌱[0m] [0mConfiguration prepared for BOARD build [[1;32m atlasa1.conf [0m][0m
+[0m[✨[0m] [0mRepeat Build Options (early) [[1;32m ./compile.sh build BOARD=atlasa1 BRANCH=current BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=full KERNEL_CONFIGURE=no RELEASE=resolute [0m][0m
+[0m[🌱[0m] [0mChecked directory OK for mount options [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/.tmp ('main temporary dir') [0m][0m
+[0m[🌱[0m] [0mPreparing [[1;32m host [0m][0m
+[0m[🌱[0m] [0mPython2 not available on host release 'noble' [[1;32m ancient u-boot versions might/will fail to build [0m][0m
+[0m[🌱[0m] [0mSyncing clock [[1;32m host [0m][0m
+[0m[🌱[0m] [0mCross arch build [[1;32m target arm64 on host amd64 [0m][0m
+[0m[🌱[0m] [0mchecking [[1;32m arch-test for 'arm64' [0m][0m
+[0m[🌱[0m] [0mAggregating packages [[1;32m rootfs [0m][0m
+[0m[🌱[0m] [0mPython3 version [[1;32m 3.12.3 - 'Python 3.12.3' [0m][0m
+[0m[🌱[0m] [0mpip3 version [[1;32m 26.3 [0m][0m
+[0m[🌱[0m] [0mUsing cached pip packages for Python tools [[1;32m 1484b14cc187abc86c943707cc525a619944cfb0ab0bf6e6a3ed4dcd47c2fb51 [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m uboot :: uboot() [0m][0m
+[0m[🌱[0m] [0mProducing new & caching [[1;32m GIT_INFO_UBOOT [0m][0m
+[0m[🌱[0m] [0mFetching SHA1 of 'branch' 'refs/heads/atlasa1-v47' [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot [0m][0m
+[0m[🌱[0m] [0mQuerying git remote for branch 'refs/heads/atlasa1-v47' [[1;32m --exit-code /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot refs/heads/atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mSHA1 of branch refs/heads/atlasa1-v47 [[1;32m 'd21ba41551ae46b522c31e5a245c9afd13b71567' [0m][0m
+[0m[🚸[0m] [0mNo Makefile URL known for git host [[1;35m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot: version left out of the artifact version [0m][0m
+[0m[🌱[0m] [0mGetting ORAS manifest [[1;32m ORAS manifest from ghcr.io/armbian/os/uboot-atlasa1-current:1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a [0m][0m
+[0m[🚸[0m] [0mORAS manifest fetch error [[1;35m Error response from registry: denied: requested access to the resource is denied [0m][0m
+[0m[🌱[0m] [0mArtifact is not available in remote cache [[1;32m ghcr.io/armbian/os/uboot-atlasa1-current:1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a [0m][0m
+[0m[🌱[0m] [0mUsing local u-boot source cache [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/git-bare/u-boot-local [0m][0m
+[0m[🌱[0m] [0mGetting sources from Git [[1;32m u-boot atlasa1-v47 [0m][0m
+[0m[🌿[0m] [0mFetching updates from remote repository [[1;39m u-boot atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mgit: Fetch from remote completed, rev-parsing... [[1;32m 'u-boot' 'atlasa1-v47' 'FETCH_HEAD' [0m][0m
+[0m[🌿[0m] [0mUsing u-boot revision SHA1 [[1;39m d21ba41551ae46b522c31e5a245c9afd13b71567 [0m][0m
+[0m[🌱[0m] [0mCleaning up u-boot git bundle artifacts [[1;32m no longer needed [0m][0m
+[0m[🌱[0m] [0mCompiling u-boot [[1;32m 2026.10 /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/sources/u-boot-worktree/u-boot/atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mCompiler version [[1;32m aarch64-linux-gnu-gcc '13.3.0' [0m][0m
+[0m[🌿[0m] [0m{u-boot:1}  Checking out to clean sources SHA1 d21ba41551ae46b522c31e5a245c9afd13b71567 [[1;39m {u-boot-worktree/u-boot/atlasa1-v47} for  [0m][0m
+[0m[🌿[0m] [0m{u-boot:1}  Cleaning u-boot tree [[1;39m u-boot-worktree/u-boot/atlasa1-v47 for '' [0m][0m
+[0m[🌱[0m] [0mCalling Python patching script for U-Boot: [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot - branch:atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mUsing U-Boot patch dir: [[1;32m u-boot-atlasa1 [0m][0m
+[0m[🌱[0m] [0m{u-boot:1} Preparing u-boot config 'atlasa1_defconfig' [[1;32m 2026.10  [0m][0m
+[0m[🌱[0m] [0m{u-boot:1} Updating u-boot config with olddefconfig [[1;32m 2026.10  [0m][0m
+[0m[🌱[0m] [0m{u-boot:1} Compiling u-boot [[1;32m 2026.10  with gcc '13.3.0' [0m][0m
+[0m[🌱[0m] [0m{u-boot:1} built u-boot target [[1;32m 2026.10 in 16 seconds [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Preparing u-boot targets packaging [[1;39m 2026.10  [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Deploying u-boot binary target [[1;39m 2026.10  :: u-boot.bin [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Deploying u-boot binary target [[1;39m 2026.10  :: atlasa1-spl.bin [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Deploying u-boot binary target [[1;39m 2026.10  :: atlasa1-package.bin [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Deploying u-boot binary target [[1;39m 2026.10  :: atlasa1-boot.json [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Deploying u-boot binary target [[1;39m 2026.10  :: atlasa1-image.py [0m][0m
+[0m[🌿[0m] [0m{u-boot:1} Done with u-boot target [[1;39m 2026.10  [0m][0m
+[0m[🌿[0m] [0mPreparing u-boot general packaging [[1;39m 2026.10  [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binaries with binwalk [[1;32m linux-u-boot-current-atlasa1 [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with binwalk [[1;32m 'atlasa1-boot.json' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with dumpimage [[1;32m 'atlasa1-boot.json' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with binwalk [[1;32m 'atlasa1-image.py' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with dumpimage [[1;32m 'atlasa1-image.py' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with binwalk [[1;32m 'atlasa1-package.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with dumpimage [[1;32m 'atlasa1-package.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with binwalk [[1;32m 'atlasa1-spl.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with dumpimage [[1;32m 'atlasa1-spl.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with binwalk [[1;32m 'u-boot.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mAnalyzing u-boot binary with dumpimage [[1;32m 'u-boot.bin' built on noble [0m][0m
+[0m[🌱[0m] [0mRunning shellcheck [[1;32m usr/lib/u-boot/platform_install.sh [0m][0m
+[0m[🌱[0m] [0mDas U-Boot .deb package version [[1;32m 1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a [0m][0m
+[0m[🌿[0m] [0mBuilding u-boot deb [[1;39m (version: 1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a) [0m][0m
+[0m[🌱[0m] [0mshellcheck found no problems in package scripts [[1;32m shellchecked 1 scripts in 'linux-u-boot-atlasa1-current' [0m][0m
+[0m[🌱[0m] [0mBuilding package, this might take a while.. [[1;32m linux-u-boot-atlasa1-current_1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a_arm64.deb [0m][0m
+[0m[🌱[0m] [0mBuilt u-boot deb OK [[1;32m linux-u-boot-atlasa1-current 1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'uboot-atlasa1-current(deb)::1-Sd21b-P0000-H1ca2-Vf2af-Bf5bd-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m kernel :: kernel() [0m][0m
+[0m[🌱[0m] [0mProducing new & caching [[1;32m GIT_INFO_KERNEL [0m][0m
+[0m[🌱[0m] [0mFetching SHA1 of 'branch' 'refs/heads/atlasa1-v47' [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux [0m][0m
+[0m[🌱[0m] [0mQuerying git remote for branch 'refs/heads/atlasa1-v47' [[1;32m --exit-code /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux refs/heads/atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mSHA1 of branch refs/heads/atlasa1-v47 [[1;32m '1eb2d7d2375a76f18cc1a0d37fa6197e9b273adb' [0m][0m
+[0m[🚸[0m] [0mNo Makefile URL known for git host [[1;35m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux: version left out of the artifact version [0m][0m
+[0m[🌱[0m] [0mSkipping drivers patch hash for kernel [[1;32m due to EXTRAWIFI=no [0m][0m
+[0m[🌱[0m] [0mUser patches directory for kernel [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/kernel/atlasa1-6.18 [0m][0m
+[0m[🌱[0m] [0mUsing kernel config provided by user in config/kernel folder [[1;32m config/kernel/linux-atlasa1-current.config [0m][0m
+[0m[🌱[0m] [0mConsidering available RAM for BTF build [[1;32m 27777/6451 MiB [0m][0m
+[0m[🌱[0m] [0mEnabling eBPF and BTF info [[1;32m for fully BTF & CO-RE enabled kernel [0m][0m
+[0m[🌱[0m] [0mGetting ORAS manifest [[1;32m ORAS manifest from ghcr.io/armbian/os/kernel-atlasa1-current:1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a [0m][0m
+[0m[🚸[0m] [0mORAS manifest fetch error [[1;35m Error response from registry: denied: requested access to the resource is denied [0m][0m
+[0m[🌱[0m] [0mArtifact is not available in remote cache [[1;32m ghcr.io/armbian/os/kernel-atlasa1-current:1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a [0m][0m
+[0m[🌱[0m] [0mKernel build starting [[1;32m linux-kernel-worktree/6.18__atlasa1__arm64 [0m][0m
+[0m[🌱[0m] [0mUsing shallow Kernel bare tree for 6.18 [[1;32m forced by KERNEL_GIT=shallow [0m][0m
+[0m[💖[0m] [0mKernel bare tree already exists [[0;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/git-bare/shallow-kernel-6.18 [0m][0m
+[0m[🌱[0m] [0mGetting sources from Git [[1;32m kernel:6.18 atlasa1-v47 [0m][0m
+[0m[🌿[0m] [0mFetching updates from remote repository [[1;39m kernel:6.18 atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mgit: Fetch from remote completed, rev-parsing... [[1;32m 'kernel:6.18' 'atlasa1-v47' '1eb2d7d2375a76f18cc1a0d37fa6197e9b273adb' [0m][0m
+[0m[🌿[0m] [0mUsing Kernel git revision [[1;39m 1eb2d7d2375a76f18cc1a0d37fa6197e9b273adb at 'Mon Nov 23 08:00:00 CST 2026' [0m][0m
+[0m[🌱[0m] [0mCalling Python patching script for kernel: [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux - branch:atlasa1-v47 [0m][0m
+[0m[🌱[0m] [0mUsing kernel patch dir: [[1;32m atlasa1-6.18 [0m][0m

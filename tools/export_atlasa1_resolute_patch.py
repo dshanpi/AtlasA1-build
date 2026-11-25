@@ -10,6 +10,7 @@ PREFIX = 'userpatches/atlasa1-release'
 BOARD_PATCH = 'patches/t736-armbian-open-source.patch'
 INPUTS = (
     'patches/armbian/menu-user-family.patch',
+    'patches/armbian/uboot-local-source.patch',
     'tools/hash_atlasa1_native_recipe.py',
     'docs/NATIVE_ARMBIAN_BUILD.md',
     'tests/test_atlasa1_native_image.py', 'tests/test_atlasa1_native_install.py',
@@ -132,6 +133,7 @@ def export(output):
     with output.open('wb') as patch:
         patch.write((BASE / BOARD_PATCH).read_bytes().replace(b'\r\n', b'\n'))
         patch.write((BASE/'patches/armbian/menu-user-family.patch').read_bytes().replace(b'\r\n', b'\n'))
+        patch.write((BASE/'patches/armbian/uboot-local-source.patch').read_bytes().replace(b'\r\n', b'\n'))
         paths = [(path, f'{PREFIX}/{path.relative_to(BASE).as_posix()}') for path in sources()]
         native = ['config/boards/atlasa1.conf', 'config/sources/families/atlasa1.conf',
                   'config/kernel/linux-atlasa1-current.config', 'extensions/atlasa1.sh']

@@ -205,6 +205,8 @@ def _export_build(destination: Path) -> dict[str, tuple[Path, str]]:
     _tree(ROOT, destination, "boards", "boards", records)
     _tree(ROOT, destination, "patches/cedar", "patches/cedar", records)
     _tree(ROOT, destination, "patches/armbian", "patches/armbian", records)
+    _file(ROOT, destination, "tools/validation/test_atlasa1_local_uboot.sh",
+          "tools/validation/test_atlasa1_local_uboot.sh", records)
     for rel in ("spl", "patches/u-boot", "patches/tf-a", "patches/linux/media-v30-replay",
                 "patches/linux/media-v30-pvr-replay", "patches/linux/gnome-media-20261119"):
         _tree(ROOT, destination, rel, rel, records)

@@ -5312,6 +5312,38 @@ diff --git a/lib/functions/configuration/interactive.sh b/lib/functions/configur
  
  	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
  	awk -v branch="$search_branch" '
+diff --git a/lib/functions/compilation/uboot-git-oras.sh b/lib/functions/compilation/uboot-git-oras.sh
+--- a/lib/functions/compilation/uboot-git-oras.sh
++++ b/lib/functions/compilation/uboot-git-oras.sh
+@@ -22,6 +22,28 @@
+ 	# Path is unchanged from when this was a git clone; cli-patch.sh pushes from it by name.
+ 	uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot"      # outer scope
+ 	uboot_git_bundles_dir="${SRC}/cache/git-bundles/u-boot" # outer scope
++
++	# Local board sources already contain the required objects.
++	if [[ -d "${BOOTSOURCE}/.git" ]]; then
++		uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot-local"
++		local existing_worktree="${SRC}/cache/sources/${BOOTSOURCEDIR}"
++		if [[ -f "${existing_worktree}/.git" ]]; then
++			local common_dir
++			common_dir=$(git -C "${existing_worktree}" rev-parse --path-format=absolute --git-common-dir)
++			[[ -d "${common_dir}" && "${common_dir}" == */.git ]] || exit_with_error "Invalid local u-boot worktree"
++			uboot_git_bare_tree="${common_dir%/.git}"
++		fi
++		if [[ ! -d "${uboot_git_bare_tree}/.git" ]]; then
++			run_host_command_logged mkdir -p "$(dirname "${uboot_git_bare_tree}")"
++			run_host_command_logged git clone --no-checkout "${BOOTSOURCE}" "${uboot_git_bare_tree}"
++		fi
++		git_ensure_safe_directory "${uboot_git_bare_tree}"
++		if ! git -C "${uboot_git_bare_tree}" show-ref --verify --quiet refs/heads/master; then
++			run_host_command_logged git -C "${uboot_git_bare_tree}" branch master HEAD
++		fi
++		display_alert "Using local u-boot source cache" "${uboot_git_bare_tree}" "info"
++		return 0
++	fi
+ 
+ 	# Deliberately not the Kernel's ".git/armbian-bare-tree-done". A tree carrying that older
+ 	# marker was produced by the old `git clone` of mainline: it has no Radxa branches, plus an
 diff --git a/userpatches/atlasa1-release/boards/pcie-v32/check-nvme-readonly.py b/userpatches/atlasa1-release/boards/pcie-v32/check-nvme-readonly.py
 new file mode 100755
 index 0000000000000000000000000000000000000000..1e21e79e976c7b66475feda896cdf9fd7edb8b14
@@ -13784,10 +13816,10 @@ index 0000000000000000000000000000000000000000..f2a573bffa95cb621180aa24a3e2a49c
 +该入口要求新的备份目录，保存显示管理器、GDM 和账户会话设置；不重启、不停止当前桌面、不修改内核启动别名，也不启用自动登录。需要另行确保已安装与 GPU 模块匹配并经过实板测试的内核。脚本输出桌面配置的恢复命令。
 diff --git a/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..edd077694f007886647d429490529a1f48d9f3d3
+index 0000000000000000000000000000000000000000..fcaea4394e44a45f6606faef730991a2e9134fb8
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
-@@ -0,0 +1,169 @@
+@@ -0,0 +1,172 @@
 +# Armbian 原生构建入口
 +
 +原生入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
@@ -13901,6 +13933,9 @@ index 0000000000000000000000000000000000000000..edd077694f007886647d429490529a1f
 +补丁直接安装 `userpatches` 板型、配置和扩展。无需替换官方 `compile.sh`。
 +补丁也修正官方菜单的板族查找路径，使其读取 `userpatches` 中的配置。
 +安装器重复运行时会识别已应用的修复。
++另一个兼容修复让 U-Boot 从已校验的本地源码创建工作区缓存。
++因此 AtlasA1 不再额外下载约 391 MB 的通用 U-Boot OCI 源码包。
++远程 U-Boot 源码仍使用官方原有流程。
 +公开输入自动下载并按 SHA-256 校验，不需要本地 Tina SDK。
 +这些输入包含厂家 DDR、GPU 和 Cedar 库，构建仍需要网络获取依赖。
 +
@@ -134586,6 +134621,44 @@ index 0000000000000000000000000000000000000000..1826b5ff08d7f5b32a68bcf6e022ef79
 + 
 + 	# Recognises both `branch)` and `pat1 | pat2 | …)` case labels (#8957).
 + 	awk -v branch="$search_branch" '
+diff --git a/userpatches/atlasa1-release/patches/armbian/uboot-local-source.patch b/userpatches/atlasa1-release/patches/armbian/uboot-local-source.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..c32ef6bf9931713af28ab57f26b8aadbccf26931
+--- /dev/null
++++ b/userpatches/atlasa1-release/patches/armbian/uboot-local-source.patch
+@@ -0,0 +1,32 @@
++diff --git a/lib/functions/compilation/uboot-git-oras.sh b/lib/functions/compilation/uboot-git-oras.sh
++--- a/lib/functions/compilation/uboot-git-oras.sh
+++++ b/lib/functions/compilation/uboot-git-oras.sh
++@@ -22,6 +22,28 @@
++ 	# Path is unchanged from when this was a git clone; cli-patch.sh pushes from it by name.
++ 	uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot"      # outer scope
++ 	uboot_git_bundles_dir="${SRC}/cache/git-bundles/u-boot" # outer scope
+++
+++	# Local board sources already contain the required objects.
+++	if [[ -d "${BOOTSOURCE}/.git" ]]; then
+++		uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot-local"
+++		local existing_worktree="${SRC}/cache/sources/${BOOTSOURCEDIR}"
+++		if [[ -f "${existing_worktree}/.git" ]]; then
+++			local common_dir
+++			common_dir=$(git -C "${existing_worktree}" rev-parse --path-format=absolute --git-common-dir)
+++			[[ -d "${common_dir}" && "${common_dir}" == */.git ]] || exit_with_error "Invalid local u-boot worktree"
+++			uboot_git_bare_tree="${common_dir%/.git}"
+++		fi
+++		if [[ ! -d "${uboot_git_bare_tree}/.git" ]]; then
+++			run_host_command_logged mkdir -p "$(dirname "${uboot_git_bare_tree}")"
+++			run_host_command_logged git clone --no-checkout "${BOOTSOURCE}" "${uboot_git_bare_tree}"
+++		fi
+++		git_ensure_safe_directory "${uboot_git_bare_tree}"
+++		if ! git -C "${uboot_git_bare_tree}" show-ref --verify --quiet refs/heads/master; then
+++			run_host_command_logged git -C "${uboot_git_bare_tree}" branch master HEAD
+++		fi
+++		display_alert "Using local u-boot source cache" "${uboot_git_bare_tree}" "info"
+++		return 0
+++	fi
++ 
++ 	# Deliberately not the Kernel's ".git/armbian-bare-tree-done". A tree carrying that older
++ 	# marker was produced by the old `git clone` of mainline: it has no Radxa branches, plus an
 diff --git a/userpatches/atlasa1-release/patches/cedar/backend-parallel-direct-slot.patch b/userpatches/atlasa1-release/patches/cedar/backend-parallel-direct-slot.patch
 new file mode 100644
 index 0000000000000000000000000000000000000000..677b6037d66496743d68ccb0d8724793ca6948cc
@@ -166862,7 +166935,7 @@ index 0000000000000000000000000000000000000000..7a445397044e4a66980e18805f976a31
 +    unittest.main()
 diff --git a/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py b/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..c3609c95947dcbc2e391ffea2944b127cd1f71d0
+index 0000000000000000000000000000000000000000..364ae0f53cf02ab758612e6142bc615f8833649e
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tests/test_atlasa1_native_install.py
 @@ -0,0 +1,60 @@
@@ -166890,7 +166963,7 @@ index 0000000000000000000000000000000000000000..c3609c95947dcbc2e391ffea2944b127
 +                source.write_text('# baseline\n')
 +            with patch.object(installer, 'ROOT', recipe), patch.object(
 +                    installer.subprocess, 'check_output', return_value=installer.REVISION+'\n'), patch.object(
-+                    installer, 'fix_family_menu'):
++                    installer, 'fix_family_menu'), patch.object(installer, 'fix_local_uboot'):
 +                installer.install(framework)
 +                config = framework/'userpatches/config/kernel/linux-atlasa1-current.config'
 +                config.write_text('CONFIG_TEST_USER_CHOICE=y\n')
@@ -176262,12 +176335,12 @@ index 0000000000000000000000000000000000000000..b500cd6256c504dce4c34767f248524d
 +    print(identity(parser.parse_args().component))
 diff --git a/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py b/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py
 new file mode 100755
-index 0000000000000000000000000000000000000000..9824858804a16fefe55d5368483ba403cfb3750d
+index 0000000000000000000000000000000000000000..1db4ea587c72c87fc1dfa56221486b129b7a9df4
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/install_atlasa1_armbian.py
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,76 @@
 +#!/usr/bin/env python3
-+"""Install AtlasA1 userpatches and the upstream family-menu compatibility fix."""
++"""Install AtlasA1 userpatches and upstream compatibility fixes."""
 +import argparse
 +import hashlib
 +import json
@@ -176285,8 +176358,8 @@ index 0000000000000000000000000000000000000000..9824858804a16fefe55d5368483ba403
 +    return hashlib.sha256(path.read_bytes()).hexdigest()
 +
 +
-+def fix_family_menu(framework):
-+    patch = ROOT/'patches/armbian/menu-user-family.patch'
++def apply_compatibility_patch(framework, name):
++    patch = ROOT/'patches/armbian'/name
 +    command = ['git', '-C', str(framework), 'apply']
 +    applied = subprocess.run([*command, '--reverse', '--check', str(patch)],
 +                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -176294,6 +176367,14 @@ index 0000000000000000000000000000000000000000..9824858804a16fefe55d5368483ba403
 +        return
 +    subprocess.run([*command, '--check', str(patch)], check=True)
 +    subprocess.run([*command, str(patch)], check=True)
++
++
++def fix_family_menu(framework):
++    apply_compatibility_patch(framework, 'menu-user-family.patch')
++
++
++def fix_local_uboot(framework):
++    apply_compatibility_patch(framework, 'uboot-local-source.patch')
 +
 +
 +def install(framework):
@@ -176314,6 +176395,7 @@ index 0000000000000000000000000000000000000000..9824858804a16fefe55d5368483ba403
 +                continue
 +            raise ValueError('Preserving modified user file: '+str(target))
 +    fix_family_menu(framework)
++    fix_local_uboot(framework)
 +    link = user/'atlasa1-release'
 +    if link.exists() or link.is_symlink():
 +        if link.resolve()!=ROOT:

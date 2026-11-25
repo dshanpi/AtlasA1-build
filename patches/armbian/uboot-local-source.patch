@@ -1,0 +1,32 @@
+diff --git a/lib/functions/compilation/uboot-git-oras.sh b/lib/functions/compilation/uboot-git-oras.sh
+--- a/lib/functions/compilation/uboot-git-oras.sh
++++ b/lib/functions/compilation/uboot-git-oras.sh
+@@ -22,6 +22,28 @@
+ 	# Path is unchanged from when this was a git clone; cli-patch.sh pushes from it by name.
+ 	uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot"      # outer scope
+ 	uboot_git_bundles_dir="${SRC}/cache/git-bundles/u-boot" # outer scope
++
++	# Local board sources already contain the required objects.
++	if [[ -d "${BOOTSOURCE}/.git" ]]; then
++		uboot_git_bare_tree="${SRC}/cache/git-bare/u-boot-local"
++		local existing_worktree="${SRC}/cache/sources/${BOOTSOURCEDIR}"
++		if [[ -f "${existing_worktree}/.git" ]]; then
++			local common_dir
++			common_dir=$(git -C "${existing_worktree}" rev-parse --path-format=absolute --git-common-dir)
++			[[ -d "${common_dir}" && "${common_dir}" == */.git ]] || exit_with_error "Invalid local u-boot worktree"
++			uboot_git_bare_tree="${common_dir%/.git}"
++		fi
++		if [[ ! -d "${uboot_git_bare_tree}/.git" ]]; then
++			run_host_command_logged mkdir -p "$(dirname "${uboot_git_bare_tree}")"
++			run_host_command_logged git clone --no-checkout "${BOOTSOURCE}" "${uboot_git_bare_tree}"
++		fi
++		git_ensure_safe_directory "${uboot_git_bare_tree}"
++		if ! git -C "${uboot_git_bare_tree}" show-ref --verify --quiet refs/heads/master; then
++			run_host_command_logged git -C "${uboot_git_bare_tree}" branch master HEAD
++		fi
++		display_alert "Using local u-boot source cache" "${uboot_git_bare_tree}" "info"
++		return 0
++	fi
+ 
+ 	# Deliberately not the Kernel's ".git/armbian-bare-tree-done". A tree carrying that older
+ 	# marker was produced by the old `git clone` of mainline: it has no Radxa branches, plus an

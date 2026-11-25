@@ -22,7 +22,7 @@ class InstallTests(unittest.TestCase):
                 source.write_text('# baseline\n')
             with patch.object(installer, 'ROOT', recipe), patch.object(
                     installer.subprocess, 'check_output', return_value=installer.REVISION+'\n'), patch.object(
-                    installer, 'fix_family_menu'):
+                    installer, 'fix_family_menu'), patch.object(installer, 'fix_local_uboot'):
                 installer.install(framework)
                 config = framework/'userpatches/config/kernel/linux-atlasa1-current.config'
                 config.write_text('CONFIG_TEST_USER_CHOICE=y\n')

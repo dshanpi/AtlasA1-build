@@ -111,6 +111,9 @@ git apply --whitespace=nowarn /path/to/atlasa1-resolute-armbian.patch
 补丁直接安装 `userpatches` 板型、配置和扩展。无需替换官方 `compile.sh`。
 补丁也修正官方菜单的板族查找路径，使其读取 `userpatches` 中的配置。
 安装器重复运行时会识别已应用的修复。
+另一个兼容修复让 U-Boot 从已校验的本地源码创建工作区缓存。
+因此 AtlasA1 不再额外下载约 391 MB 的通用 U-Boot OCI 源码包。
+远程 U-Boot 源码仍使用官方原有流程。
 公开输入自动下载并按 SHA-256 校验，不需要本地 Tina SDK。
 这些输入包含厂家 DDR、GPU 和 Cedar 库，构建仍需要网络获取依赖。
 
