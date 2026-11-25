@@ -1106,8 +1106,8 @@
       "path": "docs/NATIVE_ARMBIAN_BUILD.md",
       "kind": "source",
       "source": "mainline/docs/NATIVE_ARMBIAN_BUILD.md",
-      "size": 7983,
-      "sha256": "261c3d611271233db6467587037d31c2fe74dd22ec9fe2240cf1a2f1c89fd407"
+      "size": 8088,
+      "sha256": "6bda28f849a3f3d41f87993d9032bd9e5e89e102f0057cca4f7da43705449f5d"
     },
     {
       "path": "docs/UBUNTU_26_04.md",
@@ -3252,6 +3252,34 @@
       "sha256": "b89e87457184d8c60253e5acbe91654b799a7dea185c210b78471a56547d4044"
     },
     {
+      "path": "evidence/native-armbian-20261124/gnome-full/concurrent-build-rejected.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/gnome-full/concurrent-build-rejected.log",
+      "size": 12133,
+      "sha256": "9be54d238e1efcad02f9abe1fe6334fcc80eae98b07db4271d40c76d321cf439"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/gnome-full/pvr-recovery.log",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/gnome-full/pvr-recovery.log",
+      "size": 9596,
+      "sha256": "9fd1aec722ceeb0228caa3026409319256354ed0ce3fc48dc67b6299ea4f29d9"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/gnome-full/rootfs-oci.json",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/gnome-full/rootfs-oci.json",
+      "size": 1193,
+      "sha256": "21bc6a72e53d40438544dd2de072bb079e14828d09ef4f551134af221c63264a"
+    },
+    {
+      "path": "evidence/native-armbian-20261124/gnome-full/verify-image-content.py",
+      "kind": "source",
+      "source": "mainline/evidence/native-armbian-20261124/gnome-full/verify-image-content.py",
+      "size": 5364,
+      "sha256": "3f14d60db91592308981ce7dce6e33b3ecaef5a93470ad9b41f479a913850982"
+    },
+    {
       "path": "evidence/native-armbian-20261124/kernel-menu.json",
       "kind": "source",
       "source": "mainline/evidence/native-armbian-20261124/kernel-menu.json",
@@ -3696,8 +3724,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8777423,
-      "sha256": "93437c3e7e0d5b42cfa63eff12e01677943936ec12b0fa245fc5ec17916f841b"
+      "size": 8778269,
+      "sha256": "a29fb6328d1107b8b0171196e5e4507ae182f5807240c1d020f0d70fb7e36ddc"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -7140,8 +7168,8 @@
       "path": "tools/configure_atlasa1_native_rootfs.sh",
       "kind": "source",
       "source": "mainline/tools/configure_atlasa1_native_rootfs.sh",
-      "size": 5258,
-      "sha256": "c7d553d6b7e89169d5717e8c3844c6cfcd0d5c74a047e5677c7079d666e7dec3"
+      "size": 5974,
+      "sha256": "3b0f3c7c380ec29b6d914188e73413b601ffe8407ef64edf6808d226b861b949"
     },
     {
       "path": "tools/configure_atlasa1_resolute.sh",

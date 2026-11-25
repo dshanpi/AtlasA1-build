@@ -14,6 +14,19 @@ apt_install() {
     target apt-get -y -o Acquire::Retries=3 -o Dpkg::Options::=--force-confdef \
         -o Dpkg::Options::=--force-confold --no-install-recommends install "$@"
 }
+apt_mounts=()
+pkg=
+cleanup() {
+    local result=$?
+    trap - EXIT
+    [[ -z $pkg ]] || rm -rf -- "$pkg" || result=1
+    local index
+    for ((index=${#apt_mounts[@]}-1; index>=0; index--)); do
+        umount "${apt_mounts[index]}" || result=1
+    done
+    exit "$result"
+}
+trap cleanup EXIT
 grep -qx 'VERSION_ID="26.04"' "$root/usr/lib/os-release"
 mapfile -t releases < <(find "$root/usr/lib/modules" -mindepth 1 -maxdepth 1 -type d -name '*-current-atlasa1' -printf '%f\n')
 [[ ${#releases[@]} == 1 ]]
@@ -32,7 +45,18 @@ target usermod -aG sudo,video,audio,render,input t736
 printf 'root:1234\nt736:1234\n' | target chpasswd
 target chage -d 0 root
 if [[ $desktop_enabled == yes ]]; then
-    # Armbian mounts its apt lists only inside its own apt wrapper.
+    # Reuse the same caches as Armbian's apt wrapper.
+    for entry in 'resolute-arm64:var/cache/apt' 'lists/resolute-arm64:var/lib/apt/lists'; do
+        shared="$(dirname "$cache")/aptcache/${entry%%:*}"
+        destination="$root/${entry#*:}"
+        install -d "$shared" "$destination"
+        if mountpoint -q "$destination"; then
+            echo "Unexpected existing APT mount: $destination" >&2
+            exit 1
+        fi
+        mount --bind "$shared" "$destination"
+        apt_mounts+=("$destination")
+    done
     target apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
     firefox_candidate=$(target apt-cache policy firefox | awk '/Candidate:/ {print $2}')
     case $firefox_candidate in
@@ -43,7 +67,6 @@ if [[ $desktop_enabled == yes ]]; then
     bash "$tools/build_atlasa1_native_media.sh" "$inputs" "$work/components" "$pvr" "$release" "$desktop"
     components="$work/components"
     pkg=$(mktemp -d "$root/var/tmp/atlasa1-packages.XXXXXXXX")
-    trap 'rm -rf -- "$pkg"' EXIT
     install -m644 "$components/vendor/t736-img-userspace-candidate_24.2.6603887-2_arm64.deb" "$pkg/"
     install -m644 "$components/player/atlasa1-player_0.1-6~resolute1_arm64.deb" "$pkg/"
     install -m644 "$components/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb" "$pkg/"

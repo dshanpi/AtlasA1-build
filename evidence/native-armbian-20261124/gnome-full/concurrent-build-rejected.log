@@ -1,0 +1,100 @@
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'full' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🚸[0m] [0mThis script requires root privileges; Docker is unavailable [[1;35m trying to use sudo [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'PREFER_DOCKER': already set to 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'ARMBIAN_RELAUNCHED': already set to 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'SET_OWNER_TO_UID': '(unset)' --> '1000' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'full' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🌱[0m] [0mStarting single build process [[1;32m atlasa1 [0m][0m
+[0m[🌱[0m] [0mSourcing board configuration [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/config/boards/atlasa1.conf [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m atlasa1 [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOARDFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOOTCONFIG[0m=[0;34m'[1;34matlasa1_defconfig[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after defaulting LINUXFAMILY to BOARDFAMILY [[1;36m [1;34mLINUXFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[🌱[0m] [0mStarting main configuration[0m
+[0m[🌱[0m] [0mUsing REVISION from [[1;32m main VERSION file: '26.11.0-trunk' [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m armbian-config [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-binman-fix-pkg-resources [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-fix-pylibfdt-swig [0m][0m
+[0m[🌱[0m] [0mSourcing family configuration [[1;32m /home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/config/sources/families/atlasa1.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNEL_MAJOR_MINOR[0m=[0;34m'[1;34m6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mLINUXCONFIG[0m=[0;34m'[1;34mlinux-atlasa1-current[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELPATCHDIR[0m=[0;34m'[1;34matlasa1-6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTPATCHDIR[0m=[0;34m'[1;34mu-boot-atlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mATF_COMPILE[0m=[0;34m'[1;34mno[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mNETWORKING_STACK[0m=[0;34m'[1;34mnetwork-manager[0;34m' [0m][0m
+[0m[🌱[0m] [0mSourcing arch configuration [[1;32m arm64.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mATF_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mKERNEL_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mUBOOT_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[🌱[0m] [0mUsing NETWORKING_STACK [[1;32m NETWORKING_STACK: network-manager [0m][0m
+[0m[🌱[0m] [0mAdding networking extensions [[1;32m net-network-manager, net-chrony [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-network-manager [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-chrony [0m][0m
+[0m[🌱[0m] [0mExtension manager [[1;32m processed 23 Extension Methods calls and 45 Extension Method implementations [0m][0m
+[0m[💥[0m] [0merror! [[1;31m Another AtlasA1 build is running in this directory. Wait for it to finish or use a separate checkout.  [0m][0m
+[0m[💥[0m] [0m    👇👇👇 Showing logfile below 👇👇👇 [[1;31m /home/ubuntu/t736/AtlasA1-build/output/armbian/.tmp/logs-a0f1ac41-a5ef-4a12-a189-46313e9e7781/006.000.do_main_configuration.log [0m][0m
+[0m[👉]    --> (0) [1;32mINFO[0m: Starting main configuration
+[0m[👉]    --> (0) [1;32mINFO[0m: Using REVISION from [ [1;32mmain VERSION file: '26.11.0-trunk'[0m ]
+[0m[👉]    --> (0) [1;39mINFO[0m: Enabling extension [ [1;39marmbian-config[0m ]
+[0m[👉]    --> (0) [1;39mINFO[0m: Enabling extension [ [1;39muboot-binman-fix-pkg-resources[0m ]
+[0m[👉]    --> (0) [1;39mINFO[0m: Enabling extension [ [1;39muboot-fix-pylibfdt-swig[0m ]
+[0m[👉]    --> (0) [1;32mINFO[0m: Sourcing family configuration [ [1;32m/home/ubuntu/t736/AtlasA1-build/output/armbian/userpatches/config/sources/families/atlasa1.conf[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mKERNEL_MAJOR_MINOR[0m=[0;34m'[1;34m6.18[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mKERNELBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mLINUXCONFIG[0m=[0;34m'[1;34mlinux-atlasa1-current[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mKERNELPATCHDIR[0m=[0;34m'[1;34matlasa1-6.18[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mBOOTBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mBOOTPATCHDIR[0m=[0;34m'[1;34mu-boot-atlasa1[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mATF_COMPILE[0m=[0;34m'[1;34mno[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing family config [ [1;36m[1;34mNETWORKING_STACK[0m=[0;34m'[1;34mnetwork-manager[0;34m'[0m ]
+[0m[👉]    --> (0) [1;32mINFO[0m: Sourcing arch configuration [ [1;32marm64.conf[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing arm64 arch [ [1;36m[1;34mATF_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing arm64 arch [ [1;36m[1;34mKERNEL_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m'[0m ]
+[0m[👉]    --> (0) [1;36mCHANGE-TRACKING[0m: change-tracking: after sourcing arm64 arch [ [1;36m[1;34mUBOOT_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m'[0m ]
+[0m[👉]    --> (0) [1;32mINFO[0m: Using NETWORKING_STACK [ [1;32mNETWORKING_STACK: network-manager[0m ]
+[0m[👉]    --> (0) [1;32mINFO[0m: Adding networking extensions [ [1;32mnet-network-manager, net-chrony[0m ]
+[0m[👉]    --> (0) [1;39mINFO[0m: Enabling extension [ [1;39mnet-network-manager[0m ]
+[0m[👉]    --> (0) [1;39mINFO[0m: Enabling extension [ [1;39mnet-chrony[0m ]
+[0m[👉]    --> (2) [1;32mINFO[0m: Extension manager [ [1;32mprocessed 23 Extension Methods calls and 45 Extension Method implementations[0m ]
+[0m[👉]    --> (2) [1;31mERROR[0m: error! [ [1;31mAnother AtlasA1 build is running in this directory. Wait for it to finish or use a separate checkout. [0m ]
+[0m[💥[0m] [0m    👆👆👆 Showing logfile above 👆👆👆 [[1;31m /home/ubuntu/t736/AtlasA1-build/output/armbian/.tmp/logs-a0f1ac41-a5ef-4a12-a189-46313e9e7781/006.000.do_main_configuration.log [0m][0m
+[0m[💥[0m] [0mExiting with error 43 [[1;31m at /home/ubuntu/t736/AtlasA1-build/output/armbian/lib/functions/logging/traps.sh:1
+[0;31m                exit_with_error() --> lib/functions/logging/traps.sh:1
+[0;31m     atlasa1_acquire_build_lock() --> userpatches/extensions/atlasa1.sh:9
+[0;31m    post_family_config__atlasa1() --> userpatches/extensions/atlasa1.sh:14
+[0;31m             post_family_config() --> <extension_magic>:320
+[0;31m          call_extension_method() --> lib/functions/general/extensions.sh:67
+[0;31m          do_main_configuration() --> lib/functions/configuration/main-config.sh:399
+[0;31m                do_with_logging() --> lib/functions/logging/section-logging.sh:85
+[0;31m    do_with_conditional_logging() --> lib/functions/logging/section-logging.sh:111
+[0;31m    prep_conf_main_build_single() --> lib/functions/main/config-prepare.sh:29
+[0;31m         cli_standard_build_run() --> lib/functions/cli/cli-build.sh:22
+[0;31m        armbian_cli_run_command() --> lib/functions/cli/utils-cli.sh:214
+[0;31m                 cli_entrypoint() --> lib/functions/cli/entrypoint.sh:250
+[0;31m                           main() --> compile.sh:50
+ [0m][0m
+[0m[💥[0m] [0mCleaning up [[1;31m please wait for cleanups to finish [0m][0m
+[0m[✨[0m] [0mRepeat Build Options [[1;32m ./compile.sh build BOARD=atlasa1 BRANCH=current BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=full KERNEL_CONFIGURE=no RELEASE=resolute [0m][0m
+[0m[🌿[0m] [0mANSI log file built; inspect it by running: [[1;39m less -RS output/logs/log-build-a0f1ac41-a5ef-4a12-a189-46313e9e7781.log.ans [0m][0m
+[0m[🌱[0m] [0mShare log manually: [[1;32m use one of the commands below (or add SHARE_LOG=yes next time!) [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-a0f1ac41-a5ef-4a12-a189-46313e9e7781.log.ans https://paste.armbian.com/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-a0f1ac41-a5ef-4a12-a189-46313e9e7781.log.ans https://paste.armbian.de/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-a0f1ac41-a5ef-4a12-a189-46313e9e7781.log.ans https://paste.next.armbian.com/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-a0f1ac41-a5ef-4a12-a189-46313e9e7781.log.ans https://paste.armbian.eu/log [0m][0m
