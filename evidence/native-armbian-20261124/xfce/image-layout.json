@@ -1,0 +1,29 @@
+{
+  "image": "Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_xfce_desktop.img",
+  "bytes": 8589934592,
+  "sha256": "ee49b8a7aefc8a297d812622e21161621ac580bc764298059109c2a42642fab9",
+  "gpt": "passed",
+  "e2fsck": "passed",
+  "boot_files": {
+    "kernel_release": "6.18.63-current-atlasa1",
+    "payloads": {
+      "atlasa1-spl.bin": {
+        "lba": 16,
+        "bytes": 221184,
+        "sha256": "a1d821eaee602fdf8b481c38cf4790d0f8a6f31539dd9fc6c1a714c1e92bd0ea"
+      },
+      "atlasa1-package.bin": {
+        "lba": 24576,
+        "bytes": 325632,
+        "sha256": "2d11950bd5bc66259fb62784ec2b2bd6d14220e138885fb8e4d5040256ad6e5c"
+      }
+    },
+    "files": {
+      "boot/vmlinuz-6.18.63-current-atlasa1.atlasa1.gz": "17b9aa84dd9d712b575f4a4d0a86c2eca01a296374975031d3c16fa5d5b860c0",
+      "boot/initrd.img-6.18.63-current-atlasa1": "ccb0f24f4bdaaf7f84b0e7a81c81a6cc73580b8a143620d76dab71fbb2ff7ffe",
+      "boot/dtb/allwinner/t736-mainline-bringup.dtb": "a2018f5d02947ea2995829d8333ba72cc04b1293df6b7df0542414050e8b5a6d"
+    }
+  },
+  "build_framework": "official Armbian compile.sh",
+  "hardware_boot": "not tested"
+}

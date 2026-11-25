@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "artifactType": "application/vnd.unknown.artifact.v1",
+  "config": {
+    "mediaType": "application/vnd.oci.empty.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2,
+    "data": "e30="
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.unknown.layer.v1+tar",
+      "digest": "sha256:cf2fba93234cc027e982af0a16e4a8657711e8ece339598c5006f0826ab0fb9e",
+      "size": 491739851,
+      "annotations": {
+        "org.opencontainers.image.title": "rootfs-arm64-resolute-xfce-desktop-minimal_202611-09ad65821713-H6eccde-B58ef30.tar.zst"
+      }
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.created": "2026-11-11T15:55:49Z",
+    "org.opencontainers.image.description": "rootfs-arm64-resolute-xfce-desktop-minimal - 202611-09ad65821713-H6eccde-B58ef30 - arch \"arm64\" release \"resolute\" type \"xfce-desktop-minimal\" cache_id \"09ad65821713-H6eccde-B58ef30\" desktop_environment \"xfce\" desktop_tier \"minimal\" configng_desktops \"none\" - type: tar.zst",
+    "org.opencontainers.image.source": "https://github.com/armbian/os"
+  }
+}

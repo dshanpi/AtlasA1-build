@@ -2,7 +2,7 @@
 
 原生入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
 新入口调用官方 Armbian 菜单、编译器流程、Debian 打包和根文件系统构建。
-完整 GNOME 镜像已构建并通过离线检查，尚未实板启动。
+完整 GNOME 和 Xfce 镜像已构建并通过离线检查，尚未实板启动。
 原生路线的软件包随官方软件源更新。固定版本重建继续使用 `bash build.sh`。
 
 ## 从 AtlasA1-build 进入
@@ -33,6 +33,17 @@ cd AtlasA1-build
 ```bash
 ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
 ```
+
+构建 Xfce / X11 / LightDM 镜像：
+
+```bash
+./compile.sh BOARD=atlasa1 BRANCH=current RELEASE=resolute \
+  BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=xfce DESKTOP_TIER=minimal \
+  KERNEL_CONFIGURE=no
+```
+
+Xfce 使用对应的 X11 GPU 用户态，包含 Cedar、Firefox 适配和播放器。
+GNOME 与 Xfce 输出不同文件名，不需要覆盖已有镜像。
 
 配置保存在 `output/armbian/userpatches/config/kernel/linux-atlasa1-current.config`。
 后续构建保留这份配置。备份此文件即可保存自己的内核选项。
@@ -94,6 +105,17 @@ SHA256: c26339b1007143028b23f10fd551dfbb95df26043e252e4fd1864e8885208a32
 ```
 
 该哈希仅对应本次产物。原生构建的软件包更新和生成时间会改变镜像哈希。
+
+2026-11-25 的 Xfce 构建退出码为 0，包含 1,219 个已安装软件包。
+Xfce 4.20、LightDM、X11 GPU、Cedar、Firefox 160 和播放器的镜像内容检查通过。
+LightDM 与图形启动目标已启用。GPT、ext4、启动区读回及 initramfs 检查通过。
+这份 Xfce 镜像尚未实板启动，不能据此确认图形加速或视频播放性能。
+[Xfce 布局](../evidence/native-armbian-20261124/xfce/image-layout.json) · [内容检查](../evidence/native-armbian-20261124/xfce/image-content.json) · [构建日志](../evidence/native-armbian-20261124/xfce/build.log)
+
+```text
+Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_xfce_desktop.img
+SHA256: ee49b8a7aefc8a297d812622e21161621ac580bc764298059109c2a42642fab9
+```
 
 本次验证使用独立构建目录，并复用校验过的公开下载缓存。
 GitHub 连接缓慢，部分官方输入由另一台主机下载、校验后传入。

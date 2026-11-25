@@ -63,6 +63,12 @@ if [[ $desktop_enabled == yes ]]; then
         # The helper checks this before installing the GNOME session.
         truncate -s 0 "$root/etc/machine-id"
         TMPDIR=/tmp SUDO_USER= LC_ALL=C bash "$tools/configure_atlasa1_gnome_release.sh" "$root" "$components/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb"
+    elif [[ $desktop == xfce ]]; then
+        test -x "$root/usr/bin/startxfce4"
+        test -x "$root/usr/sbin/lightdm"
+        printf '/usr/sbin/lightdm\n' > "$root/etc/X11/default-display-manager"
+        target systemctl --no-reload enable lightdm.service
+        target systemctl --no-reload set-default graphical.target
     fi
     bash "$tools/stage_atlasa1_plymouth.sh" "$root"
 fi

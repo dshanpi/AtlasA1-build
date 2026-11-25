@@ -1,0 +1,62 @@
+Cloning into '/home/ubuntu/t736/AtlasA1-xfce-patch-20261125'...
+HEAD is now at 2d3dd98 rockchip64: orangepi5: U-Boot for NVMe on PCB v1.3.2
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'PREFER_DOCKER': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'OFFLINE_WORK': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'xfce' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'minimal' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🌱[0m] [0mStarting single build process [[1;32m atlasa1 [0m][0m
+[0m[🌱[0m] [0mSourcing board configuration [[1;32m /home/ubuntu/t736/AtlasA1-xfce-patch-20261125/userpatches/config/boards/atlasa1.conf [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m atlasa1 [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOARDFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOOTCONFIG[0m=[0;34m'[1;34matlasa1_defconfig[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after defaulting LINUXFAMILY to BOARDFAMILY [[1;36m [1;34mLINUXFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[🌱[0m] [0mStarting main configuration[0m
+[0m[🌱[0m] [0mUsing REVISION from [[1;32m main VERSION file: '26.11.0-trunk' [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m armbian-config [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-binman-fix-pkg-resources [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-fix-pylibfdt-swig [0m][0m
+[0m[🌱[0m] [0mSourcing family configuration [[1;32m /home/ubuntu/t736/AtlasA1-xfce-patch-20261125/userpatches/config/sources/families/atlasa1.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNEL_MAJOR_MINOR[0m=[0;34m'[1;34m6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mLINUXCONFIG[0m=[0;34m'[1;34mlinux-atlasa1-current[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELPATCHDIR[0m=[0;34m'[1;34matlasa1-6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTPATCHDIR[0m=[0;34m'[1;34mu-boot-atlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mATF_COMPILE[0m=[0;34m'[1;34mno[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mNETWORKING_STACK[0m=[0;34m'[1;34mnetwork-manager[0;34m' [0m][0m
+[0m[🌱[0m] [0mSourcing arch configuration [[1;32m arm64.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mATF_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mKERNEL_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mUBOOT_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[🌱[0m] [0mUsing NETWORKING_STACK [[1;32m NETWORKING_STACK: network-manager [0m][0m
+[0m[🌱[0m] [0mAdding networking extensions [[1;32m net-network-manager, net-chrony [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-network-manager [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-chrony [0m][0m
+[0m[🌱[0m] [0mExtension manager [[1;32m processed 23 Extension Methods calls and 45 Extension Method implementations [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mKERNELSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-xfce-patch-20261125/cache/atlasa1/sources-d5dffcabe5e27a34/linux[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mBOOTSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-xfce-patch-20261125/cache/atlasa1/sources-d5dffcabe5e27a34/u-boot[0;34m' [0m][0m
+[0m[🌱[0m] [0mExtension: net-chrony: Adding extra package to image [[1;32m chrony [0m][0m
+[0m[🌱[0m] [0mExtension: net-network-manager: Adding extra packages to image [[1;32m network-manager network-manager-openvpn netplan.io [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mKERNEL_PATCH_ARCHIVE_BASE[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mBOOTDIR[0m=[0;34m'[1;34mu-boot[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before handling KERNEL_MAJOR_MINOR in config_post_main [[1;36m [1;34mBOOTSOURCEDIR[0m=[0;34m'[1;34mu-boot-worktree/u-boot/atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before calling extension_finish_config [[1;36m [1;34mLINUXSOURCEDIR[0m=[0;34m'[1;34mlinux-kernel-worktree/6.18__atlasa1__arm64[0;34m' [0m][0m
+[0m[🌱[0m] [0mMinimal configuration prepared for build [[1;32m prep_conf_main_minimal_ni [0m][0m
+[0m[🌱[0m] [0mArtifacts to build: [[1;32m uboot kernel firmware armbian-base-files fake_ubuntu_advantage_tools armbian-zsh armbian-plymouth-theme armbian-bsp-cli rootfs [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m uboot :: uboot() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m kernel :: kernel() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m firmware :: firmware() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-base-files :: armbian-base-files() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m fake_ubuntu_advantage_tools :: fake_ubuntu_advantage_tools() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-zsh :: armbian-zsh() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-plymouth-theme :: armbian-plymouth-theme() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-bsp-cli :: armbian-bsp-cli() [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m rootfs :: rootfs() [0m][0m
+[0m[✨[0m] [0mDumping JSON [[1;32m for 136 variables [0m][0m
+[0m[🌱[0m] [0mCleaning up [[1;32m please wait for cleanups to finish [0m][0m

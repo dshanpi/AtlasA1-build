@@ -1,0 +1,51 @@
+{
+  "image": "Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_xfce_desktop.img",
+  "required_file_sha256": {
+    "usr/bin/startxfce4": "611af67d854cf4dc147891918c9ec9f83eac46d810d1a57bcbd98a2d3a5aa5f9",
+    "usr/bin/xfce4-session": "ad68090093285591202cdbe708862b06a07bdfddc45187f81bb1a84fa0519591",
+    "usr/sbin/lightdm": "c733afcb7b9d885efa45357f3acdb346aa4702e6f59ea322ac46b6e75831b91f",
+    "usr/share/xsessions/atlasa1-xfce.desktop": "e6c3ae32107df49402764608862f23d2decee60069251dcf134d1d19565ed148",
+    "usr/local/bin/atlasa1-x11-run": "9a837fe951a4ce458b3a688d882f5fdb1d728ccbcedd4e01611a4ac00447bde7",
+    "usr/local/sbin/atlasa1-x11-display": "aaf5ce053d0049380e162aecdef4cc2e2d27ffae604a15da1f0dc8e049958d02",
+    "etc/lightdm/lightdm.conf.d/90-atlasa1-x11.conf": "e39128d16e9138eaf5efcdba4283a779e1121a2aadb1a5a3a4a693dd47e35ef9",
+    "etc/X11/xorg.conf.d/20-atlasa1.conf": "84510b1c6cb18bf764bda884a2284e8ed12751dfdc3bb3be5cf5f4653bdb8829",
+    "opt/t736-img-ddk-24.2-x11/runtime-gles/libEGL.so.1": "216b9ab552a83253c99bf54b9bc775458dc642f18eb37eed40b6e2c42de0f38d",
+    "usr/bin/atlasa1-player": "5efb46b89cd97f50901c8974d44b7206373e699e42f2e1800f1c7c8880f01ad2",
+    "opt/atlasa1-player/bin/ffplay": "1a0968b341693a6c771ac0e05b61a5a793204663462b6c2fdac8ee979bf93c11",
+    "opt/atlasa1-player/lib/libavcodec.so.61": "7d1596f67b5c6ef035f84596248a5e8e1624abc40f8d56553dd352b08aa5447c",
+    "opt/atlasa1-firefox/lib/libavcodec.so.62": "371562fbbb1a6abceb6d0beb58b6b571f428a56f1d01f7ed4e0fab0de396aa73",
+    "opt/t736-cedar-transport-v2/bin/cedar-broker": "2a2790b05dd55a7463e8b11f6eed165cb4f2d904906c5ae8957527054de04f98",
+    "opt/t736-cedar-wc-v5/lib/libOmxVdec.so": "7c20f7e13af32df907095f5ba07fd5636b7b57da30b9149cd899ed723f5ddb67",
+    "etc/udev/rules.d/70-t736-cedar.rules": "fc09eb8652f1351a995b353eba854ad38d3146c945459180f3f4dd73025a8299",
+    "usr/lib/modules/6.18.63-current-atlasa1/extra/pvrsrvkm.ko": "3f0152cf56b2c87c26a6583389575e404e05d9870534d47cb84ca7796319cac2"
+  },
+  "installed_packages": 1219,
+  "package_versions": {
+    "xfce4-session": "4.20.4-1",
+    "xfwm4": "4.20.0-1build1",
+    "lightdm": "1.32.0-6ubuntu4",
+    "firefox": "9:160.0.1+build1-0ubuntu0.26.04.1~mt1armbian1",
+    "atlasa1-player": "0.1-6~resolute1",
+    "atlasa1-firefox-cedar": "8.0.1-1~resolute1",
+    "t736-img-userspace-candidate": "24.2.6603887-2",
+    "linux-image-current-atlasa1": "26.11.0-trunk",
+    "linux-dtb-current-atlasa1": "26.11.0-trunk",
+    "linux-u-boot-atlasa1-current": "26.11.0-trunk"
+  },
+  "pvr_vermagic": "6.18.63-current-atlasa1 SMP mod_unload aarch64",
+  "t736_home_preserved": true,
+  "default_passwords_match": true,
+  "initrd_files": [
+    "usr/sbin/wait-for-root",
+    "usr/lib/atlasa1/start-plymouth",
+    "etc/plymouth/atlasa1-enabled",
+    "scripts/init-premount/atlasa1-plymouth"
+  ],
+  "cedar_decoders_present": true,
+  "lightdm_selected": true,
+  "graphical_target": true,
+  "desktop": "xfce",
+  "wayland_package_absent": true,
+  "cedar_socket_enabled": true,
+  "hardware_boot": "not tested"
+}

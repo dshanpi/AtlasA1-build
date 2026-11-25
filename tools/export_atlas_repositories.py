@@ -126,7 +126,7 @@ def _add_generated(destination: Path, repo: str, records: dict[str, tuple[Path, 
     target = destination / "README.md"
     readme = GENERATED[repo]
     if repo == 'AtlasA1-build':
-        readme = readme.replace('# AtlasA1-build\n', '# AtlasA1-build\n\n原生 Armbian 入口：运行 `./compile.sh`，在官方菜单选择 `AtlasA1 / T736`。内核配置使用 `./compile.sh BOARD=atlasa1 BRANCH=current kernel-config`。完整 GNOME 镜像已通过官方流程构建及离线检查，包含 PowerVR、Cedar、Firefox 适配和播放器；新镜像尚未实板启动。支持范围、非交互命令和官方源码加单文件补丁的方法见 [原生构建说明](docs/NATIVE_ARMBIAN_BUILD.md)。\n', 1)
+        readme = readme.replace('# AtlasA1-build\n', '# AtlasA1-build\n\n原生 Armbian 入口：运行 `./compile.sh`，在官方菜单选择 `AtlasA1 / T736`。内核配置使用 `./compile.sh BOARD=atlasa1 BRANCH=current kernel-config`。完整 GNOME 和 Xfce 镜像已通过官方流程构建及离线检查，包含 PowerVR、Cedar、Firefox 适配和播放器；新镜像尚未实板启动。支持范围、非交互命令和官方源码加单文件补丁的方法见 [原生构建说明](docs/NATIVE_ARMBIAN_BUILD.md)。\n', 1)
     if repo in {'AtlasA1-build', 'AtlasA1-media'}:
         readme += '\nGNOME 50 / Wayland v47 完整镜像已发布，并于 2026-11-22 完成 eMMC 整盘写入、8 GiB SHA-256 回读和断电启动。PowerVR WebRender 与 Cedar 硬解已接通，但不能宣称浏览器 1080p60 或全链路零丢帧通过。主分支另修复首次显示配置与自动校时；已发布 RC1 镜像保持原始字节，安装后修复和实测限制见 [发行记录](https://github.com/dshanpi/AtlasA1-build/releases/tag/v2026.11.21-ubuntu26.04-gnome-v47-rc1)。\n'
     target.write_text(readme, encoding="utf-8", newline="\n")
