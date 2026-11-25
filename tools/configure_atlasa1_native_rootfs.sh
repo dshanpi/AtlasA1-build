@@ -9,7 +9,11 @@ desktop_enabled=$4
 desktop=$5
 [[ $root != / ]]
 tools=$(cd "$(dirname "$0")" && pwd)
-target() { chroot "$root" /usr/bin/env DEBIAN_FRONTEND=noninteractive LC_ALL=C "$@"; }
+target() { chroot "$root" /usr/bin/env TMPDIR=/tmp SUDO_USER= DEBIAN_FRONTEND=noninteractive LC_ALL=C LANG=C LANGUAGE= "$@"; }
+apt_install() {
+    target apt-get -y -o Acquire::Retries=3 -o Dpkg::Options::=--force-confdef \
+        -o Dpkg::Options::=--force-confold --no-install-recommends install "$@"
+}
 grep -qx 'VERSION_ID="26.04"' "$root/usr/lib/os-release"
 mapfile -t releases < <(find "$root/usr/lib/modules" -mindepth 1 -maxdepth 1 -type d -name '*-current-atlasa1' -printf '%f\n')
 [[ ${#releases[@]} == 1 ]]
@@ -28,6 +32,13 @@ target usermod -aG sudo,video,audio,render,input t736
 printf 'root:1234\nt736:1234\n' | target chpasswd
 target chage -d 0 root
 if [[ $desktop_enabled == yes ]]; then
+    # Armbian mounts its apt lists only inside its own apt wrapper.
+    target apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
+    firefox_candidate=$(target apt-cache policy firefox | awk '/Candidate:/ {print $2}')
+    case $firefox_candidate in
+        ''|'(none)'|*snap*) echo 'Armbian Firefox Debian package is unavailable.' >&2; exit 1 ;;
+    esac
+    apt_install firefox libxcb-dri2-0 plymouth-themes
     work=$(mktemp -d "$cache/media.XXXXXXXX")
     bash "$tools/build_atlasa1_native_media.sh" "$inputs" "$work/components" "$pvr" "$release" "$desktop"
     components="$work/components"
@@ -38,7 +49,7 @@ if [[ $desktop_enabled == yes ]]; then
     install -m644 "$components/firefox/atlasa1-firefox-cedar_8.0.1-1.resolute1_arm64.deb" "$pkg/"
     packages=()
     for deb in "$pkg/"*.deb; do packages+=("${deb#"$root"}"); done
-    target apt-get -y --no-install-recommends install plymouth-themes "${packages[@]}"
+    apt_install "${packages[@]}"
     case $(target dpkg-query -W -f='${Version}' firefox) in
         *snap*) echo 'AtlasA1 requires the Firefox Debian package from Armbian.' >&2; exit 1 ;;
     esac
@@ -51,7 +62,7 @@ if [[ $desktop_enabled == yes ]]; then
     if [[ $desktop == gnome ]]; then
         # The helper checks this before installing the GNOME session.
         truncate -s 0 "$root/etc/machine-id"
-        bash "$tools/configure_atlasa1_gnome_release.sh" "$root" "$components/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb"
+        TMPDIR=/tmp SUDO_USER= LC_ALL=C bash "$tools/configure_atlasa1_gnome_release.sh" "$root" "$components/wayland/atlasa1-img-wayland_24.2.6603887-3_arm64.deb"
     fi
     bash "$tools/stage_atlasa1_plymouth.sh" "$root"
 fi

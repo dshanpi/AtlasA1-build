@@ -1,6 +1,6 @@
 # AtlasA1-build
 
-原生 Armbian 入口：运行 `./compile.sh`，在官方菜单选择 `AtlasA1 / T736`。内核配置使用 `./compile.sh BOARD=atlasa1 BRANCH=current kernel-config`。内核、PowerVR 和 U-Boot 编译已通过，完整 GNOME 镜像仍在验证。支持范围、非交互命令和官方源码加单文件补丁的方法见 [原生构建说明](docs/NATIVE_ARMBIAN_BUILD.md)。
+原生 Armbian 入口：运行 `./compile.sh`，在官方菜单选择 `AtlasA1 / T736`。内核配置使用 `./compile.sh BOARD=atlasa1 BRANCH=current kernel-config`。完整 GNOME 镜像已通过官方流程构建及离线检查，包含 PowerVR、Cedar、Firefox 适配和播放器；新镜像尚未实板启动。支持范围、非交互命令和官方源码加单文件补丁的方法见 [原生构建说明](docs/NATIVE_ARMBIAN_BUILD.md)。
 
 AtlasA1 / T736 的 Armbian Ubuntu 26.04 LTS（arm64）eMMC 镜像。使用 `bash build.sh` 构建 GNOME Wayland / GDM 版本，包含 PowerVR、Cedar、Firefox 硬解入口和原生播放器。镜像下载、校验和与逐项验收范围见 [Releases](https://github.com/dshanpi/AtlasA1-build/releases)。
 

@@ -1,0 +1,13 @@
+Cloning into '/home/ubuntu/t736/AtlasA1-native-patch-final-20261125'...
+HEAD is now at 2d3dd98 rockchip64: orangepi5: U-Boot for NVMe on PCB v1.3.2
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.042s
+
+OK
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+Keeping user kernel configuration: /tmp/tmp015sip6g/armbian/userpatches/config/kernel/linux-atlasa1-current.config
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+Keeping user kernel configuration: /tmp/tmp015sip6g/armbian/userpatches/config/kernel/linux-atlasa1-current.config
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config

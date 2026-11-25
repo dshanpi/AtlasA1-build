@@ -1,8 +1,8 @@
 # Armbian 原生构建入口
 
-开发中的入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
+原生入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
 新入口调用官方 Armbian 菜单、编译器流程、Debian 打包和根文件系统构建。
-完整新镜像尚在构建验证，不能替代已通过实板验收的发行版。
+完整 GNOME 镜像已构建并通过离线检查，尚未实板启动。
 原生路线的软件包随官方软件源更新。固定版本重建继续使用 `bash build.sh`。
 
 ## 从 AtlasA1-build 进入
@@ -11,6 +11,8 @@
 以普通用户执行，Armbian 按需调用 sudo。
 
 ```bash
+git clone --branch armbian-native-20261124 https://github.com/dshanpi/AtlasA1-build.git
+cd AtlasA1-build
 ./compile.sh
 ```
 
@@ -77,7 +79,21 @@ git apply --whitespace=nowarn /path/to/atlasa1-resolute-armbian.patch
 单文件补丁重建的 Linux、U-Boot 和 PowerVR 源码树与原生构建输入完全一致。
 `kernel-config` 菜单已实测保存退出，保存的配置通过重装保留检查。
 Wi-Fi、蓝牙及浏览器高帧率播放的现有限制不会因更换构建入口而消失。
-本次原生构建记录将单独列出，旧版镜像验收不能代替它。
+完整 GNOME 构建退出码为 0。根文件系统包含 1,278 个已安装软件包。
+GPT、ext4、启动区读回、启动文件和 initramfs 检查通过。
+GNOME 50.1、Firefox 160、PowerVR 和 Cedar 文件检查通过。
+默认用户为 `t736`，密码为 `1234`。root 密码为 `1234`，首次登录需修改。
+这些结果不能代替实板启动、GPU 渲染和视频播放验收。
+[镜像布局](../evidence/native-armbian-20261124/native-image-layout.json) · [内容检查](../evidence/native-armbian-20261124/native-image-content.json) · [构建日志](../evidence/native-armbian-20261124/gnome-build.log)
+
+镜像位于 `output/armbian/output/images/`：
+
+```text
+Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img
+SHA256: c26339b1007143028b23f10fd551dfbb95df26043e252e4fd1864e8885208a32
+```
+
+该哈希仅对应本次产物。原生构建的软件包更新和生成时间会改变镜像哈希。
 
 本次验证使用独立构建目录，并复用校验过的公开下载缓存。
 GitHub 连接缓慢，部分官方输入由另一台主机下载、校验后传入。

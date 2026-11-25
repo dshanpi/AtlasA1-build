@@ -1,0 +1,230 @@
+AtlasA1 installed. Run ./compile.sh or ./compile.sh BOARD=atlasa1 BRANCH=current kernel-config
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'OFFLINE_WORK': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DOWNLOAD_MIRROR': '(unset)' --> 'china' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'minimal' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🚸[0m] [0mThis script requires root privileges; Docker is unavailable [[1;35m trying to use sudo [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'PREFER_DOCKER': already set to 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_MINIMAL': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'OFFLINE_WORK': '(unset)' --> 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BUILD_DESKTOP': '(unset)' --> 'yes' early [0m][0m
+[0m[🌱[0m] [0mSkip     cmdline param [[1;32m 'ARMBIAN_RELAUNCHED': already set to 'yes' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BRANCH': '(unset)' --> 'current' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_ENVIRONMENT': '(unset)' --> 'gnome' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'BOARD': '(unset)' --> 'atlasa1' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DOWNLOAD_MIRROR': '(unset)' --> 'china' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'SET_OWNER_TO_UID': '(unset)' --> '1000' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'DESKTOP_TIER': '(unset)' --> 'minimal' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'RELEASE': '(unset)' --> 'resolute' early [0m][0m
+[0m[🌿[0m] [0mApplying cmdline param [[1;39m 'KERNEL_CONFIGURE': '(unset)' --> 'no' early [0m][0m
+[0m[🌿[0m] [0m*  [[1;39m You are working offline! [0m][0m
+[0m[🌿[0m] [0m*  [[1;39m Sources, time and host will not be checked [0m][0m
+[0m[🌱[0m] [0mStarting single build process [[1;32m atlasa1 [0m][0m
+[0m[🌱[0m] [0mSourcing board configuration [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/userpatches/config/boards/atlasa1.conf [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m atlasa1 [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOARDFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing board file userpatches/config/boards/atlasa1.conf [[1;36m [1;34mBOOTCONFIG[0m=[0;34m'[1;34matlasa1_defconfig[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after defaulting LINUXFAMILY to BOARDFAMILY [[1;36m [1;34mLINUXFAMILY[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[🌱[0m] [0mStarting main configuration[0m
+[0m[🌱[0m] [0mUsing REVISION from [[1;32m main VERSION file: '26.11.0-trunk' [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m armbian-config [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-binman-fix-pkg-resources [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m uboot-fix-pylibfdt-swig [0m][0m
+[0m[🌱[0m] [0mSourcing family configuration [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/userpatches/config/sources/families/atlasa1.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNEL_MAJOR_MINOR[0m=[0;34m'[1;34m6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mLINUXCONFIG[0m=[0;34m'[1;34mlinux-atlasa1-current[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mKERNELPATCHDIR[0m=[0;34m'[1;34matlasa1-6.18[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTBRANCH[0m=[0;34m'[1;34mbranch:atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mBOOTPATCHDIR[0m=[0;34m'[1;34mu-boot-atlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mATF_COMPILE[0m=[0;34m'[1;34mno[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing family config [[1;36m [1;34mNETWORKING_STACK[0m=[0;34m'[1;34mnetwork-manager[0;34m' [0m][0m
+[0m[🌱[0m] [0mSourcing arch configuration [[1;32m arm64.conf [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mATF_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mKERNEL_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after sourcing arm64 arch [[1;36m [1;34mUBOOT_COMPILER[0m=[0;34m'[1;34maarch64-linux-gnu-[0;34m' [0m][0m
+[0m[🌱[0m] [0mUsing NETWORKING_STACK [[1;32m NETWORKING_STACK: network-manager [0m][0m
+[0m[🌱[0m] [0mAdding networking extensions [[1;32m net-network-manager, net-chrony [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-network-manager [0m][0m
+[0m[🌿[0m] [0mEnabling extension [[1;39m net-chrony [0m][0m
+[0m[🌱[0m] [0mExtension manager [[1;32m processed 23 Extension Methods calls and 45 Extension Method implementations [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mKERNELSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/linux[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after post_family_config hooks [[1;36m [1;34mBOOTSOURCE[0m=[0;34m'[1;34m/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/cache/atlasa1/sources-9892b120a77ffc6b/u-boot[0;34m' [0m][0m
+[0m[🌱[0m] [0mGetting sources from Git [[1;32m armbian-configng main [0m][0m
+[0m[💖[0m] [0mGit offline, not checking the remote at all [[0;32m armbian-configng branch:main [0m][0m
+[0m[💖[0m] [0mLocal copy is up to date, skipping git fetch [[0;32m armbian-configng branch:main [0m][0m
+[0m[🌱[0m] [0mgit: Fetch from remote completed, rev-parsing... [[1;32m 'armbian-configng' 'main' 'HEAD' [0m][0m
+[0m[🌱[0m] [0mExtension: net-chrony: Adding extra package to image [[1;32m chrony [0m][0m
+[0m[🌱[0m] [0mExtension: net-network-manager: Adding extra packages to image [[1;32m network-manager network-manager-openvpn netplan.io [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mKERNEL_PATCH_ARCHIVE_BASE[0m=[0;34m'[1;34matlasa1[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: after late_family_config hooks [[1;36m [1;34mBOOTDIR[0m=[0;34m'[1;34mu-boot[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before handling KERNEL_MAJOR_MINOR in config_post_main [[1;36m [1;34mBOOTSOURCEDIR[0m=[0;34m'[1;34mu-boot-worktree/u-boot/atlasa1-v47[0;34m' [0m][0m
+[0m[✅[0m] [0mchange-tracking: before calling extension_finish_config [[1;36m [1;34mLINUXSOURCEDIR[0m=[0;34m'[1;34mlinux-kernel-worktree/6.18__atlasa1__arm64[0;34m' [0m][0m
+[0m[🌱[0m] [0mChecking [[1;32m basic host setup [0m][0m
+[0m[🌱[0m] [0mBuild host OS release [[1;32m noble [0m][0m
+[0m[🌱[0m] [0mBuild host architecture [[1;32m amd64 [0m][0m
+[0m[🌱[0m] [0mConfiguration prepared for BOARD build [[1;32m atlasa1.conf [0m][0m
+[0m[✨[0m] [0mRepeat Build Options (early) [[1;32m ./compile.sh build BOARD=atlasa1 BRANCH=current BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=minimal DOWNLOAD_MIRROR=china KERNEL_CONFIGURE=no OFFLINE_WORK=yes RELEASE=resolute [0m][0m
+[0m[🌱[0m] [0mChecked directory OK for mount options [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp ('main temporary dir') [0m][0m
+[0m[🌱[0m] [0mPreparing [[1;32m host [0m][0m
+[0m[🌱[0m] [0mCross arch build [[1;32m target arm64 on host amd64 [0m][0m
+[0m[🌱[0m] [0mchecking [[1;32m arch-test for 'arm64' [0m][0m
+[0m[🌱[0m] [0mAggregating packages [[1;32m rootfs [0m][0m
+[0m[🌱[0m] [0mPython3 version [[1;32m 3.12.3 - 'Python 3.12.3' [0m][0m
+[0m[🌱[0m] [0mpip3 version [[1;32m 26.3 [0m][0m
+[0m[🌱[0m] [0mUsing cached pip packages for Python tools [[1;32m 1484b14cc187abc86c943707cc525a619944cfb0ab0bf6e6a3ed4dcd47c2fb51 [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m uboot :: uboot() [0m][0m
+[0m[🌱[0m] [0mOFFLINE_WORK: using stale cache [[1;32m GIT_INFO_UBOOT [0m][0m
+[0m[🌱[0m] [0mUsing cached [[1;32m GIT_INFO_UBOOT [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'uboot-atlasa1-current(deb)::1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m kernel :: kernel() [0m][0m
+[0m[🌱[0m] [0mOFFLINE_WORK: using stale cache [[1;32m GIT_INFO_KERNEL [0m][0m
+[0m[🌱[0m] [0mUsing cached [[1;32m GIT_INFO_KERNEL [0m][0m
+[0m[🌱[0m] [0mSkipping drivers patch hash for kernel [[1;32m due to EXTRAWIFI=no [0m][0m
+[0m[🌱[0m] [0mUser patches directory for kernel [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/userpatches/kernel/atlasa1-6.18 [0m][0m
+[0m[🌱[0m] [0mUsing kernel config provided by user in config/kernel folder [[1;32m config/kernel/linux-atlasa1-current.config [0m][0m
+[0m[🌱[0m] [0mConsidering available RAM for BTF build [[1;32m 27582/6451 MiB [0m][0m
+[0m[🌱[0m] [0mEnabling eBPF and BTF info [[1;32m for fully BTF & CO-RE enabled kernel [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'kernel-atlasa1-current(deb-tar)::1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m firmware :: firmware() [0m][0m
+[0m[🌱[0m] [0mOFFLINE_WORK: using stale cache [[1;32m GIT_INFO_ARMBIAN_FIRMWARE [0m][0m
+[0m[🌱[0m] [0mUsing cached [[1;32m GIT_INFO_ARMBIAN_FIRMWARE [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'armbian-firmware(deb)::1-SAdb8c-Ba2de-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-base-files :: armbian-base-files() [0m][0m
+[0m[🌱[0m] [0mFound upstream base-files package filename [[1;32m base-files_14ubuntu6_arm64.deb [0m][0m
+[0m[🌱[0m] [0mFound base-files upstream package version [[1;32m 14ubuntu6 [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'armbian-base-files-resolute-arm64(deb)::1-resolute-1armbian1-Bced1-U14ubuntu6-R55fa' to '26.11.0-trunk-14ubuntu6-resolute' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m fake_ubuntu_advantage_tools :: fake_ubuntu_advantage_tools() [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'fake-ubuntu-advantage-tools(deb)::1-B7ce6-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-zsh :: armbian-zsh() [0m][0m
+[0m[🌱[0m] [0mOFFLINE_WORK: using stale cache [[1;32m GIT_INFO_ARMBIAN_ZSH [0m][0m
+[0m[🌱[0m] [0mUsing cached [[1;32m GIT_INFO_ARMBIAN_ZSH [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'armbian-zsh(deb)::1-SA4b65-Ba2a8-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-plymouth-theme :: armbian-plymouth-theme() [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'armbian-plymouth-theme(deb)::1-B0779-R448a' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m armbian-bsp-cli :: armbian-bsp-cli() [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'armbian-bsp-cli-atlasa1-current(deb-tar)::1-PCcf47-V20e1-H01ba-B3a4b-Ra462' to '26.11.0-trunk' [0m][0m
+[0m[🌿[0m] [0mBuilding image [[1;39m atlasa1 [0m][0m
+[0m[🌱[0m] [0mChecking for rootfs cache [[1;32m current atlasa1 resolute gnome minimal no [0m][0m
+[0m[🌱[0m] [0martifact [[1;32m rootfs :: rootfs() [0m][0m
+[0m[🌱[0m] [0mrootfs version [[1;32m packages_hash: '09ad65821713-H6eccde-B58ef30' cache_type: 'gnome-desktop-minimal' rootfs_cache_id: '09ad65821713-H6eccde-B58ef30' [0m][0m
+[0m[🌱[0m] [0mReversioning package [[1;32m re-version 'rootfs-arm64-resolute-gnome-desktop-minimal(tar.zst)::202611-09ad65821713-H6eccde-B58ef30' to '26.11.0-trunk' [0m][0m
+[0m[🌱[0m] [0mUsing tmpfs for rootfs build [[1;32m RAM available: 16548MiB > 6000MiB estimated [0m][0m
+[0m[🌱[0m] [0mExtracting 202611-09ad65821713-H6eccde-B58ef30 [[1;32m 0 days old [0m][0m
+[0m[🌱[0m] [0mAdding Armbian repository and authentication key [[1;32m image-early :: /etc/apt/sources.list.d/armbian.sources [0m][0m
+[0m[🌱[0m] [0mDeploying qemu-user-static binary to chroot [[1;32m qemu-aarch64-static during image-early (from /usr/bin/qemu-aarch64-static) [0m][0m
+[0m[🌱[0m] [0mRemoving qemu-user-static binary from chroot [[1;32m qemu-aarch64-static during image-early [0m][0m
+[0m[🌱[0m] [0mDisabling Armbian repo [[1;32m arm64-resolute :: skip:no when:image-early [0m][0m
+[0m[🌱[0m] [0mDeploying qemu-user-static binary to chroot [[1;32m qemu-aarch64-static during image (from /usr/bin/qemu-aarch64-static) [0m][0m
+[0m[🌱[0m] [0mApplying distribution specific tweaks for [[1;32m resolute [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/fake-ubuntu-advantage-tools_26.11.0-trunk_all__1-B7ce6-R448a.deb [[1;39m fake-ubuntu-advantage-tools_26.11.0-trunk_all__1-B7ce6-R448a.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/extra/resolute-utils/base-files_26.11.0-trunk-14ubuntu6-resolute_arm64__1-resolute-1armbian1-Bced1-U14ubuntu6-R55fa.deb [[1;39m base-files_26.11.0-trunk-14ubuntu6-resolute_arm64__1-resolute-1armbian1-Bced1-U14ubuntu6-R55fa.deb [0m][0m
+[0m[🌱[0m] [0mUsing systemd-resolved [[1;32m for DNS management [0m][0m
+[0m[🌱[0m] [0mSetting root password[0m
+[0m[🌿[0m] [0mTemporarily disabling [[1;39m initramfs-tools hook for kernel [0m][0m
+[0m[🌿[0m] [0mUpdating [[1;39m apt package lists [0m][0m
+[0m[🌿[0m] [0mInstalling AGGREGATED_PACKAGES_IMAGE packages [[1;39m chrony network-manager network-manager-openvpn netplan.io initramfs-tools python3 plymouth fonts-ubuntu ffmpeg gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad libsdl2-2.0-0 libdrm2 libgbm1 [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/linux-u-boot-atlasa1-current_26.11.0-trunk_arm64__1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a.deb [[1;39m linux-u-boot-atlasa1-current_26.11.0-trunk_arm64__1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a.deb [0m][0m
+[0m[🌱[0m] [0mExtension: net-network-manager: Enabling Network-Manager[0m
+[0m[🌱[0m] [0mConfiguring [[1;32m NetworkManager and Netplan [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/linux-image-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb [[1;39m linux-image-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/linux-dtb-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb [[1;39m linux-dtb-current-atlasa1_26.11.0-trunk_arm64__1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/armbian-firmware_26.11.0-trunk_all__1-SAdb8c-Ba2de-R448a.deb [[1;39m armbian-firmware_26.11.0-trunk_all__1-SAdb8c-Ba2de-R448a.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/armbian-bsp-cli-atlasa1-current_26.11.0-trunk_arm64__1-PCcf47-V20e1-H01ba-B3a4b-Ra462.deb [[1;39m armbian-bsp-cli-atlasa1-current_26.11.0-trunk_arm64__1-PCcf47-V20e1-H01ba-B3a4b-Ra462.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/armbian-zsh_26.11.0-trunk_all__1-SA4b65-Ba2a8-R448a.deb [[1;39m armbian-zsh_26.11.0-trunk_all__1-SA4b65-Ba2a8-R448a.deb [0m][0m
+[0m[🌿[0m] [0mInstalling: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/armbian-plymouth-theme_26.11.0-trunk_all__1-B0779-R448a.deb [[1;39m armbian-plymouth-theme_26.11.0-trunk_all__1-B0779-R448a.deb [0m][0m
+[0m[🌱[0m] [0mEnabling Armbian services [[1;32m systemd [0m][0m
+[0m[🌱[0m] [0mEnabling serial console [[1;32m ttyS0 [0m][0m
+[0m[🌱[0m] [0mCalling image customization script [[1;32m customize-image.sh [0m][0m
+[0m[🌱[0m] [0mAdding Armbian repository and authentication key [[1;32m image-late :: /etc/apt/sources.list.d/armbian.sources [0m][0m
+[0m[🌱[0m] [0mPreserving existing qemu binary [[1;32m qemu-aarch64-static during image-late [0m][0m
+renamed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static.armbian.orig'
+[0m[🌱[0m] [0mPreserving existing qemu binary [[1;32m qemu-aarch64 during image-late [0m][0m
+renamed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64.armbian.orig'
+[0m[🌱[0m] [0mDeploying qemu-user-static binary to chroot [[1;32m qemu-aarch64-static during image-late (from /usr/bin/qemu-aarch64-static) [0m][0m
+'/usr/bin/qemu-aarch64-static' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static'
+'/usr/bin/qemu-aarch64-static' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64'
+[0m[🌱[0m] [0mRemoving qemu-user-static binary from chroot [[1;32m qemu-aarch64-static during image-late [0m][0m
+removed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static'
+removed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64'
+[0m[🌱[0m] [0mRestoring original qemu binary [[1;32m qemu-aarch64-static during image-late [0m][0m
+renamed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static.armbian.orig' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64-static'
+[0m[🌱[0m] [0mRestoring original qemu binary [[1;32m qemu-aarch64 during image-late [0m][0m
+renamed '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64.armbian.orig' -> '/home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4//usr/bin/qemu-aarch64'
+[0m[🌱[0m] [0mUpdating APT package lists [[1;32m after customization [0m][0m
+[0m[🌱[0m] [0mNo longer needed packages [[1;32m purge [0m][0m
+[0m[🚸[0m] [0mWARNING: SDCARD /var/cache/apt dir is not empty [[1;35m before 'apt-get autoremove' :: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4/var/cache/apt (7 files) [0m][0m
+[0m[🚸[0m] [0mWARNING: SDCARD /var/lib/apt/lists dir is not empty [[1;35m before 'apt-get autoremove' :: /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4/var/lib/apt/lists (47 files) [0m][0m
+[0m[🚸[0m] [0mSDCARD /var/cache/apt is not empty [[1;35m /var/cache/apt :: 7 files [0m][0m
+[0m[🚸[0m] [0mSDCARD /var/lib/apt/lists is not empty [[1;35m /var/lib/apt/lists :: 47 files [0m][0m
+[0m[🌱[0m] [0mCopying host-side apt list cache into image [[1;32m apt-get update and clean image-side [0m][0m
+[0m[🌱[0m] [0mAfter copying host-side cache into image [[1;32m 62 files [0m][0m
+[0m[🌱[0m] [0mUpdating apt lists in image [[1;32m apt-get update and clean [0m][0m
+[0m[🌱[0m] [0mAfter updating and cleaning image apt list cache [[1;32m 49 files [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ base-files = 1-resolute-1armbian1-Bced1-U14ubuntu6-R55fa [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ linux-image-current-atlasa1 = 1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ armbian-firmware = 1-SAdb8c-Ba2de-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ fake-ubuntu-advantage-tools = 1-B7ce6-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ armbian-zsh = 1-SA4b65-Ba2a8-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ armbian-plymouth-theme = 1-B0779-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ armbian-bsp-cli-atlasa1-current = 1-PCcf47-V20e1-H01ba-B3a4b-Ra462 [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ linux-u-boot-atlasa1-current = 1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a [0m][0m
+[0m[🌱[0m] [0mImage installed package hash [[1;32m ✅ linux-dtb-current-atlasa1 = 1-S1eb2-D0000-P0000-Ccc14-H5ce3-HK356f-Vc222-Bdf9b-ATL5d0911add48b-R448a [0m][0m
+[0m[🌱[0m] [0mRemoving qemu-user-static binary from chroot [[1;32m qemu-aarch64-static during image [0m][0m
+[0m[🌱[0m] [0mUnmounting [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/rootfs-26215c51-e93d-4112-875d-5c5a42c6e3a4 [0m][0m
+[0m[🌿[0m] [0mActual rootfs size [[1;39m 3630MiB [0m][0m
+[0m[🌱[0m] [0mPreparing image file for rootfs [[1;32m atlasa1 resolute [0m][0m
+[0m[🌱[0m] [0me2fsprogs version [[1;32m 1.47.0 supports orphan_file [0m][0m
+[0m[🌱[0m] [0mCurrent rootfs size [[1;32m 3630 MiB [0m][0m
+[0m[🌱[0m] [0mUsing user-defined image size [[1;32m 8192 MiB [0m][0m
+[0m[🌱[0m] [0mCreating blank image for rootfs [[1;32m truncate: 8192 MiB [0m][0m
+[0m[🌱[0m] [0mCreating partitions [[1;32m root: ext4 [0m][0m
+[0m[🌿[0m] [0mAllocated loop device [[1;39m LOOP=/dev/loop22 [0m][0m
+[0m[🌿[0m] [0mCreating rootfs [[1;39m ext4 on /dev/loop22p4 [0m][0m
+[0m[🌿[0m] [0mMounting rootfs [[1;39m /dev/loop22p4 (UUID=2148ff68-1d05-4fd0-a8cc-f8d4b774dd65) [0m][0m
+[0m[🌿[0m] [0mCopying files via rsync to [[1;39m / (MOUNT root) [0m][0m
+[0m[🌿[0m] [0mCopying files to [[1;39m /boot (MOUNT /boot) [0m][0m
+[0m[🌱[0m] [0mDeploying qemu-user-static binary to chroot [[1;32m qemu-aarch64-static during initrd# (from /usr/bin/qemu-aarch64-static) [0m][0m
+[0m[🌿[0m] [0mUpdating initramfs... [[1;39m TMPDIR=/tmp update-initramfs -u -k 6.18.63-current-atlasa1 [0m][0m
+[0m[🌱[0m] [0mUpdated initramfs. [[1;32m TMPDIR=/tmp update-initramfs -u -k 6.18.63-current-atlasa1 [0m][0m
+[0m[🌿[0m] [0mRe-enabling [[1;39m initramfs-tools hook for kernel [0m][0m
+[0m[🌱[0m] [0mUnmounting [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/.tmp/mount-26215c51-e93d-4112-875d-5c5a42c6e3a4 [0m][0m
+[0m[🌱[0m] [0mRemoving qemu-user-static binary from chroot [[1;32m qemu-aarch64-static during initrd [0m][0m
+[0m[🌱[0m] [0mFree SD cache [[1;32m 12% [0m][0m
+[0m[🌱[0m] [0mMount point [[1;32m 55% [0m][0m
+[0m[🌱[0m] [0mPreparing u-boot bootloader [[1;32m LOOP=/dev/loop22 - /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/linux-u-boot-atlasa1-current_26.11.0-trunk_arm64__1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a.deb [0m][0m
+[0m[🌱[0m] [0mSourcing u-boot install functions [[1;32m /home/ubuntu/t736/AtlasA1-native-20261124/output/armbian/output/debs/linux-u-boot-atlasa1-current_26.11.0-trunk_arm64__1-Sd21b-P0000-H1ca2-Vf2af-Bd800-R448a.deb [0m][0m
+[0m[🌱[0m] [0mWriting u-boot bootloader [[1;32m /dev/loop22 [0m][0m
+[0m[🌿[0m] [0mUnmounting recursively [[1;39m MOUNT - be patient [0m][0m
+[0m[🌿[0m] [0mFreeing loop device [[1;39m /dev/loop22 [0m][0m
+[0m[🌱[0m] [0mDone building [[1;32m Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img [0m][0m
+[0m[🌱[0m] [0mCompression host [[1;32m nproc=8 (cap=16) loadavg=1.94/2.73/3.01 MemTotal=32045MB MemAvail=23779MB [0m][0m
+[0m[🌱[0m] [0mCompression resource share [[1;32m active_xz/zstd=0 -> threads=8, budget=14267MB; pick xz=-9 zstd=-19 [0m][0m
+[0m[🌱[0m] [0mCompression xz level walk [[1;32m -9:5392MB<=budget OK [0m][0m
+[0m[🌱[0m] [0mCompression input [[1;32m 2 file(s), 8192MB total [0m][0m
+[0m[🌱[0m] [0mCompressed [[1;32m Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.atlasa1.json: 0MB -> 0MB (0%), 1s, 0 MB/s [0m][0m
+[0m[🌱[0m] [0mSHA256 calculating [[1;32m Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.atlasa1.json [0m][0m
+[0m[🌱[0m] [0mCompressed [[1;32m Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img: 8192MB -> 8192MB (100%), 1s, 8192 MB/s [0m][0m
+[0m[🌱[0m] [0mSHA256 calculating [[1;32m Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img [0m][0m
+[0m[🌱[0m] [0mFast-moving file to output/images [[1;32m -> Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.atlasa1.json (1.13KiB) [0m][0m
+[0m[🌱[0m] [0mFast-moving file to output/images [[1;32m -> Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.atlasa1.json.sha (158.00B) [0m][0m
+[0m[🌱[0m] [0mFast-moving file to output/images [[1;32m -> Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img (8.00GiB) [0m][0m
+[0m[🌱[0m] [0mFast-moving file to output/images [[1;32m -> Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img.sha (149.00B) [0m][0m
+[0m[🌱[0m] [0mFast-moving file to output/images [[1;32m -> Armbian-unofficial_26.11.0-trunk_Atlasa1_resolute_current_6.18.63_gnome_desktop.img.txt (19.32KiB) [0m][0m
+[0m[🌿[0m] [0mUnmounting recursively [[1;39m SDCARD rootfs finished - be patient [0m][0m
+[0m[🌿[0m] [0mDone building image [[1;39m atlasa1 [0m][0m
+[0m[🌱[0m] [0mRuntime [[1;32m 19:00 min [0m][0m
+[0m[✨[0m] [0mRepeat Build Options [[1;32m ./compile.sh build BOARD=atlasa1 BRANCH=current BUILD_DESKTOP=yes BUILD_MINIMAL=no DESKTOP_ENVIRONMENT=gnome DESKTOP_TIER=minimal DOWNLOAD_MIRROR=china KERNEL_CONFIGURE=no OFFLINE_WORK=yes RELEASE=resolute [0m][0m
+[0m[🌱[0m] [0mCleaning up [[1;32m please wait for cleanups to finish [0m][0m
+[0m[🌿[0m] [0mANSI log file built; inspect it by running: [[1;39m less -RS output/logs/log-build-26215c51-e93d-4112-875d-5c5a42c6e3a4.log.ans [0m][0m
+[0m[🌱[0m] [0mShare log manually: [[1;32m use one of the commands below (or add SHARE_LOG=yes next time!) [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-26215c51-e93d-4112-875d-5c5a42c6e3a4.log.ans https://paste.armbian.com/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-26215c51-e93d-4112-875d-5c5a42c6e3a4.log.ans https://paste.armbian.de/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-26215c51-e93d-4112-875d-5c5a42c6e3a4.log.ans https://paste.next.armbian.com/log [0m][0m
+[0m[🌿[0m] [0mShare log manually: [[1;39m curl --data-binary @output/logs/log-build-26215c51-e93d-4112-875d-5c5a42c6e3a4.log.ans https://paste.armbian.eu/log [0m][0m
