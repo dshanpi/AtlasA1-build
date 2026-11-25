@@ -19,6 +19,9 @@ cd AtlasA1-build
 选择 `AtlasA1 / T736`、`current`、`resolute`。
 桌面暂支持 GNOME 和 Xfce，也支持无桌面镜像。
 框架下载至 `output/armbian`；构建产物位于其 `output` 目录。
+同一构建目录只允许一个 AtlasA1 构建进程。第二次启动会明确退出，不会清理正在编译的文件。
+需要并行构建时，使用独立的仓库和 `output/armbian` 目录。
+PowerVR 在内核源码目录外的独立临时目录编译，结束后自动清理。
 
 已有仓库先执行 `git pull --ff-only`。再执行 `./compile.sh BOARD=atlasa1 KERNEL_CONFIGURE=no`。
 依次选择 `current`、`resolute`、桌面镜像、GNOME 或 Xfce、软件包档位。

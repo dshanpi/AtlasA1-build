@@ -1,7 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # AtlasA1 hooks for the official Armbian build framework.
 
+function atlasa1_acquire_build_lock() {
+    [[ ${CONFIG_DEFS_ONLY:-no} != yes ]] || return 0
+    [[ ${ATL_BUILD_LOCK_HELD:-no} != yes ]] || return 0
+    exec {ATL_BUILD_LOCK_FD}>"${SRC}/.atlasa1-build.lock"
+    flock -n "$ATL_BUILD_LOCK_FD" || exit_with_error \
+        'Another AtlasA1 build is running in this directory. Wait for it to finish or use a separate checkout.'
+    declare -g ATL_BUILD_LOCK_HELD=yes
+}
+
 function post_family_config__atlasa1() {
+    atlasa1_acquire_build_lock
     declare -g ATL_NAME="AtlasA1"
     declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
     [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'

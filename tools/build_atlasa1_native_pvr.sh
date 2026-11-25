@@ -7,10 +7,13 @@ kernel=$(realpath -e "$2")
 target=$(realpath -e "$3")
 compiler=$4
 release=$(cat "$kernel/include/config/kernel.release")
+# Keep generated sources outside the kernel's git-clean scope.
 # The vendor makefile prunes directories whose names start with a dot.
-out="$kernel/atlasa1-pvr-build"
-src="$kernel/atlasa1-pvr-source"
-if [[ ! -d $src ]]; then cp -a "$source" "$src"; fi
+work=$(mktemp -d "$(dirname "$kernel")/atlasa1-pvr.XXXXXXXX")
+trap 'rm -rf "$work"' EXIT
+out="$work/out"
+src="$work/source"
+cp -a "$source" "$src"
 kbuild="$out/target_aarch64/kbuild"
 cd "$src"
 while IFS= read -r -d '' path; do

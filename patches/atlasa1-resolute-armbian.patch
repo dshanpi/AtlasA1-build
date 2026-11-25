@@ -13816,10 +13816,10 @@ index 0000000000000000000000000000000000000000..f2a573bffa95cb621180aa24a3e2a49c
 +该入口要求新的备份目录，保存显示管理器、GDM 和账户会话设置；不重启、不停止当前桌面、不修改内核启动别名，也不启用自动登录。需要另行确保已安装与 GPU 模块匹配并经过实板测试的内核。脚本输出桌面配置的恢复命令。
 diff --git a/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..fcaea4394e44a45f6606faef730991a2e9134fb8
+index 0000000000000000000000000000000000000000..dcac6c0a5199bdb1c99bdfa631291867597c985e
 --- /dev/null
 +++ b/userpatches/atlasa1-release/docs/NATIVE_ARMBIAN_BUILD.md
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,175 @@
 +# Armbian 原生构建入口
 +
 +原生入口：`compile.sh`。旧版 `build.sh` 继续用于固定软件版本的 GNOME 镜像重建。
@@ -13841,6 +13841,9 @@ index 0000000000000000000000000000000000000000..fcaea4394e44a45f6606faef730991a2
 +选择 `AtlasA1 / T736`、`current`、`resolute`。
 +桌面暂支持 GNOME 和 Xfce，也支持无桌面镜像。
 +框架下载至 `output/armbian`；构建产物位于其 `output` 目录。
++同一构建目录只允许一个 AtlasA1 构建进程。第二次启动会明确退出，不会清理正在编译的文件。
++需要并行构建时，使用独立的仓库和 `output/armbian` 目录。
++PowerVR 在内核源码目录外的独立临时目录编译，结束后自动清理。
 +
 +已有仓库先执行 `git pull --ff-only`。再执行 `./compile.sh BOARD=atlasa1 KERNEL_CONFIGURE=no`。
 +依次选择 `current`、`resolute`、桌面镜像、GNOME 或 Xfce、软件包档位。
@@ -173915,10 +173918,10 @@ index 0000000000000000000000000000000000000000..ffc5788ffbff2f3952a1b20e0ff7c0ff
 +touch "$out/complete"
 diff --git a/userpatches/atlasa1-release/tools/build_atlasa1_native_pvr.sh b/userpatches/atlasa1-release/tools/build_atlasa1_native_pvr.sh
 new file mode 100755
-index 0000000000000000000000000000000000000000..ec1777aac473bf17e383b97334e80057a61447ef
+index 0000000000000000000000000000000000000000..917d1448b91edc189e20d81c072f4addf91330da
 --- /dev/null
 +++ b/userpatches/atlasa1-release/tools/build_atlasa1_native_pvr.sh
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,31 @@
 +#!/usr/bin/env bash
 +# Build PowerVR against the kernel selected by Armbian.
 +set -euo pipefail
@@ -173928,10 +173931,13 @@ index 0000000000000000000000000000000000000000..ec1777aac473bf17e383b97334e80057
 +target=$(realpath -e "$3")
 +compiler=$4
 +release=$(cat "$kernel/include/config/kernel.release")
++# Keep generated sources outside the kernel's git-clean scope.
 +# The vendor makefile prunes directories whose names start with a dot.
-+out="$kernel/atlasa1-pvr-build"
-+src="$kernel/atlasa1-pvr-source"
-+if [[ ! -d $src ]]; then cp -a "$source" "$src"; fi
++work=$(mktemp -d "$(dirname "$kernel")/atlasa1-pvr.XXXXXXXX")
++trap 'rm -rf "$work"' EXIT
++out="$work/out"
++src="$work/source"
++cp -a "$source" "$src"
 +kbuild="$out/target_aarch64/kbuild"
 +cd "$src"
 +while IFS= read -r -d '' path; do
@@ -185365,14 +185371,24 @@ index 0000000000000000000000000000000000000000..240aab807fb6e7751363e2aadd367c5f
 +EndSection
 diff --git a/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh b/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh
 new file mode 100644
-index 0000000000000000000000000000000000000000..bb9e34293edb9a0c31333683acd0291e455b9090
+index 0000000000000000000000000000000000000000..35208ef8778aae1d22593566ddf28a241bef4a9a
 --- /dev/null
 +++ b/userpatches/atlasa1-release/userpatches/extensions/atlasa1.sh
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,123 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +# AtlasA1 hooks for the official Armbian build framework.
 +
++function atlasa1_acquire_build_lock() {
++    [[ ${CONFIG_DEFS_ONLY:-no} != yes ]] || return 0
++    [[ ${ATL_BUILD_LOCK_HELD:-no} != yes ]] || return 0
++    exec {ATL_BUILD_LOCK_FD}>"${SRC}/.atlasa1-build.lock"
++    flock -n "$ATL_BUILD_LOCK_FD" || exit_with_error \
++        'Another AtlasA1 build is running in this directory. Wait for it to finish or use a separate checkout.'
++    declare -g ATL_BUILD_LOCK_HELD=yes
++}
++
 +function post_family_config__atlasa1() {
++    atlasa1_acquire_build_lock
 +    declare -g ATL_NAME="AtlasA1"
 +    declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
 +    [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'
@@ -188380,14 +188396,24 @@ index 0000000000000000000000000000000000000000..4684ca2a9040d83644ac25937d5c1266
 +CONFIG_FUNCTION_GRAPH_TRACER=y
 diff --git a/userpatches/extensions/atlasa1.sh b/userpatches/extensions/atlasa1.sh
 new file mode 100644
-index 0000000000000000000000000000000000000000..bb9e34293edb9a0c31333683acd0291e455b9090
+index 0000000000000000000000000000000000000000..35208ef8778aae1d22593566ddf28a241bef4a9a
 --- /dev/null
 +++ b/userpatches/extensions/atlasa1.sh
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,123 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +# AtlasA1 hooks for the official Armbian build framework.
 +
++function atlasa1_acquire_build_lock() {
++    [[ ${CONFIG_DEFS_ONLY:-no} != yes ]] || return 0
++    [[ ${ATL_BUILD_LOCK_HELD:-no} != yes ]] || return 0
++    exec {ATL_BUILD_LOCK_FD}>"${SRC}/.atlasa1-build.lock"
++    flock -n "$ATL_BUILD_LOCK_FD" || exit_with_error \
++        'Another AtlasA1 build is running in this directory. Wait for it to finish or use a separate checkout.'
++    declare -g ATL_BUILD_LOCK_HELD=yes
++}
++
 +function post_family_config__atlasa1() {
++    atlasa1_acquire_build_lock
 +    declare -g ATL_NAME="AtlasA1"
 +    declare -g ATL_RECIPE="${USERPATCHES_PATH}/atlasa1-release"
 +    [[ -f "$ATL_RECIPE/tools/prepare_atlasa1_native_inputs.py" ]] || exit_with_error 'Install the AtlasA1 recipe first.'

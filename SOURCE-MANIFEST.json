@@ -1106,8 +1106,8 @@
       "path": "docs/NATIVE_ARMBIAN_BUILD.md",
       "kind": "source",
       "source": "mainline/docs/NATIVE_ARMBIAN_BUILD.md",
-      "size": 7693,
-      "sha256": "36b69c0a798a2d1d5468aefa437d4078c5a9dcd5060dfd9d765b904e18867616"
+      "size": 7983,
+      "sha256": "261c3d611271233db6467587037d31c2fe74dd22ec9fe2240cf1a2f1c89fd407"
     },
     {
       "path": "docs/UBUNTU_26_04.md",
@@ -3696,8 +3696,8 @@
       "path": "patches/atlasa1-resolute-armbian.patch",
       "kind": "source",
       "source": "mainline/patches/atlasa1-resolute-armbian.patch",
-      "size": 8776120,
-      "sha256": "f7ceca71fb7d9adc0282ad9087b7e03bad3975ff787c98ff6f9a1ab4d59ba5a9"
+      "size": 8777423,
+      "sha256": "93437c3e7e0d5b42cfa63eff12e01677943936ec12b0fa245fc5ec17916f841b"
     },
     {
       "path": "patches/cedar/backend-parallel-direct-slot.patch",
@@ -5660,6 +5660,13 @@
       "sha256": "271fb57b73545fb877dca5bae0868fcc41c83fe45919b03e7f8624e57438306d"
     },
     {
+      "path": "tests/test_atlasa1_build_lock.py",
+      "kind": "source",
+      "source": "mainline/tests/test_atlasa1_build_lock.py",
+      "size": 1657,
+      "sha256": "465ca17bed438c85d1d7f20c22f2e47987c3dc815e69a478f8f0370950e8b6df"
+    },
+    {
       "path": "tests/test_atlasa1_native_image.py",
       "kind": "source",
       "source": "mainline/tests/test_atlasa1_native_image.py",
@@ -6328,8 +6335,8 @@
       "path": "tools/build_atlasa1_native_pvr.sh",
       "kind": "source",
       "source": "mainline/tools/build_atlasa1_native_pvr.sh",
-      "size": 1439,
-      "sha256": "bcf35a84a4395040f8f8e191a2483a665c6b4ce1ec76f38cb18fa2944b7fd6ef"
+      "size": 1532,
+      "sha256": "05bf05280c02a922e12332ab6df4ddcf57cdf6d274ccf9c7599798ceb9965df3"
     },
     {
       "path": "tools/build_atlasa1_player.py",
@@ -7882,8 +7889,8 @@
       "path": "userpatches/extensions/atlasa1.sh",
       "kind": "source",
       "source": "mainline/userpatches/extensions/atlasa1.sh",
-      "size": 6154,
-      "sha256": "2d1b50a9e4a4814114225eb041dd0b2de7f7bf185dec37772bb2efdb32f7130b"
+      "size": 6601,
+      "sha256": "b716e6710cd36b8248c7a5e03db25130aab8c6082f2b43eb41337bb076a4bb34"
     },
     {
       "path": "userpatches/kernel/t736-mainline-6.18/0001-t736-minimal-board.patch",
